@@ -1,5 +1,6 @@
 // src/app/layout.tsx
 import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'GlobalNomad',
@@ -11,5 +12,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <html lang="ko">
+      <body className="min-h-screen bg-gray-50">{children}</body>
+    </html>
+  );
 }
