@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 
-/* 폰트 임포트 */
+/* Pretendard 폰트 */
 @font-face {
   font-family: 'Pretendard';
   src: url('/fonts/Pretendard/PretendardVariable.woff2')
@@ -10,7 +10,7 @@
   font-display: swap;
 }
 
-/* 프로젝트 공통 변수 */
+/* 공통 변수 */
 :root {
   --font-pretendard:
     'Pretendard', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
@@ -24,31 +24,53 @@
   }
 }
 
+/* ✅ Tailwind v4 테마 토큰 */
 @theme {
+  /* 폰트 */
   --font-sans: var(--font-pretendard);
 
-  --color-blue: #0065ff; /* bg-blue */
-  --color-blue-light: #2eb4ff; /* bg-blue-light */
-  --color-blue-pale: #e5f3ff; /* bg-blue-pale */
+  /* Blue */
+  --color-blue: #0085ff;
+  --color-blue-light: #2eb4ff;
+  --color-blue-pale: #e5f3ff;
 
-  --color-yellow: #ffc23d; /* bg-yellow */
+  /* Yellow */
+  --color-yellow: #ffc23d;
 
-  --color-black: #1b1b1b; /* text-black */
-  --color-black-nomad: #112211; /* text-black-nomad / bg-black-nomad */
+  /* Black */
+  --color-black: #1b1b1b;
+  --color-black-nomad: #112211;
 
+  /* Gray */
   --color-gray-50: #fafafa;
   --color-gray-100: #eeeeee;
   --color-gray-200: #dddddd;
-  --color-gray-300: #cbcbcf;
-  --color-gray-400: #adaebd;
-  --color-gray-500: #a4a4aa;
-  --color-gray-600: #1a1a1a;
+  --color-gray-300: #cbc9cf;
+  --color-gray-400: #adaeb8;
+  --color-gray-500: #a4a1aa;
+  --color-gray-600: #a1a1a1;
   --color-gray-700: #79747e;
   --color-gray-800: #4b4b4b;
 
-  --color-background: var(--background); /* bg-background */
-  --color-foreground: var(--foreground); /* text-foreground */
+  /* Green */
+  --color-green: #00ac07;
+  --color-green-dark: #063b2d;
+  --color-green-light: #ced8d5;
 
+  /* Red */
+  --color-red: #ff472e;
+  --color-red-light: #ffc2ba;
+  --color-red-pale: #ffe4e0;
+
+  /* Orange */
+  --color-orange: #ff7c1d;
+  --color-orange-pale: #fff4eb;
+
+  /* Background / Foreground */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Font sizes */
   --text-3xl: 32px;
   --leading-3xl: 42px;
   --text-2xl: 24px;
@@ -67,9 +89,13 @@
   --leading-xs: 18px;
 }
 
+/* Global reset */
 html,
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-pretendard);
+  margin: 0;
+  padding: 0;
+  height: 100%;
 }
