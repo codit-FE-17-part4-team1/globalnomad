@@ -10,15 +10,19 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
   --font-pretendard:
     'Pretendard', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --background: #ffffff;
+  --foreground: #171717;
+  --point-orange-50: #fff4e8;
+  --point-orange-100: #ff7c1d;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-p-orange-50: var(--point-orange-50);
+  --color-p-orange-100: var(--point-orange-100);
 }
 
 @media (prefers-color-scheme: dark) {
