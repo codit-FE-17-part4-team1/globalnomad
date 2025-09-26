@@ -1,0 +1,93 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/Pretendard/PretendardVariable.woff2')
+    format('woff2-variations');
+  font-weight: 100 900; /* Variable 폰트 범위 */
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --font-pretendard:
+    'Pretendard', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+html,
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-pretendard);
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+input[type='datetime-local']::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
+
+/* 체험 페이지 (메인) 디자인*/
+/* 기본 스크롤바 - 높이만 설정 */
+.horizontal-scroll-only::-webkit-scrollbar {
+  height: 10px;
+}
+
+/* thumb 기본 상태 - 완전히 투명 */
+.horizontal-scroll-only::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 9999px;
+  box-shadow: none;
+  transition: box-shadow 0.3s ease;
+}
+
+/* hover 시 글로우 애니메이션 */
+.horizontal-scroll-only::-webkit-scrollbar-thumb:hover {
+  animation: glowPulse 1.2s ease-in-out infinite;
+}
+
+/* 글로우 애니메이션 키프레임 */
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 0 rgba(140, 140, 140, 0); /* 완전 투명 시작 */
+  }
+  50% {
+    box-shadow: 0 0 8px rgba(140, 140, 140, 0.5); /* 빛 확장 */
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(140, 140, 140, 0); /* 다시 사라짐 */
+  }
+}
