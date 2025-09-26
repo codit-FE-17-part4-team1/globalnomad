@@ -1,26 +1,22 @@
 @import 'tailwindcss';
 
+/* Pretendard 폰트 */
 @font-face {
   font-family: 'Pretendard';
   src: url('/fonts/Pretendard/PretendardVariable.woff2')
     format('woff2-variations');
-  font-weight: 100 900; /* Variable 폰트 범위 */
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
+/* 공통 변수 */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
   --font-pretendard:
     'Pretendard', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --background: #ffffff;
+  --foreground: #171717;
 }
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-}
-
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -28,17 +24,83 @@
   }
 }
 
+/* ✅ Tailwind v4 테마 토큰 */
+@theme {
+  /* 폰트 */
+  --font-sans: var(--font-pretendard);
+
+  /* Blue */
+  --color-blue: #0085ff;
+  --color-blue-light: #2eb4ff;
+  --color-blue-pale: #e5f3ff;
+
+  /* Yellow */
+  --color-yellow: #ffc23d;
+
+  /* Black */
+  --color-black: #1b1b1b;
+  --color-black-nomad: #112211;
+
+  /* Gray */
+  --color-gray-50: #fafafa;
+  --color-gray-100: #eeeeee;
+  --color-gray-200: #dddddd;
+  --color-gray-300: #cbc9cf;
+  --color-gray-400: #adaeb8;
+  --color-gray-500: #a4a1aa;
+  --color-gray-600: #a1a1a1;
+  --color-gray-700: #79747e;
+  --color-gray-800: #4b4b4b;
+
+  /* Green */
+  --color-green: #00ac07;
+  --color-green-dark: #063b2d;
+  --color-green-light: #ced8d5;
+
+  /* Red */
+  --color-red: #ff472e;
+  --color-red-light: #ffc2ba;
+  --color-red-pale: #ffe4e0;
+
+  /* Orange */
+  --color-orange: #ff7c1d;
+  --color-orange-pale: #fff4eb;
+
+  /* Background / Foreground */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Font sizes */
+  --text-3xl: 32px;
+  --leading-3xl: 42px;
+  --text-2xl: 24px;
+  --leading-2xl: 32px;
+  --text-xl: 20px;
+  --leading-xl: 32px;
+  --text-2lg: 18px;
+  --leading-2lg: 26px;
+  --text-lg: 16px;
+  --leading-lg: 26px;
+  --text-md: 14px;
+  --leading-md: 24px;
+  --text-sm: 13px;
+  --leading-sm: 22px;
+  --text-xs: 12px;
+  --leading-xs: 18px;
+}
+
+/* Global reset */
 html,
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-pretendard);
-  height: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
-  overflow-y: hidden;
+  height: 100%;
 }
+
+/* 버튼 */
 button {
   cursor: pointer;
 }
@@ -46,48 +108,45 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* 스크롤바 숨기기 */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
 
+/* input datetime-local 아이콘 숨기기 */
 input[type='datetime-local']::-webkit-calendar-picker-indicator {
   display: none;
   -webkit-appearance: none;
 }
 
-/* 체험 페이지 (메인) 디자인*/
-/* 기본 스크롤바 - 높이만 설정 */
+/* 수평 스크롤바 커스터마이징 */
 .horizontal-scroll-only::-webkit-scrollbar {
   height: 10px;
 }
-
-/* thumb 기본 상태 - 완전히 투명 */
+/* thumb 기본 상태 */
 .horizontal-scroll-only::-webkit-scrollbar-thumb {
   background: transparent;
   border-radius: 9999px;
   box-shadow: none;
   transition: box-shadow 0.3s ease;
 }
-
 /* hover 시 글로우 애니메이션 */
 .horizontal-scroll-only::-webkit-scrollbar-thumb:hover {
   animation: glowPulse 1.2s ease-in-out infinite;
 }
-
 /* 글로우 애니메이션 키프레임 */
 @keyframes glowPulse {
   0% {
-    box-shadow: 0 0 0 rgba(140, 140, 140, 0); /* 완전 투명 시작 */
+    box-shadow: 0 0 0 rgba(140, 140, 140, 0);
   }
   50% {
-    box-shadow: 0 0 8px rgba(140, 140, 140, 0.5); /* 빛 확장 */
+    box-shadow: 0 0 8px rgba(140, 140, 140, 0.5);
   }
   100% {
-    box-shadow: 0 0 0 rgba(140, 140, 140, 0); /* 다시 사라짐 */
+    box-shadow: 0 0 0 rgba(140, 140, 140, 0);
   }
 }
