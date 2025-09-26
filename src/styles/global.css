@@ -99,3 +99,54 @@ body {
   padding: 0;
   height: 100%;
 }
+
+/* 버튼 */
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* 스크롤바 숨기기 */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* input datetime-local 아이콘 숨기기 */
+input[type='datetime-local']::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
+
+/* 수평 스크롤바 커스터마이징 */
+.horizontal-scroll-only::-webkit-scrollbar {
+  height: 10px;
+}
+/* thumb 기본 상태 */
+.horizontal-scroll-only::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 9999px;
+  box-shadow: none;
+  transition: box-shadow 0.3s ease;
+}
+/* hover 시 글로우 애니메이션 */
+.horizontal-scroll-only::-webkit-scrollbar-thumb:hover {
+  animation: glowPulse 1.2s ease-in-out infinite;
+}
+/* 글로우 애니메이션 키프레임 */
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 0 rgba(140, 140, 140, 0);
+  }
+  50% {
+    box-shadow: 0 0 8px rgba(140, 140, 140, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(140, 140, 140, 0);
+  }
+}
