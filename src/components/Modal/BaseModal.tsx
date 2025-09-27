@@ -6,13 +6,7 @@ import { useRef } from 'react';
 
 type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
 
-const sizeMap: Record<ModalSize, string> = {
-  sm: 'w-[24rem] max-w-[90vw]',
-  md: 'w-[32rem] max-w-[90vw]',
-  lg: 'w-[40rem] max-w-[95vw]',
-  xl: 'w-[56rem] max-w-[95vw]',
-  full: 'w-screen h-screen rounded-none',
-};
+// 모달 사이즈를 따로 잡고 싶은데, className으로 직접 작성해야 할 지, 상수로 빼서 관리할 지 고민
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -27,7 +21,7 @@ export default function BaseModal({
   isOpen,
   onClose,
   children,
-  size = 'lg',
+  size = 'md',
   className,
 }: BaseModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -48,14 +42,14 @@ export default function BaseModal({
       aria-label="모달 오버레이: 클릭하면 닫힘"
       onClick={handleOverLayClick}
     >
-      {/* 여기서 하얀 박스/테두리/그림자/폭을 준다 */}
+      {/* 디테일 잡기? */}
       <div
         role="dialog"
         aria-modal="true"
+        // ','를 통해서 배열로 관리 (코드 가독성), join을 통해 문자열로 합치기 --> 이렇게도 된다고 함!
         className={[
           'relative bg-white rounded-lg shadow-xl',
-          'max-h-[90vh] overflow-auto', // 내용 많을 때 스크롤
-          sizeMap[size],
+          'max-h-[90vh] overflow-auto w-[540px]', // 스크롤 되도록 설정
           className ?? '',
         ].join(' ')}
       >
