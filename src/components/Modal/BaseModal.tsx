@@ -1,5 +1,8 @@
+'use client';
+
 import '@/styles/global.css';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
+// import Portal from '@/components/Modal/Portalmodal';
 
 type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
 
@@ -26,46 +29,31 @@ export default function BaseModal({
   children,
   size = 'lg',
   className,
-  closeOnOverlay,
 }: BaseModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-  // const handleOverLayClick = (e: React.MouseEvent) => {
-  //   if (e.target === overlayRef.current) {
-  //     onClose();
-  //   }
-  // };
-  // if (!isOpen) {
-  //   return null;
-  // }
+  const handleOverLayClick = (e: React.MouseEvent) => {
+    if (e.target === overlayRef.current) {
+      onClose();
+    }
+  };
+  if (!isOpen) {
+    return null;
+  }
 
   return (
+    // <Portal>
     <div
       ref={overlayRef}
       className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4"
       aria-label="모달 오버레이: 클릭하면 닫힘"
-      onClick={(e) => {
-        if (closeOnOverlay && e.target === overlayRef.current) onClose();
-      }}
+      onClick={handleOverLayClick}
     >
       {/* 여기서 하얀 박스/테두리/그림자/폭을 준다 */}
       <div
         role="dialog"
         aria-modal="true"
         className={[
-          'relative bg-white rounded-2xl shadow-xl',
+          'relative bg-white rounded-lg shadow-xl',
           'max-h-[90vh] overflow-auto', // 내용 많을 때 스크롤
           sizeMap[size],
           className ?? '',
@@ -74,5 +62,6 @@ export default function BaseModal({
         {children}
       </div>
     </div>
+    // </Portal>
   );
 }
