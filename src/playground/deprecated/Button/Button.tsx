@@ -6,6 +6,8 @@ type ButtonProps = {
   onClick?: () => void;
   disabled?: boolean;
   backgroundColor?: 'green';
+  children: React.ReactNode;
+  variant: string;
 };
 
 export default function Button({
@@ -13,6 +15,8 @@ export default function Button({
   onClick,
   disabled,
   backgroundColor = 'green',
+  children,
+  variant,
 }: ButtonProps) {
   const base = 'px-4 py-2 rounded disabled:opacity-50 font-bold';
 
