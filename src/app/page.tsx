@@ -1,10 +1,12 @@
 import TestModal from '@/components/Modal/TestModal';
+import TestProfile from '@/components/Profile/ProfileCard';
 
 export default function HomePage() {
   return (
     <div>
       <h1>Modal 테스트 페이지</h1>
       <TestModal />
+      <TestProfile />
     </div>
   );
 }
