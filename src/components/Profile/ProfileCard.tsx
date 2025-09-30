@@ -40,8 +40,7 @@ export default function ProfileCard() {
   ];
 
   return (
-    // ml은 테스트용으로 적용 (뺄 예정!)
-    <div className="rounded-2xl border border-[var(--color-gray-200)] lg:w-[380px] shadow h-[430px] bg-white p-6 ml-8">
+    <div className="rounded-2xl border border-[var(--color-gray-200)] lg:w-[380px] shadow h-[430px] bg-white p-6">
       {/* 프로필 이미지 수정*/}
       <div className="relative mx-auto mb-6 h-28 w-28">
         <Image
