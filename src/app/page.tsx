@@ -1,12 +1,13 @@
 import TestModal from '@/components/Modal/TestModal';
 import TestProfile from '@/components/Profile/ProfileCard';
+import '../styles/global.css';
 
 export default function HomePage() {
   return (
-    <div>
-      <h1>Modal 테스트 페이지</h1>
-      <TestModal />
-      <TestProfile />
+    <div className="h-screen flex items-center justify-center">
+      <p className="text-sm sm:text-base md:text-lg lg:text-2xl bg-blue sm:bg-green md:bg-yellow lg:bg-red p-4 rounded">
+        반응형 breakpoint 테스트
+      </p>
     </div>
   );
 }
