@@ -29,6 +29,12 @@
   /* 폰트 */
   --font-sans: var(--font-pretendard);
 
+  /* 반응형 */
+  --breakpoint-xs: 375px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+
   /* Blue */
   --color-blue: #0085ff;
   --color-blue-light: #2eb4ff;
