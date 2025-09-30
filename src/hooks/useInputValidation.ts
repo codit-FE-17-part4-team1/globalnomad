@@ -1,6 +1,6 @@
-//에러 메시지 관리
-
+//에러 상태 관리
 import { useState } from 'react';
+
 import {
   validateEmail,
   validatePassword,
@@ -20,25 +20,25 @@ export function useInputValidation(type: InputType, passwordValue?: string) {
   const [error, setError] = useState('');
 
   const validate = (value: string) => {
-    let errorMsg = '';
+    let errorMessage = '';
     switch (type) {
       case 'email':
-        errorMsg = validateEmail(value);
+        errorMessage = validateEmail(value);
         break;
       case 'password':
-        errorMsg = validatePassword(value);
+        errorMessage = validatePassword(value);
         break;
       case 'nickname':
-        errorMsg = validateNickname(value);
+        errorMessage = validateNickname(value);
         break;
       case 'passwordConfirm':
-        errorMsg = validatePasswordConfirm(passwordValue || '', value);
+        errorMessage = validatePasswordConfirm(passwordValue || '', value);
         break;
       default:
-        errorMsg = '';
+        errorMessage = '';
     }
-    setError(errorMsg);
-    return errorMsg === '';
+    setError(errorMessage);
+    return errorMessage === '';
   };
 
   return { error, validate };
