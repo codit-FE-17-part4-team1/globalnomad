@@ -1,0 +1,49 @@
+/* 캘린더의 테두리 지정 */
+.react-datepicker {
+  overflow: hidden;
+  border-radius: 12px;
+}
+/* 캘린더 header */
+.react-datepicker__header {
+  padding: 12px 0;
+  background-color: var(--color-green-dark);
+  border-top-right-radius: 12px;
+  border-top-left-radius: 12px;
+  border-bottom: none;
+}
+
+/* 캘린더 header 아이콘 */
+.react-datepicker__navigation-icon::before {
+  top: 10px;
+}
+.react-datepicker__triangle {
+  visibility: hidden;
+}
+
+.react-datepicker__current-month {
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--color-white);
+}
+
+/* 날짜 hover */
+.react-datepicker__day:hover {
+  border-radius: 15px;
+}
+/* 선택된 날짜 */
+.react-datepicker__day--selected {
+  background-color: var(--color-green);
+  border-radius: 15px;
+  color: var(--color-white) !important;
+}
+/* 선택된 날짜 hover */
+.react-datepicker__day--selected:not([aria-disabled='true']):hover {
+  background-color: var(--color-green-dark);
+}
+.react-datepicker__day--keyboard-selected {
+  background-color: var(--color-green-light);
+}
+/* 지난달 */
+.react-datepicker__day--outside-month {
+  color: var(--color-gray-400);
+}
