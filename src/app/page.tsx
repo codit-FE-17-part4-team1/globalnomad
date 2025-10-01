@@ -1,5 +1,3 @@
-import TestModal from '@/components/Modal/TestModal';
-import TestProfile from '@/components/Profile/ProfileCard';
 import '../styles/global.css';
 
 export default function HomePage() {
