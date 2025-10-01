@@ -12,7 +12,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    children: "로그인",
+    children: '로그인',
     onClick: () => {},
   },
 };
