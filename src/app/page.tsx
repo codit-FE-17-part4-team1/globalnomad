@@ -1,12 +1,11 @@
 import '../styles/global.css';
+import ProfileLayout from '@/app/Profile/layout';
 
 export default function HomePage() {
   return (
-    <div className="h-screen flex items-center justify-center">
-      <p className="text-sm sm:text-base md:text-lg lg:text-2xl bg-blue sm:bg-green md:bg-yellow lg:bg-red p-4 rounded">
-        반응형 breakpoint 테스트
-      </p>
-    </div>
+    <ProfileLayout>
+      <div> 각 페이지 작업 </div>
+    </ProfileLayout>
   );
 }
 
