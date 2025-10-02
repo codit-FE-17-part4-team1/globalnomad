@@ -1,6 +1,7 @@
 // src/app/layout.tsx
 import type { Metadata } from 'next';
 import '@/styles/global.css';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 

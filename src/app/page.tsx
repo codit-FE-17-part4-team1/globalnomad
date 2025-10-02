@@ -1,10 +1,14 @@
 import '../styles/global.css';
 import ProfileLayout from '@/app/Profile/layout';
+import ReservationsStatus from '@/app/Profile/ReservationStatus/page';
 
 export default function HomePage() {
   return (
     <ProfileLayout>
-      <div> 각 페이지 작업 </div>
+      <div>
+        {' '}
+        <ReservationsStatus />{' '}
+      </div>
     </ProfileLayout>
   );
 }
