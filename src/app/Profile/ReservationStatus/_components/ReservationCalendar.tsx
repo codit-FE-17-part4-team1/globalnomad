@@ -1,12 +1,13 @@
 'use client';
 
 import { Calendar, Views } from 'react-big-calendar';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { localizer } from '@/lib/calendarLocalizer';
 import type { CalEvent } from '@/types/calendar';
+import BaseModal from '@/components/Modal/BaseModal';
 
 type Props = {
-  events?: CalEvent[]; // 없으면 내부에서 빈 배열 사용
+  events?: CalEvent[]; // 목 데이터 받기
 };
 
 type ToolbarProps = {
@@ -41,46 +42,57 @@ function MonthToolbar({ date, localizer, onNavigate }: ToolbarProps) {
 }
 
 export default function ReservationCalendar({ events = [] }: Props) {
-  const messages = useMemo(
-    () => ({
-      showMore: (n: number) => `+${n} 더보기`,
-    }),
-    []
-  );
+  const [data, setData] = useState<CalEvent[]>(events);
+
+  useEffect(() => setData(events), [events]);
+
+  const [openModal, setOpenModal] = useState(false);
+
+  const handleEventClick = () => {
+    setOpenModal(true);
+  };
 
   const formats = useMemo(
     () => ({
-      weekdayFormat: 'EEEEE', // 일주일을 나타냄
+      weekdayFormat: 'eee', // 일주일을 Sun, Mon, Tue ... 로 나타내기 위함 (S,M,T ... 로 나타내려면 'eeeee' , Sunday, Monday ... 는 'eeee') 암튼 커스텀 가능!
     }),
     []
   );
 
   return (
-    <Calendar
-      culture="en"
-      localizer={localizer}
-      views={[Views.MONTH]}
-      defaultView={Views.MONTH}
-      events={events}
-      startAccessor="start"
-      endAccessor="end"
-      messages={messages}
-      formats={formats}
-      popup
-      selectable
-      components={{
-        toolbar: MonthToolbar,
-      }}
-      eventPropGetter={(event) => {
-        // UI 스타일링 (색상 스위치)
-        const base = 'rounded-md h-2 mt-1';
-        const className =
-          event.tone === 'beige'
-            ? `${base} bg-amber-100`
-            : `${base} bg-blue-500`;
-        return { className };
-      }}
-      style={{ height: 640 }}
-    />
+    <>
+      {/* 일단 필요한 prop만 ! */}
+      <Calendar<CalEvent>
+        culture="en"
+        localizer={localizer}
+        views={[Views.MONTH]}
+        defaultView={Views.MONTH}
+        events={data}
+        startAccessor="start"
+        endAccessor="end"
+        formats={formats}
+        onSelectEvent={handleEventClick}
+        components={{
+          toolbar: MonthToolbar,
+        }}
+        eventPropGetter={(event) => {
+          // UI 스타일링 (색상 스위치)
+          const base = 'rounded-md h-2 mt-1';
+          const className =
+            event.tone === 'beige'
+              ? `${base} bg-amber-100`
+              : `${base} bg-blue-500`;
+          return { className };
+        }}
+        style={{ height: 640 }}
+      />
+      <BaseModal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        size="md"
+      >
+        <div>예약정보</div>
+      </BaseModal>
+    </>
   );
 }

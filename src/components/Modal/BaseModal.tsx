@@ -1,6 +1,5 @@
 'use client';
 
-import '@/styles/global.css';
 import { useRef } from 'react';
 // import Portal from '@/components/Modal/Portalmodal';
 
