@@ -23,7 +23,7 @@ function MonthToolbar({ date, localizer, onNavigate }: ToolbarProps) {
       <button
         type="button"
         aria-label="이전 달"
-        className="rounded-md borer px-2 py-1 text-sm"
+        className="px-2 py-1 text-sm"
         onClick={() => onNavigate('PREV')}
       >
         <span className="text-2xl">«</span>
@@ -32,7 +32,7 @@ function MonthToolbar({ date, localizer, onNavigate }: ToolbarProps) {
       <button
         type="button"
         aria-label="다음 달"
-        className="rounded-md borer px-2 py-1 text-sm"
+        className="px-2 py-1 text-sm"
         onClick={() => onNavigate('NEXT')}
       >
         <span className="text-2xl">»</span>

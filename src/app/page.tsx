@@ -1,15 +1,19 @@
 import '../styles/global.css';
 import ProfileLayout from '@/app/Profile/layout';
 import ReservationsStatus from '@/app/Profile/ReservationStatus/page';
+import TestModal from '@/components/Modal/TestModal';
 
 export default function HomePage() {
   return (
-    <ProfileLayout>
-      <div>
-        {' '}
-        <ReservationsStatus />{' '}
-      </div>
-    </ProfileLayout>
+    <>
+      <TestModal />
+      <ProfileLayout>
+        <div>
+          {' '}
+          <ReservationsStatus />{' '}
+        </div>
+      </ProfileLayout>
+    </>
   );
 }
 
