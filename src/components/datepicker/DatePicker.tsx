@@ -32,7 +32,6 @@ export default function DatePickerComponent({ className }: DatePickerType) {
           'md:text-lg md:w-[374px] md:py-[15px]',
           'xs:w-[149px] xs:py-[17px]'
         )}
-        // 하이트 56 44
       />
       <Image
         src="/icon/calendar.svg"
