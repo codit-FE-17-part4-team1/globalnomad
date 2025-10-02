@@ -1,6 +1,8 @@
 // src/app/layout.tsx
 import type { Metadata } from 'next';
 import '@/styles/global.css';
+import Header from '@/components/Header/Header';
+import Footer from '@/components/Footer/Footer';
 
 export const metadata: Metadata = {
   title: 'GlobalNomad',
@@ -15,7 +17,12 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="min-h-screen bg-background text-foreground">
-        {children}
+        {/* 헤더 */}
+        <Header />
+        {/* 각 페이지 */}
+        <main className="mx-auto">{children}</main>
+        {/* 푸터 */}
+        <Footer />
       </body>
     </html>
   );
