@@ -37,7 +37,7 @@ export default function InputTEST() {
       <FormInput
         id="nickname"
         name="nickname"
-        type="nickname"
+        type="text" // nickname → 표준 type 보정
         labelText="닉네임"
         placeholder="닉네임을 입력하세요"
         value={form.nickname}
@@ -55,12 +55,25 @@ export default function InputTEST() {
       <FormInput
         id="passwordConfirm"
         name="passwordConfirm"
-        type="passwordConfirm"
+        type="password" // passwordConfirm → password 로 처리
         labelText="비밀번호 확인"
         placeholder="비밀번호를 다시 입력하세요"
         value={form.passwordConfirm}
         onChange={handleChange}
         passwordValue={form.password}
+      />
+      <FormInput
+        id="passwordConfirm"
+        name="passwordConfirm"
+        type="password" // passwordConfirm → password 로 처리
+        labelText="비밀번호 확인"
+        placeholder="비밀번호를 다시 입력하세요"
+        value={form.passwordConfirm}
+        onChange={handleChange}
+        passwordValue={form.password}
+        inputClassName="border-gray-700 bg-white"
+        labelClassName="text-black font-bold"
+        labelUnstyled
       />
 
       {/* ---------------- 검색 ---------------- */}
@@ -74,34 +87,39 @@ export default function InputTEST() {
       />
 
       {/* ---------------- 커스텀 입력 ---------------- */}
-      <h2 className="text-lg font-bold">일반 입력</h2>
-      <CustomInput
-        id="title"
-        name="title"
-        type="text"
-        labelText="제목"
-        placeholder="제목을 입력하세요"
-        value={form.title}
-        // onChange={handleChange}
-      />
-      <CustomInput
-        id="price"
-        name="price"
-        type="number"
-        labelText="가격"
-        placeholder="가격"
-        value={form.price}
-        // onChange={handleChange}
-      />
-      <CustomInput
-        id="address"
-        name="address"
-        type="text"
-        labelText="주소"
-        placeholder="주소를 입력해주세요"
-        value={form.address}
-        // onChange={handleChange}
-      />
+      <div className="bg-blue-pale">
+        <h2 className="text-lg font-bold">일반 입력</h2>
+        <CustomInput
+          id="title"
+          name="title"
+          type="text"
+          labelText="제목"
+          placeholder="제목을 입력하세요"
+          value={form.title}
+          onChange={handleChange}
+          inputClassName="border-gray-700 bg-white"
+          labelClassName="text-black font-bold"
+          labelUnstyled
+        />
+        <CustomInput
+          id="price"
+          name="price"
+          type="number"
+          labelText="가격"
+          placeholder="가격"
+          value={form.price}
+          onChange={handleChange}
+        />
+        <CustomInput
+          id="address"
+          name="address"
+          type="text"
+          labelText="주소"
+          placeholder="주소를 입력해주세요"
+          value={form.address}
+          onChange={handleChange}
+        />
+      </div>
 
       {/* ---------------- TextArea ---------------- */}
       <h2 className="text-lg font-bold">긴 텍스트 입력</h2>
@@ -112,7 +130,28 @@ export default function InputTEST() {
         labelText="설명"
         placeholder="설명을 입력하세요"
         value={form.description}
-        // onChange={handleChange}
+        onChange={handleChange}
+      />
+
+      <FormInput
+        id="email"
+        name="email"
+        type="email"
+        labelText="이메일"
+        value={form.email}
+        onChange={handleChange}
+        labelClassName="text-blue-600"
+      />
+
+      <CustomInput
+        id="nickname"
+        name="nickname"
+        labelText="닉네임"
+        value={form.nickname}
+        placeholder="닉네임을 입력하세요"
+        onChange={handleChange}
+        labelClassName="text-red-500 text-xl italic"
+        labelUnstyled
       />
     </div>
   );
