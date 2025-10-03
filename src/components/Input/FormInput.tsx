@@ -45,12 +45,15 @@ export default function FormInput({
   errorClassName,
 }: FormInputProps) {
   const [visible, setVisible] = useState(false);
-  const changeType =
-    type === 'password' || type === 'passwordConfirm'
-      ? visible
-        ? 'text'
-        : 'password'
-      : type;
+  const changeType = (() => {
+    if (type === 'password' || type === 'passwordConfirm') {
+      return visible ? 'text' : 'password';
+    }
+    if (type === 'nickname') {
+      return 'text'; //nickname 내려줌
+    }
+    return type; // email, text, number 내려줌
+  })();
 
   const { error, validate } = useInputValidation(type, passwordValue);
 
