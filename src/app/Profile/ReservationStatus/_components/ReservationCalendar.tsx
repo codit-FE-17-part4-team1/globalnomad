@@ -116,19 +116,33 @@ export default function ReservationCalendar() {
             style: {
               backgroundColor: color,
               border: 'none',
-              borderRadius: 8,
-              height: 8,
-              marginTop: 6,
+              borderRadius: 3,
+              height: 20,
             },
           };
         }}
       />
       <BaseModal
         isOpen={openModal}
-        onClose={() => setOpenModal(false)}
+        onClose={() => {
+          setOpenModal(false);
+          setSelected(null);
+        }}
         size="md"
+        title="예약 정보"
       >
-        <div>예약정보</div>
+        {selected && (
+          <div>
+            <p className="text-sm text-gray-600">
+              {selected.start.toLocaleString()} ~{' '}
+              {selected.end.toLocaleString()}
+            </p>
+            {selected.place && (
+              <p className="mt-1 text-sm">장소: {selected.place}</p>
+            )}
+            <p className="mt-1 text-sm">상태: {selected.status}</p>
+          </div>
+        )}
       </BaseModal>
     </>
   );
