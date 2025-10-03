@@ -6,7 +6,7 @@ import TestModal from '@/components/Modal/TestModal';
 export default function HomePage() {
   return (
     <>
-      <TestModal />
+      {/* <TestModal /> */}
       <ProfileLayout>
         <div>
           {' '}

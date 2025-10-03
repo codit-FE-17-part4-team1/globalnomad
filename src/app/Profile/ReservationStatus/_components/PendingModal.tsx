@@ -19,8 +19,8 @@ export default function PendingModal({
   onReject,
 }: Props) {
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} size="md">
-      <div>예약 정보</div>
+    <BaseModal isOpen={isOpen} onClose={onClose} size="md" title="예약 정보">
+      <div className="border-b"></div>
     </BaseModal>
   );
 }

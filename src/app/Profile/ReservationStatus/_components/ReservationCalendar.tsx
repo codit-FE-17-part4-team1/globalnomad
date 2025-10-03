@@ -1,14 +1,33 @@
 'use client';
 
 import { Calendar, Views } from 'react-big-calendar';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { localizer } from '@/lib/calendarLocalizer';
 import type { CalEvent } from '@/types/calendar';
 import BaseModal from '@/components/Modal/BaseModal';
 
-type Props = {
-  events?: CalEvent[]; // 목 데이터 받기
-};
+const mock: CalEvent[] = [
+  {
+    id: 'e1',
+    title: '피오르 체험',
+    start: new Date(2025, 1, 10, 10),
+    end: new Date(2025, 1, 10, 12),
+    place: '홍대 스튜디오',
+    status: 'confirmed', // 승인
+  },
+  {
+    id: 'e2',
+    title: '열기구 페스티벌',
+    start: new Date(2025, 1, 11, 14),
+    end: new Date(2025, 1, 12, 12),
+    place: '성수',
+    status: 'pending', // 신청
+  },
+];
+
+// type Props = {
+//   events?: CalEvent[]; // 목 데이터 받기
+// };
 
 type ToolbarProps = {
   date: Date;
@@ -41,10 +60,10 @@ function MonthToolbar({ date, localizer, onNavigate }: ToolbarProps) {
   );
 }
 
-export default function ReservationCalendar({ events = [] }: Props) {
-  const [data, setData] = useState<CalEvent[]>(events);
+export default function ReservationCalendar() {
+  //   const [data, setData] = useState<CalEvent[]>(events);
 
-  useEffect(() => setData(events), [events]);
+  //   useEffect(() => setData(events), [events]);
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -67,7 +86,7 @@ export default function ReservationCalendar({ events = [] }: Props) {
         localizer={localizer}
         views={[Views.MONTH]}
         defaultView={Views.MONTH}
-        events={data}
+        events={mock}
         startAccessor="start"
         endAccessor="end"
         formats={formats}
