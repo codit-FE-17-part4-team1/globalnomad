@@ -68,6 +68,9 @@ export default function ButtonTest() {
         >
           관광
         </MyButton>
+        <MyButton color="buttonCategory" className="w-[127px] h-[58px]">
+          관광
+        </MyButton>
       </ul>
     </>
   );
