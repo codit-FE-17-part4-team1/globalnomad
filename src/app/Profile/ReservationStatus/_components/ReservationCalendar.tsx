@@ -23,11 +23,15 @@ const mock: CalEvent[] = [
     place: '성수',
     status: 'pending', // 신청
   },
+  {
+    id: 'e3',
+    title: '먹방',
+    start: new Date(2025, 1, 15, 10),
+    end: new Date(2025, 1, 15, 12),
+    place: '잠실',
+    status: 'canceled', // 취소
+  },
 ];
-
-// type Props = {
-//   events?: CalEvent[]; // 목 데이터 받기
-// };
 
 type ToolbarProps = {
   date: Date;
@@ -60,12 +64,17 @@ function MonthToolbar({ date, localizer, onNavigate }: ToolbarProps) {
   );
 }
 
+function EventBar() {
+  return <div className="h-2 w-full rounded-md" />;
+}
+
 export default function ReservationCalendar() {
   //   const [data, setData] = useState<CalEvent[]>(events);
 
   //   useEffect(() => setData(events), [events]);
 
   const [openModal, setOpenModal] = useState(false);
+  const [selected, setSelected] = useState<CalEvent | null>(null);
 
   const handleEventClick = () => {
     setOpenModal(true);
@@ -87,23 +96,32 @@ export default function ReservationCalendar() {
         views={[Views.MONTH]}
         defaultView={Views.MONTH}
         events={mock}
+        defaultDate={mock[0].start}
         startAccessor="start"
         endAccessor="end"
         formats={formats}
         onSelectEvent={handleEventClick}
         components={{
           toolbar: MonthToolbar,
+          event: EventBar,
         }}
         eventPropGetter={(event) => {
-          // UI 스타일링 (색상 스위치)
-          const base = 'rounded-md h-2 mt-1';
-          const className =
-            event.tone === 'beige'
-              ? `${base} bg-amber-100`
-              : `${base} bg-blue-500`;
-          return { className };
+          const color =
+            event.status === 'confirmed'
+              ? '#F6EAD9' // 베이지
+              : event.status === 'pending'
+                ? '#3B82F6' // 파랑
+                : '#D1D5DB'; // 회색(취소)
+          return {
+            style: {
+              backgroundColor: color,
+              border: 'none',
+              borderRadius: 8,
+              height: 8,
+              marginTop: 6,
+            },
+          };
         }}
-        style={{ height: 640 }}
       />
       <BaseModal
         isOpen={openModal}
