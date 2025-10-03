@@ -76,7 +76,9 @@ export default function FormInput({
   };
 
   return (
-    <div className={`w-full mb-4 ${wrapperClassName || ''}`}>
+    <div
+      className={`w-full mb-4 flex flex-col gap-2 ${wrapperClassName || ''}`}
+    >
       <Label
         id={id}
         text={labelText}
