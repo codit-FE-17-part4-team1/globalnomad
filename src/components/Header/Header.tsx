@@ -17,8 +17,8 @@ export default function Header({
   onNotificationClick,
 }: HeaderProps) {
   return (
-    <header className="w-full h-[70px] bg-[#ffffff]">
-      <div className="flex items-center justify-between w-full max-w-[1920px] h-[70px] py-[10px] border-b border-[#DDDDDD] mx-auto px-[max(20px,5%)]">
+    <header className="w-full h-[70px] bg-[#ffffff] border-b border-[#DDDDDD]">
+      <div className="flex items-center justify-between h-full w-full max-w-[1240px] mx-auto px-5">
         {/* 로고 */}
         <Link href="/">
           <img

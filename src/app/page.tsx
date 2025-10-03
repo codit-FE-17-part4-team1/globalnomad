@@ -1,80 +1,42 @@
-import '../styles/global.css';
-import ProfileLayout from '@/app/Profile/layout';
+// app/page.tsx
+'use client';
 
-export default function HomePage() {
+import MainBanner from './_components/main/MainBanner';
+import SearchBar from './_components/main/SearchBar';
+import PopularExperiences from './_components/main/PopularExperiences';
+import AllExperiences from './_components/main/AllExperiences';
+
+const MainPage: React.FC = () => {
   return (
-    <ProfileLayout>
-      <div> 각 페이지 작업 </div>
-    </ProfileLayout>
+    <>
+      {/* 메인 전체 컨테이너 */}
+      <div className="w-full flex flex-col items-center">
+        {/* 배너 영역 */}
+        <div className="w-full relative">
+          <MainBanner />
+
+          {/* 검색 영역 (배너 위에 겹치도록) */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-12 md:-bottom-16 z-10 w-full max-w-[1240px]">
+            <SearchBar />
+          </div>
+        </div>
+
+        {/* 인기 체험 영역 */}
+        <div className="w-full flex justify-center mt-20">
+          <div className="w-full max-w-[1240px]">
+            <PopularExperiences />
+          </div>
+        </div>
+
+        {/* 모든 체험 영역 */}
+        <div className="w-full flex justify-center mt-20">
+          <div className="w-full max-w-[1240px]">
+            <AllExperiences />
+          </div>
+        </div>
+      </div>
+    </>
   );
-}
+};
 
-// export default function Home() {
-//   const colors = [
-//     'blue',
-//     'blue-light',
-//     'blue-pale',
-//     'yellow',
-//     'black',
-//     'black-nomad',
-//     'gray-50',
-//     'gray-100',
-//     'gray-200',
-//     'gray-300',
-//     'gray-400',
-//     'gray-500',
-//     'gray-600',
-//     'gray-700',
-//     'gray-800',
-//     'green',
-//     'green-dark',
-//     'green-light',
-//     'red',
-//     'red-light',
-//     'red-pale',
-//     'orange',
-//     'orange-pale',
-//   ];
-
-//   return (
-//     <main className="p-6 space-y-10">
-//       <h1 className="text-3xl font-bold mb-8">🎨 Tailwind @theme Color Test</h1>
-//       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-//         {colors.map((c) => {
-//           const v = `var(--color-${c})`;
-//           // 텍스트 대비를 위해 밝기 체크 후 흰색/검은색 결정(간단 버전)
-//           const textColor = [
-//             'gray-50',
-//             'gray-100',
-//             'blue-light',
-//             'blue-pale',
-//             'green-light',
-//             'red-light',
-//             'red-pale',
-//             'orange-pale',
-//           ].includes(c)
-//             ? '#000' // 밝은 배경이면 검은 글자
-//             : '#fff'; // 어두운 배경이면 흰 글자
-
-//           return (
-//             <div
-//               key={c}
-//               className="rounded-xl p-4 shadow-md flex flex-col items-center text-center"
-//               style={{ backgroundColor: v, color: textColor }}
-//             >
-//               <p className="font-semibold">{c}</p>
-//               <p className="mt-2">Text color changes</p>
-//               <svg
-//                 className="w-10 h-10 mt-3"
-//                 viewBox="0 0 24 24"
-//                 style={{ fill: textColor }}
-//               >
-//                 <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-//               </svg>
-//             </div>
-//           );
-//         })}
-//       </section>
-//     </main>
-//   );
-// }
+export default MainPage;
