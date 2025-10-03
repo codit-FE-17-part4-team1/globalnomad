@@ -4,7 +4,7 @@ import React from 'react';
 import MyButton from '@/components/Button/Button';
 
 interface CategoryButtonsProps {
-  categories: string[]; // ex: ['전체', '문화,예술', '식음료', '스포츠', '투어', '관광', '웰빙']
+  categories: string[];
   selectedCategory: string;
   onSelectCategory: (category: string) => void;
 }

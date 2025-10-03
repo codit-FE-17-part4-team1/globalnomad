@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import ExperiencesCard, { ExperiencesCardProps } from './ExperiencesCard';
 import Pagination from './Pagination';
 import CategoryButtons from './CategoryButtons';
+import PriceFilter from './PriceFilter';
 
-interface Experience extends ExperiencesCardProps {
+export interface Experience extends ExperiencesCardProps {
   id: number;
   category: string;
 }
@@ -16,7 +17,7 @@ const experiences: Experience[] = [
     id: 1,
     image: '/images/street_dance.png',
     title: '스트릿 댄스',
-    category: '문화,예술',
+    category: '투어',
     price: 38000,
     rating: 4.9,
     reviews: 793,
@@ -24,7 +25,7 @@ const experiences: Experience[] = [
   {
     id: 2,
     image: '/images/bridge.png',
-    title: '징검다리 건너기',
+    title: '연인과 사랑의 징검다리 건너기',
     category: '투어',
     price: 5600,
     rating: 4.9,
@@ -33,8 +34,8 @@ const experiences: Experience[] = [
   {
     id: 3,
     image: '/images/VR.png',
-    title: 'VR 게임',
-    category: '스포츠',
+    title: 'VR 게임 마스터하는 법',
+    category: '투어',
     price: 38000,
     rating: 4.9,
     reviews: 293,
@@ -42,8 +43,8 @@ const experiences: Experience[] = [
   {
     id: 4,
     image: '/images/street_dance.png',
-    title: '스트릿 댄스',
-    category: '문화,예술',
+    title: '함께 배우면 즐거운 스트릿 댄스',
+    category: '투어',
     price: 38000,
     rating: 4.9,
     reviews: 793,
@@ -51,7 +52,7 @@ const experiences: Experience[] = [
   {
     id: 5,
     image: '/images/bridge.png',
-    title: '징검다리 건너기 연장',
+    title: '연인과 사랑의 징검다리 건너기',
     category: '투어',
     price: 5600,
     rating: 4.9,
@@ -60,8 +61,8 @@ const experiences: Experience[] = [
   {
     id: 6,
     image: '/images/VR.png',
-    title: 'VR 게임 연장',
-    category: '스포츠',
+    title: 'VR 게임 마스터하는 법',
+    category: '투어',
     price: 38000,
     rating: 4.9,
     reviews: 293,
@@ -69,8 +70,8 @@ const experiences: Experience[] = [
   {
     id: 7,
     image: '/images/street_dance.png',
-    title: '스트릿 댄스',
-    category: '문화,예술',
+    title: '함께 배우면 즐거운 스트릿 댄스',
+    category: '투어',
     price: 38000,
     rating: 4.9,
     reviews: 793,
@@ -78,7 +79,7 @@ const experiences: Experience[] = [
   {
     id: 8,
     image: '/images/bridge.png',
-    title: '징검다리 건너기',
+    title: '연인과 사랑의 징검다리 건너기',
     category: '투어',
     price: 5600,
     rating: 4.9,
@@ -87,8 +88,17 @@ const experiences: Experience[] = [
   {
     id: 9,
     image: '/images/VR.png',
-    title: 'VR 게임',
-    category: '스포츠',
+    title: 'VR 게임 마스터하는 법',
+    category: '투어',
+    price: 38000,
+    rating: 4.9,
+    reviews: 293,
+  },
+  {
+    id: 10,
+    image: '/images/VR.png',
+    title: 'VR 게임 마스터하는 법',
+    category: '투어',
     price: 38000,
     rating: 4.9,
     reviews: 293,
@@ -113,16 +123,21 @@ const AllExperiences: React.FC = () => {
   const [filteredExperiences, setFilteredExperiences] =
     useState<Experience[]>(experiences);
 
-  // 마운트 시 로컬 스토리지에서 카테고리 불러오기
+  const [priceSort, setPriceSort] = useState(''); // 가격 정렬 상태
+
   useEffect(() => {
     const savedCategory = localStorage.getItem('selectedCategory');
-    if (savedCategory) setSelectedCategory(savedCategory);
-
     const savedPage = localStorage.getItem('allExperiencesPage');
+    const savedItemsPerPage = localStorage.getItem('itemsPerPage');
+    const savedPriceSort = localStorage.getItem('priceSort');
+
+    if (savedCategory) setSelectedCategory(savedCategory);
     if (savedPage) setCurrentPage(Number(savedPage));
+    if (savedItemsPerPage) setItemsPerPage(Number(savedItemsPerPage));
+    if (savedPriceSort) setPriceSort(savedPriceSort);
   }, []);
 
-  // 카테고리 변경 시 필터링 + 로컬 스토리지 저장
+  // 카테고리 변경 시 필터링
   useEffect(() => {
     const filtered =
       selectedCategory === '전체'
@@ -134,13 +149,25 @@ const AllExperiences: React.FC = () => {
     localStorage.setItem('selectedCategory', selectedCategory);
   }, [selectedCategory]);
 
-  // 페이지 변경 시 visibleCards 업데이트 + 로컬 스토리지 저장
+  // 가격 정렬 필터
+  useEffect(() => {
+    let sorted = [...filteredExperiences];
+    if (priceSort === '가격이 낮은 순')
+      sorted.sort((a, b) => a.price - b.price);
+    else if (priceSort === '가격이 높은 순')
+      sorted.sort((a, b) => b.price - a.price);
+
+    setFilteredExperiences(sorted);
+    localStorage.setItem('priceSort', priceSort);
+  }, [priceSort]);
+
   useEffect(() => {
     const startIdx = (currentPage - 1) * itemsPerPage;
     const endIdx = startIdx + itemsPerPage;
     setVisibleCards(filteredExperiences.slice(startIdx, endIdx));
 
     localStorage.setItem('allExperiencesPage', currentPage.toString());
+    localStorage.setItem('itemsPerPage', itemsPerPage.toString());
   }, [currentPage, itemsPerPage, filteredExperiences]);
 
   const handlePageChange = (page: number, perPage: number) => {
@@ -157,9 +184,14 @@ const AllExperiences: React.FC = () => {
         onSelectCategory={setSelectedCategory}
       />
 
-      <h2 className="text-black font-bold text-2xl lg:text-[36px] leading-[100%] mb-7">
-        ⛸️ 모든 체험
-      </h2>
+      <div className="flex justify-between items-center mb-7">
+        <h2 className="text-black font-bold text-2xl lg:text-[36px] leading-[100%]">
+          ⛸️ 모든 체험
+        </h2>
+
+        {/* 가격 정렬 필터 */}
+        <PriceFilter selected={priceSort} setSelected={setPriceSort} />
+      </div>
 
       {/* 카드 리스트 */}
       <div className="grid gap-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">

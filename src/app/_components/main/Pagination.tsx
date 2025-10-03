@@ -36,7 +36,7 @@ const Pagination: React.FC<PaginationProps> = ({
     if (savedPage) setCurrentPage(Number(savedPage));
   }, []);
 
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
 
   const handlePageClick = (page: number) => {
     if (page < 1 || page > totalPages) return;
@@ -49,20 +49,20 @@ const Pagination: React.FC<PaginationProps> = ({
     <div className="flex justify-center gap-2 mt-6">
       {/* 이전 버튼 */}
       <button
-        className={`px-3 py-1 rounded-md border ${
-          currentPage === 1
-            ? 'bg-gray-200 text-gray-400 border-gray-200 cursor-not-allowed'
-            : 'bg-white text-gray-700 border-gray-300'
+        className={`w-[55px] h-[55px] p-3 rounded-xl border flex items-center justify-center ${
+          currentPage <= 1
+            ? 'bg-white border-gray-200 cursor-not-allowed'
+            : 'bg-white border-green-dark'
         }`}
         onClick={() => handlePageClick(currentPage - 1)}
-        disabled={currentPage === 1}
+        disabled={currentPage <= 1}
       >
         <Image
           src="/icon/btn/alt_arrow_left.svg"
           alt="이전"
           width={20}
           height={20}
-          className={currentPage === totalPages ? 'opacity-50' : ''}
+          className={currentPage === 1 ? 'opacity-50' : ''}
         />
       </button>
 
@@ -70,10 +70,10 @@ const Pagination: React.FC<PaginationProps> = ({
       {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((page) => (
         <button
           key={page}
-          className={`px-3 py-1 rounded-md border ${
+          className={`w-[55px] h-[55px] p-3 rounded-xl border ${
             page === currentPage
-              ? 'bg-blue-500 text-white border-blue-500'
-              : 'bg-white text-gray-700 border-gray-300'
+              ? 'bg-green-dark text-white border-green-dark'
+              : 'bg-white text-green-dark border-green-dark'
           }`}
           onClick={() => handlePageClick(page)}
         >
@@ -83,10 +83,10 @@ const Pagination: React.FC<PaginationProps> = ({
 
       {/* 다음 버튼 */}
       <button
-        className={`px-3 py-1 rounded-md border ${
+        className={`w-[55px] h-[55px] p-3 rounded-xl border flex items-center justify-center ${
           currentPage === totalPages
-            ? 'bg-gray-200 text-gray-400 border-gray-200 cursor-not-allowed'
-            : 'bg-white text-gray-700 border-gray-300'
+            ? 'bg-white border-gray-200 cursor-not-allowed'
+            : 'bg-white border-green-dark'
         }`}
         onClick={() => handlePageClick(currentPage + 1)}
         disabled={currentPage === totalPages}
