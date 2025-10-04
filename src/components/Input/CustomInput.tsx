@@ -12,6 +12,12 @@ type CustomInputProps = {
   placeholder?: string;
   value?: string | number;
   onChange?: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+
+  // 사용자 스타일 수정 prop
+  wrapperClassName?: string;
+  labelClassName?: string;
+  labelUnstyled?: boolean; //기본 스타일 제거
+  inputClassName?: string;
 };
 
 export default function CustomInput({
@@ -23,10 +29,21 @@ export default function CustomInput({
   placeholder,
   value,
   onChange,
+  wrapperClassName,
+  labelClassName,
+  labelUnstyled = false,
+  inputClassName,
 }: CustomInputProps) {
   return (
-    <div className="w-full mb-4">
-      {labelText && <Label id={id} text={labelText} />}
+    <div className={`w-full mb-4 ${wrapperClassName || ''}`}>
+      {labelText && (
+        <Label
+          id={id}
+          text={labelText}
+          className={labelClassName}
+          unstyled={labelUnstyled}
+        />
+      )}
       {variant === 'textarea' ? (
         <textarea
           id={id}
@@ -34,10 +51,11 @@ export default function CustomInput({
           placeholder={placeholder}
           value={value as string}
           onChange={onChange as (e: ChangeEvent<HTMLTextAreaElement>) => void}
-          className="w-full px-5 py-4 rounded-md border
+          className={`w-full px-5 py-4 rounded-md border
             border-gray-700 focus:outline-none
             min-h-[240px]
-            text-lg text-black placeholder-gray-600"
+            text-lg text-black placeholder-gray-600
+            ${inputClassName || ''}`}
         />
       ) : (
         <input
@@ -47,9 +65,10 @@ export default function CustomInput({
           placeholder={placeholder}
           value={value}
           onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void}
-          className="w-full px-5 py-4 rounded-md border
+          className={`w-full px-5 py-4 rounded-md border
             border-gray-700 focus:outline-none
-            text-lg text-black placeholder-gray-600"
+            text-lg text-black placeholder-gray-600
+            ${inputClassName || ''}`}
         />
       )}
     </div>
