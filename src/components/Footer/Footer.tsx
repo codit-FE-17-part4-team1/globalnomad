@@ -3,8 +3,8 @@ import Image from 'next/image';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#112211] text-[#676767]">
-      <div className="mx-auto w-full pt-8 pb-16 flex flex-col gap-4 px-[max(20px,5%)]">
+    <footer className="w-full h-[160px] bg-[#112211] text-[#676767]">
+      <div className="mx-auto h-full w-full max-w-[1240px] pt-8 pb-16 flex flex-col gap-4 px-5">
         {/* 모바일 (<768px): 저작권 + 개인정보처리방침 */}
         <div className="flex justify-between w-full items-center md:hidden">
           <span className="font-normal text-lg leading-none tracking-normal whitespace-nowrap">

@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import Button from '@/components/Button';
+import Button from '@/components/Button/Button';
 type HeaderType = {
   title: string;
   type?: 'button' | 'filter' | null;
@@ -15,7 +15,7 @@ export default function MypageHeader({
   return (
     <div
       className={clsx(
-        'flex justify-between items-center sticky top-0 h-[50px] items-start',
+        'flex justify-between sticky z-50 top-0 h-[50px] items-start',
         'xs:h-[62px]'
       )}
     >
