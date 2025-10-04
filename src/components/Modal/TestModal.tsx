@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import ConfirmModal from '@/components/Modal/Presets/ConfirmModal';
+import ConfirmModal from '@/components/Modal/ConfirmModal';
 import BaseModal from '@/components/Modal/BaseModal';
 
 export default function ModalPlayground() {
