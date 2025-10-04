@@ -1,6 +1,8 @@
 // app/page.tsx
 'use client';
 
+import Header from '@/components/Header/Header';
+import Footer from '@/components/Footer/Footer';
 import MainBanner from './_components/main/MainBanner';
 import SearchBar from './_components/main/SearchBar';
 import PopularExperiences from './_components/main/PopularExperiences';
@@ -9,6 +11,7 @@ import AllExperiences from './_components/main/AllExperiences';
 const MainPage: React.FC = () => {
   return (
     <>
+      <Header />
       {/* 메인 전체 컨테이너 */}
       <div className="w-full flex flex-col items-center">
         {/* 배너 영역 */}
@@ -35,6 +38,7 @@ const MainPage: React.FC = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };
