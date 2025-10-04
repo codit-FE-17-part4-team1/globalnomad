@@ -72,6 +72,10 @@ export default function ButtonTest() {
           관광
         </MyButton>
       </ul>
+
+      <MyButton color="buttonTransparent" className="text-red text-3xl">
+        x
+      </MyButton>
     </>
   );
 }

@@ -10,7 +10,8 @@ interface MyButtonProps {
     | 'buttonPrimary'
     | 'buttonSecondary'
     | 'buttonCategory'
-    | 'buttonCategoryActive';
+    | 'buttonCategoryActive'
+    | 'buttonTransparent';
   disabled?: boolean;
 }
 
@@ -30,6 +31,7 @@ export default function MyButton({
       'bg-white text-black-nomad border border-black-nomad rounded-lg text-lg font-medium',
     buttonCategoryActive:
       'bg-black-nomad text-white border border-black-nomad rounded-lg text-lg font-medium',
+    buttonTransparent: 'bg-transparent',
   };
 
   return (
