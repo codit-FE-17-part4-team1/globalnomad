@@ -11,26 +11,17 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const pathname = usePathname();
+  const hiddenRoutes = ['/', '/Login', '/Signup'];
+
+  const showLayout = !hiddenRoutes.includes(pathname);
 
   return (
     <html lang="ko">
-      <body>
-        <div className="flex flex-col min-h-screen">
-          {/* 헤더 */}
-          <Header
-            isLoggedIn={isLoggedIn}
-            userName={isLoggedIn ? '코드잇' : undefined}
-            userImage={isLoggedIn ? '/images/user.png' : undefined}
-            onNotificationClick={() => alert('알림 버튼 클릭!')}
-          />
-
-          {/* 메인 콘텐츠 */}
-          <main className="flex-grow">{children}</main>
-
-          {/* 푸터 */}
-          <Footer />
-        </div>
+      <body className="min-h-screen bg-background text-foreground">
+        {showLayout && <Header />}
+        <main className="mx-auto">{children}</main>
+        {showLayout && <Footer />}
       </body>
     </html>
   );
