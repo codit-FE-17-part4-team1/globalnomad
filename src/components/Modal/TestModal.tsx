@@ -44,9 +44,13 @@ export default function ModalPlayground() {
       />
 
       {/* BaseModal - children 입력해서 구현해보기 */}
-      <BaseModal isOpen={isRawOpen} onClose={() => setRawOpen(false)} size="md">
+      <BaseModal
+        isOpen={isRawOpen}
+        onClose={() => setRawOpen(false)}
+        size="md"
+        title="후기 작성"
+      >
         <div className="p-6">
-          <h2 className="text-xl font-semibold mb-4">후기 작성</h2>
           <p className="text-black text-center">
             내부 컨텐츠 항목 추가
             <br />
