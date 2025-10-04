@@ -5,37 +5,38 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export default function ProfileCard() {
-  const pathname = usePathname(); // next.js의 App Router에서 현재 URL의 경로(path) 부분을 읽어오는 클라이언트 컴포넌트 훅이라고 하는데, 이건 다른 페이지가 생성되면 연결하면 되는걸지?
+  const pathname = usePathname();
+  // next.js의 App Router에서 현재 URL의 경로(path) 부분을 읽어오는 클라이언트 컴포넌트 훅이라고 하는데, 이건 다른 페이지가 생성되면 연결하면 되는걸지?
 
   // 경로 설정의 이름을 확인해야 할 듯 !
   const MENU = [
     {
       key: 'info',
       label: '내 정보',
-      href: '/profile/info',
+      href: '/Profile/MyInfo',
       icon: '/icon/account_checkout.svg',
-      active: true,
+      active: false,
     },
     {
       key: 'reservations',
       label: '예약 내역',
-      href: '/profile/reservations',
+      href: '/Profile/ReservationHistory',
       icon: '/icon/check.svg',
       active: false,
     },
     {
       key: 'manage',
       label: '내 체험 관리',
-      href: '/profile/experiences',
+      href: '/Profile/Experience',
       icon: '/icon/setting.svg',
       active: false,
     },
     {
       key: 'status',
       label: '예약 현황',
-      href: '/profile/status',
+      href: '/Profile/ReservationStatus',
       icon: '/icon/calendar_check.svg',
-      active: false,
+      active: true,
     },
   ];
 
@@ -65,14 +66,13 @@ export default function ProfileCard() {
       {/* 메뉴 */}
       <nav className="space-y-3">
         {MENU.map((item) => {
-          // const isActive = pathname.startsWith(item.href);
+          const isActive = pathname === item.href;
           return (
             <Link
               key={item.key}
               href={item.href}
               className={[
                 'flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors duration-200',
-                // isActive
                 item.active
                   ? 'bg-[var(--color-green-light)] text-[var(--color-green-dark)] font-bold'
                   : 'text-[var(--color-gray-400)] font-semibold',
