@@ -1,5 +1,8 @@
 'use client';
 
+import '@/styles/global.css';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
 import { Calendar, Views } from 'react-big-calendar';
 import { useMemo, useState } from 'react';
 import { localizer } from '@/lib/calendarLocalizer';
@@ -10,24 +13,24 @@ const mock: CalEvent[] = [
   {
     id: 'e1',
     title: '피오르 체험',
-    start: new Date(2025, 1, 10, 10),
-    end: new Date(2025, 1, 10, 12),
+    start: new Date(2025, 10, 10, 10),
+    end: new Date(2025, 10, 10, 12),
     place: '홍대 스튜디오',
     status: 'confirmed', // 승인
   },
   {
     id: 'e2',
     title: '열기구 페스티벌',
-    start: new Date(2025, 1, 11, 14),
-    end: new Date(2025, 1, 12, 12),
+    start: new Date(2025, 10, 11, 14),
+    end: new Date(2025, 10, 12, 12),
     place: '성수',
     status: 'pending', // 신청
   },
   {
     id: 'e3',
     title: '먹방',
-    start: new Date(2025, 1, 15, 10),
-    end: new Date(2025, 1, 15, 12),
+    start: new Date(2025, 10, 15, 10),
+    end: new Date(2025, 10, 15, 12),
     place: '잠실',
     status: 'canceled', // 취소
   },

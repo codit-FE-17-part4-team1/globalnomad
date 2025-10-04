@@ -12,6 +12,7 @@ const MainPage: React.FC = () => {
   return (
     <>
       <Header />
+
       {/* 메인 전체 컨테이너 */}
       <div className="w-full flex flex-col items-center">
         {/* 배너 영역 */}
@@ -38,6 +39,7 @@ const MainPage: React.FC = () => {
           </div>
         </div>
       </div>
+
       <Footer />
     </>
   );
