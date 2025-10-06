@@ -12,14 +12,51 @@ export default function ButtonTest(){
             {/* disabled button */}
             <MyButton onClick={() => {}} className="py-[7px] px-[22px]" disabled>신청 불가</MyButton><br /><br />
 
-            {/* buttonCategory */}
-            <ul>
-                <MyButton color="buttonCategoryActive" onClick={() => alert("문화예술")} className="mr-[24px] w-[127px] h-[58px]">문화예술</MyButton>
-                <MyButton color="buttonCategory" onClick={() => alert("문화예술")} className="mr-[24px] w-[127px] h-[58px]">식음료</MyButton>
-                <MyButton color="buttonCategory" onClick={() => alert("문화예술")} className="mr-[24px] w-[127px] h-[58px]">스포츠</MyButton>
-                <MyButton color="buttonCategory" onClick={() => alert("문화예술")} className="mr-[24px] w-[127px] h-[58px]">투어</MyButton>
-                <MyButton color="buttonCategory" onClick={() => alert("문화예술")} className="w-[127px] h-[58px]">관광</MyButton>
-            </ul>
-        </>
-    )
+      {/* buttonCategory */}
+      <ul>
+        <MyButton
+          color="buttonCategoryActive"
+          onClick={() => alert('문화예술')}
+          className="mr-[24px] w-[127px] h-[58px]"
+        >
+          문화예술
+        </MyButton>
+        <MyButton
+          color="buttonCategory"
+          onClick={() => alert('문화예술')}
+          className="mr-[24px] w-[127px] h-[58px]"
+        >
+          식음료
+        </MyButton>
+        <MyButton
+          color="buttonCategory"
+          onClick={() => alert('문화예술')}
+          className="mr-[24px] w-[127px] h-[58px]"
+        >
+          스포츠
+        </MyButton>
+        <MyButton
+          color="buttonCategory"
+          onClick={() => alert('문화예술')}
+          className="mr-[24px] w-[127px] h-[58px]"
+        >
+          투어
+        </MyButton>
+        <MyButton
+          color="buttonCategory"
+          onClick={() => alert('문화예술')}
+          className="w-[127px] h-[58px]"
+        >
+          관광
+        </MyButton>
+        <MyButton color="buttonCategory" className="w-[127px] h-[58px]">
+          관광
+        </MyButton>
+      </ul>
+
+      <MyButton color="buttonTransparent" className="text-red text-3xl">
+        x
+      </MyButton>
+    </>
+  );
 }
