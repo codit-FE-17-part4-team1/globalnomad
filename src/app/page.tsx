@@ -1,30 +1,48 @@
+// app/page.tsx
 'use client';
 
-import Image from 'next/image';
-import '../styles/global.css';
-import MyButton from '@/components/Button/Button';
-import Link from 'next/link';
+import Header from '@/components/Header/Header';
+import Footer from '@/components/Footer/Footer';
+import MainBanner from './_components/main/MainBanner';
+import SearchBar from './_components/main/SearchBar';
+import PopularExperiences from './_components/main/PopularExperiences';
+import AllExperiences from './_components/main/AllExperiences';
 
-export default function HomePage() {
+const MainPage: React.FC = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
-      <div className="flex flex-col items-center gap-6">
-        <Image
-          src="/icon/logo/logo_big.svg"
-          alt="GlobalNomad Logo"
-          width={200}
-          height={200}
-          priority
-        />
-        <Link href="/Login">
-          <MyButton
-            onClick={() => console.log('로그인 성공')}
-            className="py-[11px] px-[138.5px]"
-          >
-            로그인 하기
-          </MyButton>
-        </Link>
+    <>
+      <Header />
+
+      {/* 메인 전체 컨테이너 */}
+      <div className="w-full flex flex-col items-center">
+        {/* 배너 영역 */}
+        <div className="w-full relative">
+          <MainBanner />
+
+          {/* 검색 영역 (배너 위에 겹치도록) */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-12 md:-bottom-16 z-10 w-full max-w-[1240px]">
+            <SearchBar />
+          </div>
+        </div>
+
+        {/* 인기 체험 영역 */}
+        <div className="w-full flex justify-center mt-20">
+          <div className="w-full max-w-[1240px]">
+            <PopularExperiences />
+          </div>
+        </div>
+
+        {/* 모든 체험 영역 */}
+        <div className="w-full flex justify-center mt-20">
+          <div className="w-full max-w-[1240px]">
+            <AllExperiences />
+          </div>
+        </div>
       </div>
-    </div>
+
+      <Footer />
+    </>
   );
-}
+};
+
+export default MainPage;

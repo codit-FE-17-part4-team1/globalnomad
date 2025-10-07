@@ -44,7 +44,7 @@ export default function Dropdown({ children }: DropdownProps) {
 
   return (
     <DropdownContext.Provider value={{ open, setOpen, selected, setSelected }}>
-      <div ref={dropdownRef} className="relative m-1">
+      <div ref={dropdownRef} className="relative">
         {children}
       </div>
     </DropdownContext.Provider>
@@ -64,7 +64,7 @@ interface DropdownButtonProps {
 
 const buttonStyles: { [key: string]: string } = {
   dropdownPrimary:
-    'px-4 py-2 border border-[#79747E] text-[#a4a1aa] bg-white rounded-sm flex items-center justify-between',
+    'px-4 py-4 border border-[#79747E] text-[#a4a1aa] bg-white rounded-sm flex items-center justify-between',
   dropdownSecondary:
     'w-[127px] h-[53px] py-[13.5px] px-[20px] rounded-2xl bg-white border border-[#0b3b2d] text-[#0b3b2d] text-lg flex items-center justify-between',
   dropdownTertiary:

@@ -1,0 +1,10 @@
+export type ReservationStatus = 'confirmed' | 'pending' | 'canceled';
+
+export type CalEvent = {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  status: 'pending' | 'confirmed' | 'canceled';
+  place?: string;
+};

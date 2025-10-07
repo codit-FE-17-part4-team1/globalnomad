@@ -1,6 +1,5 @@
 'use client';
 
-import '@/styles/global.css';
 import { useRef } from 'react';
 // import Portal from '@/components/Modal/Portalmodal';
 
@@ -14,7 +13,7 @@ interface BaseModalProps {
   children: React.ReactNode;
   size?: ModalSize;
   className?: string;
-  closeOnOverlay?: boolean;
+  title?: React.ReactNode;
 }
 
 export default function BaseModal({
@@ -23,6 +22,7 @@ export default function BaseModal({
   children,
   size = 'md',
   className,
+  title,
 }: BaseModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const handleOverLayClick = (e: React.MouseEvent) => {
@@ -53,6 +53,11 @@ export default function BaseModal({
           className ?? '',
         ].join(' ')}
       >
+        {title && (
+          <div className="flex items-center justify-between px-6 py-4">
+            <h2 className="text-xl font-semibold mb-4">{title}</h2>
+          </div>
+        )}
         {children}
       </div>
     </div>

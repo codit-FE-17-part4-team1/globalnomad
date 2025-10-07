@@ -1,6 +1,9 @@
+// app/layout.tsx
 'use client';
 
 import '../styles/global.css';
+
+import React from 'react';
 import { usePathname } from 'next/navigation';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';

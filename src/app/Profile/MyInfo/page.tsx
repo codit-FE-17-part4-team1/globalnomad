@@ -2,7 +2,6 @@
 import FormInput from '@/components/Input/FormInput';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
 import { useInputValue } from '@/hooks/useInputValue';
-// import Nodata from '@/app/Profile/_components/Nodata/Nodata';
 export default function MyInfo() {
   const [form, handleChange] = useInputValue({
     nickname: '',
@@ -10,11 +9,11 @@ export default function MyInfo() {
     password: '',
     passwordConfirm: '',
   });
-
+  const LabelStyle = 'font-bold! text-2xl! mb-4! text-black!';
   return (
     <div>
       <Header
-        title="제목"
+        title="내 정보"
         type="button"
         buttonText="저장하기"
         onClick={() => {
@@ -22,7 +21,7 @@ export default function MyInfo() {
         }}
       />
       <form>
-        <fieldset>
+        <fieldset className="flex flex-col gap-4">
           <FormInput
             id="nickname"
             name="nickname"
@@ -31,6 +30,7 @@ export default function MyInfo() {
             placeholder="닉네임을 입력하세요"
             value={form.nickname}
             onChange={handleChange}
+            labelClassName={LabelStyle}
           />
           <FormInput
             id="email"
@@ -40,6 +40,7 @@ export default function MyInfo() {
             placeholder="이메일을 입력하세요"
             value={form.email}
             onChange={handleChange}
+            labelClassName={LabelStyle}
           />
           <FormInput
             id="password"
@@ -49,6 +50,7 @@ export default function MyInfo() {
             placeholder="비밀번호를 입력하세요"
             value={form.password}
             onChange={handleChange}
+            labelClassName={LabelStyle}
           />
           <FormInput
             id="passwordConfirm"
@@ -59,6 +61,7 @@ export default function MyInfo() {
             value={form.passwordConfirm}
             onChange={handleChange}
             passwordValue={form.password}
+            labelClassName={LabelStyle}
           />
         </fieldset>
       </form>

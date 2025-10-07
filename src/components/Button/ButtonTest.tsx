@@ -1,35 +1,16 @@
-'use client';
+"use client";
 
-import MyButton from './Button';
+import MyButton from "./Button";
 
-export default function ButtonTest() {
-  return (
-    <>
-      {/* 기본 버튼 - buttonPrimary */}
-      <MyButton
-        onClick={() => alert('로그인 클릭!')}
-        className="py-[11px] px-[138.5px]"
-      >
-        로그인 하기
-      </MyButton>
-      <br />
-      <br />
-      {/* buttonSecondary */}
-      <MyButton
-        color="buttonSecondary"
-        onClick={() => alert('')}
-        className="py-[7px] px-[22px]"
-      >
-        로그인 하기
-      </MyButton>
-      <br />
-      <br />
-      {/* disabled button */}
-      <MyButton onClick={() => {}} className="py-[7px] px-[22px]" disabled>
-        신청 불가
-      </MyButton>
-      <br />
-      <br />
+export default function ButtonTest(){
+    return(
+        <>
+            {/* 기본 버튼 - buttonPrimary */}
+            <MyButton onClick={() => alert("로그인 클릭!")} className="py-[11px] px-[138.5px]">로그인 하기</MyButton><br /><br />
+            {/* buttonSecondary */}
+            <MyButton color="buttonSecondary" onClick={() => alert("")} className="py-[7px] px-[22px]">로그인 하기</MyButton><br /><br />
+            {/* disabled button */}
+            <MyButton onClick={() => {}} className="py-[7px] px-[22px]" disabled>신청 불가</MyButton><br /><br />
 
       {/* buttonCategory */}
       <ul>
@@ -68,7 +49,14 @@ export default function ButtonTest() {
         >
           관광
         </MyButton>
+        <MyButton color="buttonCategory" className="w-[127px] h-[58px]">
+          관광
+        </MyButton>
       </ul>
+
+      <MyButton color="buttonTransparent" className="text-red text-3xl">
+        x
+      </MyButton>
     </>
   );
 }
