@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import Image from 'next/image';
 import BaseModal from '@/components/Modal/BaseModal';
 
 type Alert = {
   id: number;
   title: string;
   time: string;
-  status: '승인' | '취소' | '신청';
+  status: '승인' | '거절';
   createdAt: string;
 };
 
@@ -20,20 +20,29 @@ export default function AlertModal({
   onClose: () => void;
   alerts?: Alert[];
 }) {
-  const [openModal, setOpenModal] = useState(true);
   return (
     <BaseModal
-      isOpen={openModal}
-      onClose={() => setOpenModal(false)}
+      isOpen={isOpen}
+      onClose={onClose}
       title="알림 `${n}`개"
+      className="bg-[var(--color-green-light)] relative"
     >
-      {/* 1. 전체 배경 넣기 */}
-      <div className="bg-[var(--color-green-light)] p-6 space-y-4 rounded-lg">
+      <Image
+        className="absolute right-5 top-4 cursor-pointer"
+        src="/icon/btn/X_lg.svg"
+        alt="닫기"
+        width={30}
+        height={30}
+      />
+      {/*  -------------------------------------------  */}
+      {/* 1. 배경 넣기 */}
+      <div className="p-6 space-y-4 rounded-lg">
         {alerts.map((item) => (
           <div
             key={item.id}
-            className="bg-white rounded-lg shadow-sm p-4 relative"
+            className="bg-white rounded-sm shadow-sm p-4 relative"
           >
+            {/* <Image src="/icon/btn/X_lg.svg" alt="닫기" width={20} height={20} /> */}
             {/* 2. 점 표시 (승인/거절 색상 구분) */}
             <div
               className={`absolute top-4 left-4 w-2 h-2 rounded-full ${
@@ -69,7 +78,12 @@ export default function AlertModal({
 
             {/* 4. x 버튼 */}
             <button className="absolute top-3 right-3 text-[var(--color-gray-400)] hover:text-[var(--color-gray-600)]">
-              ✕
+              <Image
+                src="/icon/btn/X_md.svg"
+                alt="닫기"
+                width={20}
+                height={20}
+              />
             </button>
           </div>
         ))}

@@ -134,6 +134,7 @@ export default function ReservationCalendar() {
         }}
         size="md"
         title="예약 정보"
+        className="bg-white"
       >
         {/* status에 따라 보여지는 모달을 다르게 설정하기! 
         그러면 굳이 BaseModal을 여기서 import 하지 않아도 될 수도 ? 근데 각 컴포넌트에서는 매번 import 해야하는데 뭐가 더 효율적인지 고민 필요할 듯 */}
