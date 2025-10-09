@@ -8,34 +8,7 @@ import { useMemo, useState } from 'react';
 import { localizer } from '@/lib/calendarLocalizer';
 import type { CalEvent } from '@/types/calendar';
 import BaseModal from '@/components/Modal/BaseModal';
-
-const mock: CalEvent[] = [
-  {
-    id: 'e1',
-    title: '피오르 체험',
-    start: new Date(2025, 10, 10, 10),
-    end: new Date(2025, 10, 10, 12),
-    time: '2023-10-10 15:00~18:00',
-    place: '홍대 스튜디오',
-    status: 'confirmed', // 승인
-  },
-  {
-    id: 'e2',
-    title: '열기구 페스티벌',
-    start: new Date(2025, 10, 11, 14),
-    end: new Date(2025, 10, 12, 12),
-    place: '성수',
-    status: 'pending', // 신청
-  },
-  {
-    id: 'e3',
-    title: '먹방',
-    start: new Date(2025, 10, 15, 10),
-    end: new Date(2025, 10, 15, 12),
-    place: '잠실',
-    status: 'canceled', // 취소
-  },
-];
+import { mockCalEvents } from '@/app/Profile/ReservationStatus/mock/CalendarMockdata';
 
 type ToolbarProps = {
   date: Date;
@@ -73,10 +46,6 @@ function EventBar() {
 }
 
 export default function ReservationCalendar() {
-  //   const [data, setData] = useState<CalEvent[]>(events);
-
-  //   useEffect(() => setData(events), [events]);
-
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState<CalEvent | null>(null);
 
@@ -99,8 +68,8 @@ export default function ReservationCalendar() {
         localizer={localizer}
         views={[Views.MONTH]}
         defaultView={Views.MONTH}
-        events={mock}
-        defaultDate={mock[0].start}
+        events={mockCalEvents}
+        defaultDate={mockCalEvents[0].start}
         startAccessor="start"
         endAccessor="end"
         formats={formats}

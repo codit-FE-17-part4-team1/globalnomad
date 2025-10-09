@@ -4,30 +4,14 @@ import { useState } from 'react';
 import ReservationCalendar from './_components/ReservationCalendar';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
 import AlertModal from '@/components/Modal/AlertModal';
-
-const mockAlerts = [
-  {
-    id: 1,
-    title: '함께하면 즐거운 스트릿 댄스',
-    time: '2025-10-10 10:00~11:00',
-    status: '승인' as const,
-    createdAt: '1분 전',
-  },
-  {
-    id: 2,
-    title: '함께하면 즐거운 스트릿 댄스',
-    time: '2025-10-30 14:00~18:00',
-    status: '거절' as const,
-    createdAt: '2분 전',
-  },
-];
+import { mockAlerts } from '@/app/Profile/ReservationStatus/mock/AlertMockdata';
 
 export default function ReservationStatusPage() {
-  const [isAlertOpen, setIsAlertOpen] = useState(true); // 테스트를 위해 true로 설정
+  const [isAlertOpen, setIsAlertOpen] = useState(true); // 테스트를 위해 true로 설정 (임시) 추후엔 흠 ..
 
   return (
     <div className="mx-auto max-w-screen-xl ">
-      {/* 임시 확인 */}
+      {/* 임시 확인, 나중에 알림 이모티콘? 에 연결할 예정 */}
       <AlertModal
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}

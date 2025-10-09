@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import BaseModal from '@/components/Modal/BaseModal';
 
@@ -20,12 +21,22 @@ export default function AlertModal({
   onClose: () => void;
   alerts?: Alert[];
 }) {
+  const [localAlerts, setLocalAlerts] = useState<Alert[]>(alerts);
+
+  useEffect(() => {
+    setLocalAlerts(alerts);
+  }, [alerts]);
+
+  const handleRemoveAlerts = (id: number) => {
+    setLocalAlerts((prev) => prev.filter((a) => a.id !== id));
+  };
+
   return (
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title="알림 `${n}`개"
-      className="bg-[var(--color-green-light)] relative"
+      title={`알림 ${localAlerts.length}개`}
+      className="bg-[var(--color-green-light)] relative w-[368px]" // 일단 width는 피그마로 두고, 나중에 봐야 할 듯 (BaseModal의 width가 고정되어 있어서 흠)
     >
       <Image
         className="absolute right-5 top-4 cursor-pointer"
@@ -33,11 +44,12 @@ export default function AlertModal({
         alt="닫기"
         width={30}
         height={30}
+        onClick={onClose}
       />
       {/*  -------------------------------------------  */}
       {/* 1. 배경 넣기 */}
-      <div className="p-6 space-y-4 rounded-lg">
-        {alerts.map((item) => (
+      <div className="p-6 space-y-2 rounded-lg">
+        {localAlerts.map((item) => (
           <div
             key={item.id}
             className="bg-white rounded-sm shadow-sm p-4 relative"
@@ -76,8 +88,11 @@ export default function AlertModal({
               </p>
             </div>
 
-            {/* 4. x 버튼 */}
-            <button className="absolute top-3 right-3 text-[var(--color-gray-400)] hover:text-[var(--color-gray-600)]">
+            {/* 4. x 버튼 추가 */}
+            <button
+              onClick={() => handleRemoveAlerts(item.id)}
+              className="absolute top-3 right-3 text-[var(--color-gray-400)] hover:text-[var(--color-gray-600)]"
+            >
               <Image
                 src="/icon/btn/X_md.svg"
                 alt="닫기"
