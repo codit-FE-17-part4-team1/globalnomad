@@ -48,7 +48,7 @@ export default function BaseModal({
         aria-modal="true"
         // ','를 통해서 배열로 관리 (코드 가독성), join을 통해 문자열로 합치기 --> 이렇게도 된다고 함!
         className={[
-          'relative bg-white rounded-lg shadow-xl',
+          'relative  rounded-lg shadow-xl',
           'max-h-[90vh] overflow-auto w-[540px]', // 스크롤 되도록 설정
           className ?? '',
         ].join(' ')}
