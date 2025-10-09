@@ -1,13 +1,17 @@
-// app/Profile/ReservationStatus/page.tsx
+'use client';
+
+import { useState } from 'react';
 import ReservationCalendar from './_components/ReservationCalendar';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
-import CategoryButtons from '@/app/_components/main/CategoryButtons';
+import AlertModal from '@/components/Modal/AlertModal';
 
-export default async function ReservationStatusPage() {
-  // 임시로 목데이터 넣어보기
+export default function ReservationStatusPage() {
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   return (
     <div className="mx-auto max-w-screen-xl ">
+      {/* 임시 확인 */}
+      <AlertModal isOpen={isAlertOpen} onClose={() => setIsAlertOpen(false)} />
       {/* 공통 컴포넌트 적용 - title 유선님 작업하신 거 조립 완료 */}
       <Header title="예약 현황" />
       {/* 카테고리 필터 공통 컴포넌트 적용 필요 */}

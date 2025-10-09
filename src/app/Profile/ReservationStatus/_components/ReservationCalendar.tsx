@@ -15,6 +15,7 @@ const mock: CalEvent[] = [
     title: '피오르 체험',
     start: new Date(2025, 10, 10, 10),
     end: new Date(2025, 10, 10, 12),
+    time: '2023-10-10 15:00~18:00',
     place: '홍대 스튜디오',
     status: 'confirmed', // 승인
   },
