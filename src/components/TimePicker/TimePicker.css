@@ -3,10 +3,7 @@
   posiiton: relative;
 }
 .react-datepicker__input-container > input {
-  width: 140px;
   height: 56px;
-  color: red;
-  border: 1px solid blue;
 }
 .react-datepicker__input-container > input::placeholder {
   color: red;

@@ -64,7 +64,7 @@ interface DropdownButtonProps {
 
 const buttonStyles: { [key: string]: string } = {
   dropdownPrimary:
-    'px-4 py-4 border border-[#79747E] text-[#a4a1aa] bg-white rounded-sm flex items-center justify-between',
+    'px-4 py-4 border border-[#79747E] text-[#a4a1aa] bg-white rounded-sm flex items-center justify-between mb-4',
   dropdownSecondary:
     'w-[127px] h-[53px] py-[13.5px] px-[20px] rounded-2xl bg-white border border-[#0b3b2d] text-[#0b3b2d] text-lg flex items-center justify-between',
   dropdownTertiary:
@@ -137,22 +137,26 @@ interface DropdownContentProps {
     | 'dropdownSet';
 }
 
+// className prop 추가
 function DropdownContent({
   children,
   color = 'dropdownPrimary',
-}: DropdownContentProps) {
+  className,
+}: DropdownContentProps & { className?: string }) {
   const { open } = useContext(DropdownContext);
 
-  const baseClass = 'absolute z-20 mt-1 rounded bg-white';
+  const baseClass = 'absolute z-20 rounded bg-white';
   const addClass = {
     dropdownPrimary: 'w-[100%] p-[8px] shadow-lg',
     dropdownSecondary: 'w-[127px] border border-[#ddd]',
     dropdownTertiary: 'w-[160px] border border-[#ddd]',
-    dropdownSet: 'w-[160px] border border-[#ddd]',
+    dropdownSet: 'border border-[#ddd]',
   }[color];
 
   return open ? (
-    <div className={`${baseClass} ${addClass}`}>{children}</div>
+    <div className={`${baseClass} ${addClass} ${className ?? ''}`}>
+      {children}
+    </div>
   ) : null;
 }
 
