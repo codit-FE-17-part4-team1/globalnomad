@@ -32,13 +32,13 @@ export default function Header({
         {!isLoggedIn ? (
           <div className="flex items-center justify-center gap-6">
             <Link
-              href="/login"
+              href="/Login"
               className="text-[#1B1B1B] hover:text-[#79747E] font-medium text-sm leading-6 tracking-normal text-center transition-colors duration-300 whitespace-nowrap"
             >
               로그인
             </Link>
             <Link
-              href="/signup"
+              href="/Signup"
               className="text-[#1B1B1B] hover:text-[#79747E] font-medium text-sm leading-6 tracking-normal text-center transition-colors duration-300 whitespace-nowrap"
             >
               회원가입
