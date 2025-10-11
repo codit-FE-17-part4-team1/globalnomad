@@ -4,15 +4,12 @@ import '@/styles/global.css';
 import BaseModal from '@/components/Modal/BaseModal';
 import Button from '@/playground/deprecated/Button/Button';
 
-type ModalSize = 'md' | 'lg' | 'xl';
-
 interface ConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
   message: string;
   onConfirm?: () => void; // 없으면 ‘확인’이 그냥 onClose
   confirmLabel?: string; // 확인
-  size?: ModalSize;
   className?: string;
 }
 
@@ -22,16 +19,10 @@ export default function ConfirmModal({
   message,
   onConfirm,
   confirmLabel = '확인',
-  size = 'lg',
   className,
 }: ConfirmModalProps) {
   return (
-    <BaseModal
-      isOpen={isOpen}
-      onClose={onClose}
-      size={size}
-      className={className}
-    >
+    <BaseModal isOpen={isOpen} onClose={onClose} className={className}>
       <div className="p-8">
         <p className="pt-14 text-center text-black">{message}</p>
         <div className="mt-8 flex justify-end gap-2">
