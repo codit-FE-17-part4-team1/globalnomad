@@ -6,9 +6,11 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Calendar, Views } from 'react-big-calendar';
 import { useMemo, useState } from 'react';
 import { localizer } from '@/lib/calendarLocalizer';
-import type { CalEvent } from '@/types/calendar';
-import BaseModal from '@/components/Modal/BaseModal';
+import type { CalEvent, CalStatus } from '@/types/calendar';
 import { mockCalEvents } from '@/app/Profile/ReservationStatus/mock/CalendarMockdata';
+import PendingModal from '@/components/Modal/ReservationModal/PendingModal';
+import ConfirmedModal from '@/components/Modal/ReservationModal/ConfirmedModal';
+import CanceledModal from '@/components/Modal/ReservationModal/CanceledModal';
 
 type ToolbarProps = {
   date: Date;
@@ -48,10 +50,34 @@ function EventBar() {
 export default function ReservationCalendar() {
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState<CalEvent | null>(null);
+  const [reservationsForDate, setReservationsForDate] = useState<CalEvent[]>(
+    []
+  );
 
-  const handleEventClick = () => {
+  const handleEventClick = (ev: CalEvent) => {
+    setSelected(ev);
+
+    // 같은 날 여러 데이터(신청,승인,거절)가 있다면 탭 이동할 수 있도록
+    const clickedDate = ev.start.toDateString();
+    const dailyReservations = mockCalEvents.filter(
+      (event) => event.start.toDateString() === clickedDate
+    );
+    setReservationsForDate(
+      // CalEvent[] 타입을 { nickname, people, status }[] 타입으로 변환 --> 이건 해석이 필요할 듯
+      dailyReservations.map((e) => ({ ...e, people: 1 }))
+    );
     setOpenModal(true);
   };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSelected(null);
+  };
+
+  // API 연동으로 받을 항목! async 어쩌고 ..
+  const handleApprove = () => {};
+
+  const handleReject = () => {};
 
   const formats = useMemo(
     () => ({
@@ -95,6 +121,45 @@ export default function ReservationCalendar() {
           };
         }}
       />
+
+      {openModal && selected && (
+        <>
+          {selected.status === 'pending' && (
+            <PendingModal
+              isOpen={openModal}
+              onClose={handleCloseModal}
+              status={selected.status}
+              // date={formatDate(selected.start)}
+              // time={formatTimeRange(selected.start, selected.end)}
+              reservations={reservationsForDate}
+              onApprove={handleApprove}
+              onReject={handleReject}
+            />
+          )}
+
+          {selected.status === 'confirmed' && (
+            <ConfirmedModal
+              isOpen={openModal}
+              onClose={handleCloseModal}
+              status={selected.status}
+              // date={formatDate(selected.start)}
+              // time={formatTimeRange(selected.start, selected.end)}
+              reservations={reservationsForDate}
+            />
+          )}
+
+          {selected.status === 'canceled' && (
+            <CanceledModal
+              isOpen={openModal}
+              onClose={handleCloseModal}
+              status={selected.status}
+              // date={formatDate(selected.start)}
+              // time={formatTimeRange(selected.start, selected.end)}
+              reservations={reservationsForDate}
+            />
+          )}
+        </>
+      )}
 
       {/* 10/09 상태에 따른 모달을 따로 작업했으니, 여기서 각각 상태에 맞게 불러야 할 듯 -- 우선 주석처리 */}
       {/* <BaseModal
