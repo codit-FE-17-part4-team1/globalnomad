@@ -95,7 +95,9 @@ export default function ReservationCalendar() {
           };
         }}
       />
-      <BaseModal
+
+      {/* 10/09 상태에 따른 모달을 따로 작업했으니, 여기서 각각 상태에 맞게 불러야 할 듯 -- 우선 주석처리 */}
+      {/* <BaseModal
         isOpen={openModal}
         onClose={() => {
           setOpenModal(false);
@@ -104,10 +106,10 @@ export default function ReservationCalendar() {
         size="md"
         title="예약 정보"
         className="bg-white"
-      >
-        {/* status에 따라 보여지는 모달을 다르게 설정하기! 
+      > */}
+      {/* status에 따라 보여지는 모달을 다르게 설정하기! 
         그러면 굳이 BaseModal을 여기서 import 하지 않아도 될 수도 ? 근데 각 컴포넌트에서는 매번 import 해야하는데 뭐가 더 효율적인지 고민 필요할 듯 */}
-        {selected && (
+      {/* {selected && (
           <div>
             <p className="text-sm text-gray-600">
               {selected.start.toLocaleString()} ~{' '}
@@ -119,7 +121,7 @@ export default function ReservationCalendar() {
             <p className="mt-1 text-sm">상태: {selected.status}</p>
           </div>
         )}
-      </BaseModal>
+      </BaseModal> */}
     </>
   );
 }
