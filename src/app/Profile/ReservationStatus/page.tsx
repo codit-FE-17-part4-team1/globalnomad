@@ -1,7 +1,7 @@
 // app/Profile/ReservationStatus/page.tsx
 import ReservationCalendar from './_components/ReservationCalendar';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
-import CategoryButtons from '@/app/_components/main/CategoryButtons';
+import CategoryButtons from '@/app/main/_components/CategoryButtons';
 
 export default async function ReservationStatusPage() {
   // 임시로 목데이터 넣어보기

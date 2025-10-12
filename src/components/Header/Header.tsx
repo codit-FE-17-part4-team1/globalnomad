@@ -18,7 +18,7 @@ export default function Header({
 }: HeaderProps) {
   return (
     <header className="w-full h-[70px] bg-[#ffffff] border-b border-[#DDDDDD]">
-      <div className="flex items-center justify-between h-full w-full max-w-[1240px] mx-auto px-5">
+      <div className="flex items-center justify-between h-full w-full min-w-[375px] max-w-[1240px] mx-auto px-5">
         {/* 로고 */}
         <Link href="/">
           <img
