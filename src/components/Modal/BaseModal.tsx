@@ -3,33 +3,33 @@
 import { useRef } from 'react';
 // import Portal from '@/components/Modal/Portalmodal';
 
-type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
-
 // 모달 사이즈를 따로 잡고 싶은데, className으로 직접 작성해야 할 지, 상수로 빼서 관리할 지 고민
 
 interface BaseModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  size?: ModalSize;
   className?: string;
   title?: React.ReactNode;
+  closeOnOverlay?: boolean; // 추가
+  closeOnEsc?: boolean; // 추가
 }
 
 export default function BaseModal({
   isOpen,
   onClose,
   children,
-  size = 'md',
   className,
   title,
+  closeOnOverlay = true, // 기본값
+  closeOnEsc = true, // 얘도 추가해보고 싶은데 어떻게 쓸 수 있을까?(고민)
 }: BaseModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const handleOverLayClick = (e: React.MouseEvent) => {
-    if (e.target === overlayRef.current) {
-      onClose();
-    }
+    if (!closeOnOverlay) return;
+    if (e.target === overlayRef.current) onClose();
   };
+
   if (!isOpen) {
     return null;
   }
@@ -39,7 +39,7 @@ export default function BaseModal({
     <div
       ref={overlayRef}
       className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4"
-      aria-label="모달 오버레이: 클릭하면 닫힘"
+      aria-label="모달 오버레이"
       onClick={handleOverLayClick}
     >
       {/* 디테일 잡기? */}
@@ -48,10 +48,11 @@ export default function BaseModal({
         aria-modal="true"
         // ','를 통해서 배열로 관리 (코드 가독성), join을 통해 문자열로 합치기 --> 이렇게도 된다고 함!
         className={[
-          'relative bg-white rounded-lg shadow-xl',
+          'relative  rounded-lg shadow-xl',
           'max-h-[90vh] overflow-auto w-[540px]', // 스크롤 되도록 설정
           className ?? '',
         ].join(' ')}
+        onClick={(e) => e.stopPropagation()}
       >
         {title && (
           <div className="flex items-center justify-between px-6 py-4">

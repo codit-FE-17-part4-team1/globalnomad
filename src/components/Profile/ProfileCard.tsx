@@ -6,9 +6,8 @@ import { usePathname } from 'next/navigation';
 
 export default function ProfileCard() {
   const pathname = usePathname();
-  // next.js의 App Router에서 현재 URL의 경로(path) 부분을 읽어오는 클라이언트 컴포넌트 훅이라고 하는데, 이건 다른 페이지가 생성되면 연결하면 되는걸지?
+  // next.js의 App Router에서 현재 URL의 경로(path) 부분을 읽어오는 클라이언트 컴포넌트 훅이라고 하는데, 이건 다른 페이지가 생성되면 연결하면 되는걸지? --> 확인 완료
 
-  // 경로 설정의 이름을 확인해야 할 듯 !
   const MENU = [
     {
       key: 'info',
@@ -27,7 +26,7 @@ export default function ProfileCard() {
     {
       key: 'manage',
       label: '내 체험 관리',
-      href: '/Profile/Experience',
+      href: '/Profile/ExperienceSet',
       icon: '/icon/setting.svg',
       active: false,
     },
