@@ -8,6 +8,7 @@ export interface CalEvent {
   time?: string;
   place?: string;
   nickname?: string;
+  people?: number;
   status: CalStatus;
 }
 
@@ -20,6 +21,7 @@ export const mockCalEvents: CalEvent[] = [
     time: '2025-11-10 10:00~12:00',
     place: '홍대 스튜디오',
     nickname: '짱구',
+    people: 2,
     status: 'pending',
   },
   {
@@ -29,6 +31,7 @@ export const mockCalEvents: CalEvent[] = [
     end: new Date(2025, 9, 16, 14),
     place: '성수',
     nickname: '짱아',
+    people: 1,
     status: 'confirmed',
   },
   {
@@ -38,6 +41,7 @@ export const mockCalEvents: CalEvent[] = [
     end: new Date(2025, 9, 15, 12),
     place: '잠실',
     nickname: '흰둥이',
+    people: 3,
     status: 'canceled',
   },
   {
@@ -48,6 +52,7 @@ export const mockCalEvents: CalEvent[] = [
     time: '2025-11-10 10:00~12:00',
     place: '홍대 스튜디오',
     nickname: '신봉선',
+    people: 4,
     status: 'confirmed',
   },
 ];

@@ -5,6 +5,8 @@ export type CalEvent = {
   title: string;
   start: Date;
   end: Date;
-  status: 'pending' | 'confirmed' | 'canceled';
+  status: ReservationStatus;
   place?: string;
+  people?: number;
+  nickname?: string;
 };

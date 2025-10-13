@@ -6,7 +6,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Calendar, Views } from 'react-big-calendar';
 import { useMemo, useState } from 'react';
 import { localizer } from '@/lib/calendarLocalizer';
-import type { CalEvent, CalStatus } from '@/types/calendar';
+import type { CalEvent, ReservationStatus } from '@/types/calendar';
 import { mockCalEvents } from '@/app/Profile/ReservationStatus/mock/CalendarMockdata';
 import PendingModal from '@/components/Modal/ReservationModal/PendingModal';
 import ConfirmedModal from '@/components/Modal/ReservationModal/ConfirmedModal';
@@ -50,9 +50,14 @@ function EventBar() {
 export default function ReservationCalendar() {
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState<CalEvent | null>(null);
-  const [reservationsForDate, setReservationsForDate] = useState<CalEvent[]>(
-    []
-  );
+  // 모달에 전달할 데이터의 타입을 명확하게 지정합니다.  --> 버그가 나서 확인 중인데 왜 이렇게 해야함? (공부중)
+  const [reservationsForDate, setReservationsForDate] = useState<
+    {
+      nickname: string;
+      people: number;
+      status: ReservationStatus;
+    }[]
+  >([]);
 
   const handleEventClick = (ev: CalEvent) => {
     setSelected(ev);
@@ -63,8 +68,11 @@ export default function ReservationCalendar() {
       (event) => event.start.toDateString() === clickedDate
     );
     setReservationsForDate(
-      // CalEvent[] 타입을 { nickname, people, status }[] 타입으로 변환 --> 이건 해석이 필요할 듯
-      dailyReservations.map((e) => ({ ...e, people: 1 }))
+      dailyReservations.map((e) => ({
+        ...e,
+        nickname: e.nickname || '',
+        people: e.people || 0, // people이 없으면 0을 기본값으로 사용
+      }))
     );
     setOpenModal(true);
   };
@@ -75,9 +83,13 @@ export default function ReservationCalendar() {
   };
 
   // API 연동으로 받을 항목! async 어쩌고 ..
-  const handleApprove = () => {};
+  const handleApprove = (nickname: string) => {
+    console.log(`${nickname}님 예약 승인`);
+  };
 
-  const handleReject = () => {};
+  const handleReject = (nickname: string) => {
+    console.log(`${nickname}님 예약 거절`);
+  };
 
   const formats = useMemo(
     () => ({
@@ -122,6 +134,7 @@ export default function ReservationCalendar() {
         }}
       />
 
+      {/* 모달 조립해보기 (신청, 승인, 거절) - 전달해야하는 Props와 Type들이 어렵군, 타입때문에 오류가 나는 듯 ㅠ*/}
       {openModal && selected && (
         <>
           {selected.status === 'pending' && (
@@ -153,40 +166,11 @@ export default function ReservationCalendar() {
               isOpen={openModal}
               onClose={handleCloseModal}
               status={selected.status}
-              // date={formatDate(selected.start)}
-              // time={formatTimeRange(selected.start, selected.end)}
               reservations={reservationsForDate}
             />
           )}
         </>
       )}
-
-      {/* 10/09 상태에 따른 모달을 따로 작업했으니, 여기서 각각 상태에 맞게 불러야 할 듯 -- 우선 주석처리 */}
-      {/* <BaseModal
-        isOpen={openModal}
-        onClose={() => {
-          setOpenModal(false);
-          setSelected(null);
-        }}
-        size="md"
-        title="예약 정보"
-        className="bg-white"
-      > */}
-      {/* status에 따라 보여지는 모달을 다르게 설정하기! 
-        그러면 굳이 BaseModal을 여기서 import 하지 않아도 될 수도 ? 근데 각 컴포넌트에서는 매번 import 해야하는데 뭐가 더 효율적인지 고민 필요할 듯 */}
-      {/* {selected && (
-          <div>
-            <p className="text-sm text-gray-600">
-              {selected.start.toLocaleString()} ~{' '}
-              {selected.end.toLocaleString()}
-            </p>
-            {selected.place && (
-              <p className="mt-1 text-sm">장소: {selected.place}</p>
-            )}
-            <p className="mt-1 text-sm">상태: {selected.status}</p>
-          </div>
-        )}
-      </BaseModal> */}
     </>
   );
 }
