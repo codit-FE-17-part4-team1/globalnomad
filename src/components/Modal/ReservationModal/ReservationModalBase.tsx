@@ -3,18 +3,18 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import BaseModal from '@/components/Modal/BaseModal';
-import type { CalStatus } from '@/types/calendar';
+import type { ReservationStatus } from '@/types/calendar';
 
 interface ReservationModalBaseProps {
   isOpen: boolean;
   onClose: () => void;
-  status: CalStatus;
+  status: ReservationStatus;
   date: string;
   time: string;
   reservations: {
     nickname: string;
     people: number;
-    status: CalStatus;
+    status: ReservationStatus;
   }[];
   renderActionButtons?: (item: {
     nickname: string;
@@ -31,7 +31,7 @@ export default function ReservationModalBase({
   reservations,
   renderActionButtons,
 }: ReservationModalBaseProps) {
-  const [activeTab, setActiveTab] = useState<CalStatus>(status);
+  const [activeTab, setActiveTab] = useState<ReservationStatus>(status);
 
   // 모달이 열릴 때마다 바꿔줘야 함
   useEffect(() => {

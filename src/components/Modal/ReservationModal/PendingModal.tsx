@@ -2,17 +2,17 @@
 
 import ReservationModalBase from './ReservationModalBase';
 import Button from '@/components/Button/Button';
-import type { CalStatus } from '@/types/calendar';
+import type { CalEvent, ReservationStatus } from '@/types/calendar';
 
 interface PendingModalProps {
   isOpen: boolean;
   onClose: () => void;
   date: string;
   time: string;
-  reservations: { nickname: string; people: number; status: CalStatus }[];
+  reservations: (CalEvent & { people: number })[];
   onApprove: (nickname: string) => void;
   onReject: (nickname: string) => void;
-  status: CalStatus;
+  status: ReservationStatus;
 }
 
 export default function PendingModal({
@@ -32,7 +32,11 @@ export default function PendingModal({
       status={status}
       date={date}
       time={time}
-      reservations={reservations}
+      reservations={reservations.map((item) => ({
+        nickname: item.nickname || '',
+        people: item.people,
+        status: item.status,
+      }))}
       renderActionButtons={(item) => (
         <div className="flex space-x-2">
           {/* 버튼 스타일이 왜 안 먹을까? */}
