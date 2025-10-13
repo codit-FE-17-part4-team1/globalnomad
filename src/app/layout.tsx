@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="min-h-screen bg-background text-foreground">
-        {showLayout && <Header />}
+        {showLayout && <Header isLoggedIn={false} />}
         <main className="mx-auto">{children}</main>
         {showLayout && <Footer />}
       </body>

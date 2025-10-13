@@ -30,15 +30,15 @@ const Review: React.FC<ReviewProps> = ({ userImage, name, date, content }) => {
   const toggleExpanded = () => setExpanded((prev) => !prev);
 
   return (
-    <div className="w-full sm:w-[469px] lg:w-[800px] border-b-[0.5px] border-black-nomad/25 pb-6">
-      <div className="w-[327px] sm:w-[429px] lg:w-[790px] mx-auto flex">
+    <div className="w-full flex flex-col">
+      <div className="flex pt-6">
         {/* 프로필 이미지 */}
         <div className="w-[45px] h-[45px] mr-4 flex-shrink-0 rounded-full overflow-hidden">
           <ProfileImage imageUrl={userImage} name={name} />
         </div>
 
         <div className="flex-1">
-          {/* 이름 + 리뷰 작성 날짜 */}
+          {/* 이름 | 리뷰 작성일 */}
           <div className="flex items-center gap-2 mb-2">
             <h3 className="font-bold text-lg text-black-nomad">{name}</h3>
             <span className="font-normal text-md text-black-nomad select-none">
@@ -76,6 +76,8 @@ const Review: React.FC<ReviewProps> = ({ userImage, name, date, content }) => {
           )}
         </div>
       </div>
+      {/* 구분선 라인 */}
+      <div className="-mx-5 md:mx-0 pt-6 border-b-[0.5px] border-black-nomad/25"></div>
     </div>
   );
 };

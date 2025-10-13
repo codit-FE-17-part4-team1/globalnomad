@@ -3,42 +3,44 @@
 
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
-import MainBanner from './_components/main/MainBanner';
-import SearchBar from './_components/main/SearchBar';
-import PopularExperiences from './_components/main/PopularExperiences';
-import AllExperiences from './_components/main/AllExperiences';
+import MainBanner from './main/_components/MainBanner';
+import SearchBar from './main/_components/SearchBar';
+import PopularExperiences from './main/_components/PopularActivities';
+import AllExperiences from './main/_components/AllActivities';
+
+const SectionContainer: React.FC<{
+  children: React.ReactNode;
+  className?: string;
+}> = ({ children, className = '' }) => (
+  <section className={`w-full flex justify-center ${className}`}>
+    <div className="w-full min-w-[375px] max-w-[1240px]">{children}</div>
+  </section>
+);
 
 const MainPage: React.FC = () => {
   return (
     <>
-      <Header />
+      <Header isLoggedIn={false} />
 
-      {/* 메인 전체 컨테이너 */}
-      <div className="w-full flex flex-col items-center">
-        {/* 배너 영역 */}
-        <div className="w-full relative">
+      <main className="w-full flex flex-col items-center">
+        {/* 배너 + 검색 영역 */}
+        <div className="relative w-full">
           <MainBanner />
-
-          {/* 검색 영역 (배너 위에 겹치도록) */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-12 md:-bottom-16 z-10 w-full max-w-[1240px]">
+          <div className="absolute left-1/2 bottom-0 transform -translate-x-1/2 translate-y-2/3 z-10 w-full max-w-[1240px]">
             <SearchBar />
           </div>
         </div>
 
         {/* 인기 체험 영역 */}
-        <div className="w-full flex justify-center mt-20">
-          <div className="w-full max-w-[1240px]">
-            <PopularExperiences />
-          </div>
-        </div>
+        <SectionContainer className="mt-30 md:mt-40">
+          <PopularExperiences />
+        </SectionContainer>
 
         {/* 모든 체험 영역 */}
-        <div className="w-full flex justify-center mt-20">
-          <div className="w-full max-w-[1240px]">
-            <AllExperiences />
-          </div>
-        </div>
-      </div>
+        <SectionContainer className="my-20">
+          <AllExperiences />
+        </SectionContainer>
+      </main>
 
       <Footer />
     </>

@@ -15,7 +15,7 @@ const CategoryButtons: React.FC<CategoryButtonsProps> = ({
   onSelectCategory,
 }) => {
   return (
-    <div className="flex overflow-x-auto no-scrollbar mb-6">
+    <div className="flex md:flex-nowrap overflow-x-auto scrollbar-hide mb-7">
       {categories.map((category, idx) => (
         <MyButton
           key={category}
@@ -25,7 +25,7 @@ const CategoryButtons: React.FC<CategoryButtonsProps> = ({
               : 'buttonCategory'
           }
           onClick={() => onSelectCategory(category)}
-          className={`mr-[24px] w-[127px] h-[58px] ${idx === categories.length - 1 ? '' : ''}`}
+          className={`mr-[8px] md:mr-[14px] lg:mr-[24px] w-[80px] h-[41px] md:w-[120px] md:h-[58px] lg:w-[127px] lg:h-[58px] flex-shrink-0 last:mr-0`}
         >
           {category}
         </MyButton>

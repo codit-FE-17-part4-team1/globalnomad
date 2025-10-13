@@ -1,0 +1,23 @@
+// src/types/review.d.ts
+
+export interface User {
+  profileImageUrl: string;
+  nickname: string;
+  id: number;
+}
+
+export interface Review {
+  id: number;
+  user: User;
+  activityId: number;
+  rating: number;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ReviewList {
+  averageRating: number;
+  totalCount: number;
+  reviews: Review[];
+}
