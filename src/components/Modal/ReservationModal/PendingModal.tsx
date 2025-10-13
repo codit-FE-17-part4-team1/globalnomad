@@ -2,15 +2,17 @@
 
 import ReservationModalBase from './ReservationModalBase';
 import Button from '@/components/Button/Button';
+import type { CalStatus } from '@/types/calendar';
 
 interface PendingModalProps {
   isOpen: boolean;
   onClose: () => void;
   date: string;
   time: string;
-  reservations: { nickname: string; people: number }[];
+  reservations: { nickname: string; people: number; status: CalStatus }[];
   onApprove: (nickname: string) => void;
   onReject: (nickname: string) => void;
+  status: CalStatus;
 }
 
 export default function PendingModal({
@@ -21,24 +23,31 @@ export default function PendingModal({
   reservations,
   onApprove,
   onReject,
+  status,
 }: PendingModalProps) {
   return (
     <ReservationModalBase
       isOpen={isOpen}
       onClose={onClose}
-      status="pending"
+      status={status}
       date={date}
       time={time}
       reservations={reservations}
       renderActionButtons={(item) => (
         <div className="flex space-x-2">
+          {/* 버튼 스타일이 왜 안 먹을까? */}
           <Button
-            className="bg-[var(--color-green-dark)] text-white"
+            className="bg-[var(--color-green-dark)] p-2 text-white text-sm"
             onClick={() => onApprove(item.nickname)}
           >
             승인하기
           </Button>
-          <Button onClick={() => onReject(item.nickname)}>거절하기</Button>
+          <Button
+            className="p-2 text-black border-[var(--color-gray-400)] text-sm "
+            onClick={() => onReject(item.nickname)}
+          >
+            거절하기
+          </Button>
         </div>
       )}
     />

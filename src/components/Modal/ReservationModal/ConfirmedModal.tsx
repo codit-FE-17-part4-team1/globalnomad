@@ -2,13 +2,15 @@
 
 import ReservationModalBase from './ReservationModalBase';
 import Chips from '@/components/chips/Chips';
+import type { CalStatus } from '@/types/calendar';
 
 interface ConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
   date: string;
   time: string;
-  reservations: { nickname: string; people: number }[];
+  reservations: { nickname: string; people: number; status: CalStatus }[];
+  status: CalStatus;
 }
 
 export default function ConfirmModal({
@@ -17,12 +19,13 @@ export default function ConfirmModal({
   date,
   time,
   reservations,
+  status,
 }: ConfirmModalProps) {
   return (
     <ReservationModalBase
       isOpen={isOpen}
       onClose={onClose}
-      status="confirmed"
+      status={status}
       date={date}
       time={time}
       reservations={reservations}
@@ -32,6 +35,6 @@ export default function ConfirmModal({
         </Chips>
       )}
     />
-    // chips가 어떻게 들어가야 하는건가? -> prop으로 내려줬는데 확인 필요할 듯
+    // chips가 어떻게 들어가야 하는건가? -> prop으로 내려줬는데 확인 필요할 듯 -> 확인 완료!
   );
 }
