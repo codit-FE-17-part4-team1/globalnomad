@@ -29,14 +29,16 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-[640px] min-w-[350px] px-6">
         <div className="flex justify-center mb-[54px]">
-          <Image
-            src="/icon/logo/logo_big.svg"
-            alt="메인 로고"
-            width={340}
-            height={0}
-            className="w-[340px] max-w-[270px] h-auto"
-            priority
-          />
+          <Link href="/">
+            <Image
+              src="/icon/logo/logo_big.svg"
+              alt="메인 로고"
+              width={340}
+              height={0}
+              className="w-[340px] max-w-[270px] h-auto"
+              priority
+            />
+          </Link>
         </div>
 
         <form onSubmit={handleSubmit} autoComplete="off">
