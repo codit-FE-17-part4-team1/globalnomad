@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import BaseModal from '@/components/Modal/BaseModal';
 import type { ReservationStatus } from '@/types/calendar';
+import TimeDropdown from '@/app/Profile/ReservationStatus/_components/TimeDropdown';
 
 interface ReservationModalBaseProps {
   isOpen: boolean;
@@ -85,11 +86,20 @@ export default function ReservationModalBase({
           ))}
         </div>
 
-        {/* 날짜 - 카테고리로 추가 필요 */}
+        {/* 날짜 */}
         <div className="mb-4">
-          <h3 className="font-semibold mb-2">예약 날짜</h3>
-          <p>{date}</p>
-          <div className="mt-2 border px-4 py-2 rounded-md">{time}</div>
+          <p className="text-lg font-semibold mb-2">예약 날짜</p>
+          <p className="mb-1">{date}</p>
+          {/* 시간 - button & dropdown 으로 구현 필요할 듯 */}
+          <TimeDropdown
+            className="mt-2"
+            value={time}
+            options={[]}
+            onChange={() => {}}
+          />
+          {/* <div className="mt-2 border border-[var(--color-gray-500)] px-4 py-2 rounded-md">
+            {time}
+          </div> */}
         </div>
 
         {/* 예약 내역 */}
@@ -98,7 +108,7 @@ export default function ReservationModalBase({
           {filteredReservations.map((item, idx) => (
             <div
               key={idx}
-              className="border rounded-lg p-4 mb-3 flex justify-between items-center"
+              className="border-[var(--color-gray-500)] border  rounded-lg p-4 mb-3 flex justify-between items-center"
             >
               <div>
                 <p className="text-gray-600">
