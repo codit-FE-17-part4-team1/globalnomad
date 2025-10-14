@@ -31,6 +31,7 @@ export default function ReservationStatusPage() {
         selectedExperience={selectedExperience}
         onSelectExperience={setSelectedExperience}
       />
+      {/* 여기서 조립해야 할 듯? - 체험이 없을 경우를 조건부로! */}
       <div className="h-[560px] md:h-[620px] lg:h-[680px]">
         <ReservationCalendar />
       </div>
