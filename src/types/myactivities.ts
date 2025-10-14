@@ -71,7 +71,7 @@ export const reservationSchema = z.object({
   teamId: z.string(),
   activityId: z.number(),
   scheduleId: z.number(),
-  status: z.string(),
+  status: reservationStatus,
   reviewSubmitted: z.boolean(),
   totalPrice: z.number(),
   headCount: z.number(),
@@ -94,9 +94,12 @@ export const updateReservationStatusSchema = z.object({
 });
 
 // -- 내 체험 삭제 --
-export const deleteActivitySchema = z.object({
-  id: z.number(),
+export const deleteActivityPathZ = z.object({
+  teamId: z.string(),
+  activityId: z.number().int(),
 });
+
+export const deleteActivityResZ = z.unknown().optional();
 
 // -- 내 체험 수정 --
 export const modifyActivitySchema = z.object({
@@ -114,7 +117,9 @@ export const modifyActivitySchema = z.object({
 
 export type Activity = z.infer<typeof activitySchema>;
 export type MyActivitiesResponse = z.infer<typeof myactivitiesSchema>;
-export type ReservationDashboard = z.infer<typeof reservationsDashboardSchema>;
+export type ReservationDashboard = z.infer<
+  typeof reservationsDashboardListSchema
+>;
 export type ReservedScheduleItem = z.infer<typeof reservedScheduleMonthSchema>;
 export type ReservedSchedule = z.infer<typeof reservedScheduleListSchema>;
 export type ReservationsTime = z.infer<typeof reservationsTimeSchema>;
@@ -122,3 +127,5 @@ export type ReservationStatus = z.infer<typeof reservationStatus>;
 export type UpdateReservationStatus = z.infer<
   typeof updateReservationStatusSchema
 >;
+
+export type DeleteActivityRes = z.infer<typeof deleteActivityResZ>;
