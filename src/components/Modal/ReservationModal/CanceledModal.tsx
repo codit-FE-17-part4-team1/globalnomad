@@ -2,15 +2,20 @@
 
 import ReservationModalBase from './ReservationModalBase';
 import Chips from '@/components/chips/Chips';
-import type { CalStatus } from '@/types/calendar';
+import type { ReservationStatus } from '@/types/calendar';
 
 interface CanceledModalProps {
   isOpen: boolean;
   onClose: () => void;
   date: string;
   time: string;
-  reservations: { nickname: string; people: number; status: CalStatus }[];
-  status: CalStatus;
+  reservations: {
+    nickname: string;
+    people: number;
+    status: ReservationStatus;
+    time: string;
+  }[];
+  status: ReservationStatus;
 }
 
 export default function CanceledModal({

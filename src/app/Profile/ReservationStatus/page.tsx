@@ -13,54 +13,108 @@ import { mockAlerts } from '@/app/Profile/ReservationStatus/mock/AlertMockdata';
 import ExperienceSelect from '@/app/Profile/ReservationStatus/_components/ExperienceSelect';
 import type { Activity, ReservationDashboard } from '@/types/api/myactivities';
 
+// [개발용 임시 데이터]
+const mockActivities: Activity[] = [
+  {
+    id: 1,
+    title: '피오르 체험',
+    userId: 1,
+    description: '',
+    category: '',
+    price: 0,
+    address: '',
+    bannerImageUrl: '',
+    rating: 0,
+    reviewCount: 0,
+    createdAt: '',
+    updatedAt: '',
+  },
+  {
+    id: 2,
+    title: '열기구 페스티벌',
+    userId: 1,
+    description: '',
+    category: '',
+    price: 0,
+    address: '',
+    bannerImageUrl: '',
+    rating: 0,
+    reviewCount: 0,
+    createdAt: '',
+    updatedAt: '',
+  },
+];
+const mockDashboardData: ReservationDashboard = [
+  {
+    date: '2025-10-10',
+    reservations: { completed: 0, confirmed: 1, pending: 1 },
+  },
+  {
+    date: '2025-10-15',
+    reservations: { completed: 0, confirmed: 0, pending: 1 },
+  },
+  {
+    date: '2025-10-16',
+    reservations: { completed: 1, confirmed: 1, pending: 0 },
+  },
+];
+
 export default function ReservationStatusPage() {
   const [isAlertOpen, setIsAlertOpen] = useState(true); // 테스트를 위해 true로 설정 (임시) 추후엔 흠 ..
-  const [myActivities, setMyActivities] = useState<Activity[]>([]);
-  const [selectedActivityId, setSelectedActivityId] = useState<number>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [dashboardData, setDashboardData] = useState<ReservationDashboard>([]);
+  // const [myActivities, setMyActivities] = useState<Activity[]>([]);
+  // const [selectedActivityId, setSelectedActivityId] = useState<number>();
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [dashboardData, setDashboardData] = useState<ReservationDashboard>([]);
+  const [myActivities, setMyActivities] = useState<Activity[]>(mockActivities);
+  const [selectedActivityId, setSelectedActivityId] = useState<
+    number | undefined
+  >(mockActivities[0]?.id);
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태를 false로 변경
+  const [dashboardData, setDashboardData] =
+    useState<ReservationDashboard>(mockDashboardData);
 
-  // 내 체험 목록(myActivities) 불러오기
-  useEffect(() => {
-    const fetchMyActivities = async () => {
-      try {
-        const data = await getMyActivitiesAction({});
-        const activities = data.activities || [];
-        setMyActivities(activities);
-        if (activities.length > 0) {
-          setSelectedActivityId(activities[0].id);
-        }
-      } catch (error) {
-        console.error('내 체험 목록을 불러오는 데 실패했습니다:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchMyActivities();
-  }, []);
+  // // [개발용 임시 주석] API 연동을 잠시 비활성화합니다.
+  // // 내 체험 목록(myActivities) 불러오기
+  // useEffect(() => {
+  //   const fetchMyActivities = async () => {
+  //     try {
+  //       const data = await getMyActivitiesAction({});
+  //       const activities = data.activities || [];
+  //       setMyActivities(activities);
+  //       if (activities.length > 0) {
+  //         setSelectedActivityId(activities[0].id);
+  //       }
+  //     } catch (error) {
+  //       console.error('내 체험 목록을 불러오는 데 실패했습니다:', error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+  //   fetchMyActivities();
+  // }, []);
 
-  // 체험 또는 날짜가 변경될 때마다 월별 예약 현황 데이터 보여주기
-  useEffect(() => {
-    if (!selectedActivityId) return;
+  // // [개발용 임시 주석] API 연동을 잠시 비활성화합니다.
+  // // 체험 또는 날짜가 변경될 때마다 월별 예약 현황 데이터 보여주기
+  // useEffect(() => {
+  //   if (!selectedActivityId) return;
 
-    const fetchDashboard = async () => {
-      try {
-        // TODO: year, month는 현재 캘린더가 보고 있는 연/월을 받아와야 합니다.
-        const data = await getReservationDashboardAction({
-          teamId: '9-2', // TODO: 실제 팀 ID로 교체
-          activityId: selectedActivityId,
-          year: '2025',
-          month: '10',
-        });
-        setDashboardData(data);
-      } catch (error) {
-        console.error(error);
-        // TODO: 사용자에게 에러 알림
-      }
-    };
+  //   const fetchDashboard = async () => {
+  //     try {
+  //       // TODO: year, month는 현재 캘린더가 보고 있는 연/월을 받아와야 함
+  //       const data = await getReservationDashboardAction({
+  //         teamId: '17-1',
+  //         activityId: selectedActivityId,
+  //         year: '2025',
+  //         month: '10',
+  //       });
+  //       setDashboardData(data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
 
-    fetchDashboard();
-  }, [selectedActivityId]);
+  //   fetchDashboard();
+  // }, [selectedActivityId]);
 
   return (
     <div className="mx-auto max-w-screen-xl ">

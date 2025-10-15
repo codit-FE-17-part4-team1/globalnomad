@@ -90,7 +90,7 @@ export const reservationsTimeSchema = z.object({
 
 // -- 내 체험 예약 상태(승인,거절) 업데이트 --
 export const updateReservationStatusSchema = z.object({
-  status: reservationStatus,
+  status: z.enum(['confirmed', 'declined']),
 });
 
 // -- 내 체험 삭제 --

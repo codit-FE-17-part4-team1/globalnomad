@@ -16,6 +16,7 @@ interface ReservationModalBaseProps {
     nickname: string;
     people: number;
     status: ReservationStatus;
+    time: string;
   }[];
   renderActionButtons?: (item: {
     nickname: string;
@@ -41,7 +42,7 @@ export default function ReservationModalBase({
     }
   }, [isOpen, status]);
 
-  const tabs = [
+  const tabs: { key: ReservationStatus; label: string }[] = [
     { key: 'pending', label: '신청' },
     { key: 'confirmed', label: '승인' },
     { key: 'canceled', label: '거절' },

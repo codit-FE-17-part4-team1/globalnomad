@@ -9,7 +9,12 @@ interface PendingModalProps {
   onClose: () => void;
   date: string;
   time: string;
-  reservations: (CalEvent & { people: number })[];
+  reservations: {
+    nickname: string;
+    people: number;
+    status: ReservationStatus;
+    time: string;
+  }[];
   onApprove: (nickname: string) => void;
   onReject: (nickname: string) => void;
   status: ReservationStatus;
@@ -32,11 +37,7 @@ export default function PendingModal({
       status={status}
       date={date}
       time={time}
-      reservations={reservations.map((item) => ({
-        nickname: item.nickname || '',
-        people: item.people,
-        status: item.status,
-      }))}
+      reservations={reservations}
       renderActionButtons={(item) => (
         <div className="flex space-x-2">
           {/* 버튼 스타일이 왜 안 먹을까? */}

@@ -13,6 +13,7 @@ interface ConfirmModalProps {
     nickname: string;
     people: number;
     status: ReservationStatus;
+    time: string;
   }[];
   status: ReservationStatus;
 }
