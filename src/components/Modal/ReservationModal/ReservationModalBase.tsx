@@ -5,6 +5,8 @@ import Image from 'next/image';
 import type { TimeOption } from '@/app/Profile/ReservationStatus/_components/TimeDropdown';
 import BaseModal from '@/components/Modal/BaseModal';
 import type { ReservationStatus } from '@/types/calendar';
+import Button from '@/components/Button/Button';
+import Chips from '@/components/chips/Chips';
 import TimeDropdown from '@/app/Profile/ReservationStatus/_components/TimeDropdown';
 
 interface ReservationModalBaseProps {
@@ -18,11 +20,10 @@ interface ReservationModalBaseProps {
     people: number;
     status: ReservationStatus;
     time: string;
+    id: number; // reservationId
   }[];
-  renderActionButtons?: (item: {
-    nickname: string;
-    people: number;
-  }) => React.ReactNode;
+  onApprove?: (reservationId: number) => void;
+  onReject?: (reservationId: number) => void;
 }
 
 export default function ReservationModalBase({
@@ -32,7 +33,8 @@ export default function ReservationModalBase({
   date,
   time,
   reservations,
-  renderActionButtons,
+  onApprove,
+  onReject,
 }: ReservationModalBaseProps) {
   const [activeTab, setActiveTab] = useState<ReservationStatus>(status);
   const [selectedTime, setSelectedTime] = useState<string>('all');
@@ -98,8 +100,13 @@ export default function ReservationModalBase({
             <button
               key={tab.key}
               onClick={() => {
-                setActiveTab(tab.key);
-                setSelectedTime('all'); // 탭을 변경하면 시간 필터는 '전체'로 초기화
+                const newTab = tab.key;
+                setActiveTab(newTab);
+                // 새로 선택된 탭의 첫 번째 예약 시간을 찾아 기본 선택값으로 설정합니다.
+                const reservationsInNewTab = reservations.filter(
+                  (item) => item.status === newTab
+                );
+                setSelectedTime(reservationsInNewTab[0]?.time || 'all');
               }}
               className={`pb-2 pr-4 flex justify-evenly font-semibold ${
                 activeTab === tab.key
@@ -152,7 +159,32 @@ export default function ReservationModalBase({
                   </span>
                 </p>
               </div>
-              {renderActionButtons && renderActionButtons(item)}
+              {activeTab === 'pending' && onApprove && onReject && (
+                <div className="flex space-x-2">
+                  <Button
+                    className="bg-[var(--color-green-dark)] p-2 text-white text-sm"
+                    onClick={() => onApprove(item.id)}
+                  >
+                    승인하기
+                  </Button>
+                  <Button
+                    className="p-2 text-black border-[var(--color-gray-400)] text-sm "
+                    onClick={() => onReject(item.id)}
+                  >
+                    거절하기
+                  </Button>
+                </div>
+              )}
+              {activeTab === 'confirmed' && (
+                <Chips color="orange" variant="round">
+                  예약 승인
+                </Chips>
+              )}
+              {activeTab === 'canceled' && (
+                <Chips color="red" variant="round">
+                  예약 거절
+                </Chips>
+              )}
             </div>
           ))}
         </div>

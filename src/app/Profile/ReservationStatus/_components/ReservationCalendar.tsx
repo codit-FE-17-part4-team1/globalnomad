@@ -94,6 +94,7 @@ export default function ReservationCalendar({
       people: number;
       status: ReservationStatus;
       time: string;
+      id: number;
     }[]
   >([]);
 
@@ -184,6 +185,7 @@ export default function ReservationCalendar({
       people: r.headCount,
       status: r.status === 'declined' ? 'canceled' : r.status,
       time: `${r.startTime}~${r.endTime}`,
+      id: r.id,
     }));
     setReservationsForDate(formattedReservations);
     setOpenModal(true);
@@ -195,12 +197,12 @@ export default function ReservationCalendar({
   };
 
   // API 연동으로 받을 항목! async 어쩌고 ..
-  const handleApprove = (nickname: string) => {
-    console.log(`${nickname}님 예약 승인`);
+  const handleApprove = (reservationId: number) => {
+    console.log(`예약 ID ${reservationId} 승인`);
   };
 
-  const handleReject = (nickname: string) => {
-    console.log(`${nickname}님 예약 거절`);
+  const handleReject = (reservationId: number) => {
+    console.log(`예약 ID ${reservationId} 거절`);
   };
 
   const formats = useMemo(
@@ -270,6 +272,8 @@ export default function ReservationCalendar({
               date={formatDate(selected.start)}
               time=""
               reservations={reservationsForDate}
+              onApprove={handleApprove}
+              onReject={handleReject}
             />
           )}
 
@@ -281,6 +285,8 @@ export default function ReservationCalendar({
               date={formatDate(selected.start)}
               time=""
               reservations={reservationsForDate}
+              onApprove={handleApprove}
+              onReject={handleReject}
             />
           )}
         </>

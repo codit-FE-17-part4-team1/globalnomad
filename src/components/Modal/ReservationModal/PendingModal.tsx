@@ -1,7 +1,6 @@
 'use client';
 
 import ReservationModalBase from './ReservationModalBase';
-import Button from '@/components/Button/Button';
 import type { CalEvent, ReservationStatus } from '@/types/calendar';
 
 interface PendingModalProps {
@@ -14,9 +13,10 @@ interface PendingModalProps {
     people: number;
     status: ReservationStatus;
     time: string;
+    id: number;
   }[];
-  onApprove: (nickname: string) => void;
-  onReject: (nickname: string) => void;
+  onApprove: (reservationId: number) => void;
+  onReject: (reservationId: number) => void;
   status: ReservationStatus;
 }
 
@@ -38,23 +38,8 @@ export default function PendingModal({
       date={date}
       time={time}
       reservations={reservations}
-      renderActionButtons={(item) => (
-        <div className="flex space-x-2">
-          {/* 버튼 스타일이 왜 안 먹을까? */}
-          <Button
-            className="bg-[var(--color-green-dark)] p-2 text-white text-sm"
-            onClick={() => onApprove(item.nickname)}
-          >
-            승인하기
-          </Button>
-          <Button
-            className="p-2 text-black border-[var(--color-gray-400)] text-sm "
-            onClick={() => onReject(item.nickname)}
-          >
-            거절하기
-          </Button>
-        </div>
-      )}
+      onApprove={onApprove}
+      onReject={onReject}
     />
   );
 }

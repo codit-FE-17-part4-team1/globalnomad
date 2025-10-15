@@ -1,7 +1,6 @@
 'use client';
 
 import ReservationModalBase from './ReservationModalBase';
-import Chips from '@/components/chips/Chips';
 import type { ReservationStatus } from '@/types/calendar';
 
 interface CanceledModalProps {
@@ -14,6 +13,7 @@ interface CanceledModalProps {
     people: number;
     status: ReservationStatus;
     time: string;
+    id: number;
   }[];
   status: ReservationStatus;
 }
@@ -34,11 +34,6 @@ export default function CanceledModal({
       date={date}
       time={time}
       reservations={reservations}
-      renderActionButtons={() => (
-        <Chips color="red" variant="round">
-          예약 거절
-        </Chips>
-      )}
     />
   );
 }
