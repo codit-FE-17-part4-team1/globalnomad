@@ -63,16 +63,12 @@ export default function TimeDropdown({
           height={16}
           className="cursor-pointer"
         />
-        {/* <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
-          {' '}
-          <path d="M5 7l5 6 5-6" fill="none" stroke="currentColor" />{' '}
-        </svg>{' '} */}
       </button>
       {open && (
         <ul
           ref={listRef}
           role="listbox"
-          className="absolute top-full left-0 z-50 mt-2 max-h-56 w-full overflow-auto rounded-md border bg-white shadow-lg"
+          className="absolute top-full left-0 z-50 mt-2 max-h-56 w-full overflow-auto rounded-md border border-[var(--color-gray-500)] bg-white shadow-lg"
         >
           {options.map((opt) => (
             <li
