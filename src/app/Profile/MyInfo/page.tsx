@@ -1,24 +1,18 @@
 'use client';
+
 import FormInput from '@/components/Input/FormInput';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
-import { useInputValue } from '@/hooks/useInputValue';
+import { useMyInfoUpdate } from './useMyInfoUpdate';
 export default function MyInfo() {
-  const [form, handleChange] = useInputValue({
-    nickname: '',
-    email: '',
-    password: '',
-    passwordConfirm: '',
-  });
-  const LabelStyle = 'font-bold! text-2xl! mb-4! text-black!';
+  const Label_Style = 'font-bold! text-2xl! mb-4! text-black!';
+  const { form, handleChange, handleSubmit } = useMyInfoUpdate();
   return (
     <div>
       <Header
         title="내 정보"
         type="button"
         buttonText="저장하기"
-        onClick={() => {
-          console.log('저장하기');
-        }}
+        onClick={handleSubmit}
       />
       <form>
         <fieldset className="flex flex-col gap-4">
@@ -30,7 +24,7 @@ export default function MyInfo() {
             placeholder="닉네임을 입력하세요"
             value={form.nickname}
             onChange={handleChange}
-            labelClassName={LabelStyle}
+            labelClassName={Label_Style}
           />
           <FormInput
             id="email"
@@ -40,28 +34,28 @@ export default function MyInfo() {
             placeholder="이메일을 입력하세요"
             value={form.email}
             onChange={handleChange}
-            labelClassName={LabelStyle}
+            labelClassName={Label_Style}
           />
           <FormInput
             id="password"
             name="password"
             type="password"
             labelText="비밀번호"
-            placeholder="비밀번호를 입력하세요"
+            placeholder="8자 이상 입력해 주세요"
             value={form.password}
             onChange={handleChange}
-            labelClassName={LabelStyle}
+            labelClassName={Label_Style}
           />
           <FormInput
             id="passwordConfirm"
             name="passwordConfirm"
             type="passwordConfirm"
-            labelText="비밀번호 확인"
-            placeholder="비밀번호를 다시 입력하세요"
+            labelText="비밀번호 재입력"
+            placeholder="비밀번호를 한번 더 입력해 주세요"
             value={form.passwordConfirm}
             onChange={handleChange}
             passwordValue={form.password}
-            labelClassName={LabelStyle}
+            labelClassName={Label_Style}
           />
         </fieldset>
       </form>

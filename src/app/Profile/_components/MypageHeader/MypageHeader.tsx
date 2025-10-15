@@ -1,21 +1,28 @@
 import clsx from 'clsx';
 import Button from '@/components/Button/Button';
+import ReservationFilter from './ReservationFilter';
 type HeaderType = {
   title: string;
   type?: 'button' | 'filter' | null;
   buttonText?: string;
   onClick?: () => void;
+  selected?: string;
+  setSelected?: React.Dispatch<React.SetStateAction<string>>;
+  selectList?: string[];
 };
 export default function MypageHeader({
   title,
   type = null,
   buttonText,
   onClick,
+  selected,
+  setSelected,
+  selectList,
 }: HeaderType) {
   return (
     <div
       className={clsx(
-        'flex justify-between sticky z-50 top-0 h-[50px] items-start',
+        'flex justify-between sticky z-50 top-0 h-[50px] items-start bg-background',
         'xs:h-[62px]'
       )}
     >
@@ -30,7 +37,11 @@ export default function MypageHeader({
           {buttonText}
         </Button>
       ) : type === 'filter' ? (
-        <select></select>
+        <ReservationFilter
+          selected={selected}
+          setSelected={setSelected!}
+          selectList={selectList}
+        />
       ) : null}
     </div>
   );
