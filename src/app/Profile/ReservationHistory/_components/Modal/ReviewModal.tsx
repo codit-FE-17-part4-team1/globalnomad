@@ -12,10 +12,16 @@ type ModalType = {
 export default function ReviewModal({ isRawOpen, setRawOpen }: ModalType) {
   const REVIEWSTAR = 5;
   return (
-    <Modal isOpen={isRawOpen} onClose={() => setRawOpen(false)} size="md">
-      <div className="p-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold mb-4">후기 작성</h2>
+    <Modal
+      isOpen={isRawOpen}
+      onClose={() => setRawOpen(false)}
+      size="md"
+      title="후기작성"
+      className="bg-white"
+    >
+      <div className="p-6 relative">
+        <div className="sticky top-6 flex justify-between items-center mb-10">
+          {/* <h2 className="text-xl font-semibold">후기 작성</h2> */}
           <button onClick={() => setRawOpen(false)}>
             <Image
               src="/icon/btn/X_lg.svg"

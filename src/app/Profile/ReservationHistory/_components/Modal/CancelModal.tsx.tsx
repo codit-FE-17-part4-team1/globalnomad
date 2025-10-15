@@ -10,7 +10,11 @@ type ModalType = {
 
 export default function CancelModal({ isRawOpen, setRawOpen }: ModalType) {
   return (
-    <BaseModal isOpen={isRawOpen} onClose={() => setRawOpen(false)} size="md">
+    <BaseModal
+      isOpen={isRawOpen}
+      onClose={() => setRawOpen(false)}
+      className="bg-white w-[184px]"
+    >
       <div className="p-6">
         <div className="flex flex-col justify-center items-center gap-4">
           <Image
