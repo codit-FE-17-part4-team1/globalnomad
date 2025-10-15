@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import type {
   MyActivitiesResponse,
   ReservationDashboard,
-} from '@/types/myactivities';
+} from '@/types/api/myactivities';
 
 function getAccessTokenOrThrow() {
   const token = cookies().get('accessToken')?.value;

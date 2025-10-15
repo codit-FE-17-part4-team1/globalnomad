@@ -5,7 +5,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 import { Calendar, Views } from 'react-big-calendar';
 import { useMemo, useState } from 'react';
-import { localizer } from '@/lib/calendarLocalizer';
+import { localizer } from '@/types/calendarLocalizer';
 import type { CalEvent, ReservationStatus } from '@/types/calendar';
 import { mockCalEvents } from '@/app/Profile/ReservationStatus/mock/CalendarMockdata';
 import PendingModal from '@/components/Modal/ReservationModal/PendingModal';
