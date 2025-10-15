@@ -5,12 +5,13 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 import { Calendar, Views } from 'react-big-calendar';
 import { useMemo, useState } from 'react';
+import { getReservationsByDateAction } from '@/actions/myactivities.actions';
 import { localizer } from '@/types/calendarLocalizer';
 import type { CalEvent, ReservationStatus } from '@/types/calendar';
-import { mockCalEvents } from '@/app/Profile/ReservationStatus/mock/CalendarMockdata';
 import PendingModal from '@/components/Modal/ReservationModal/PendingModal';
 import ConfirmedModal from '@/components/Modal/ReservationModal/ConfirmedModal';
 import CanceledModal from '@/components/Modal/ReservationModal/CanceledModal';
+import type { ReservationDashboard } from '@/types/api/myactivities';
 
 // 날짜를 'YYYY. MM. DD' 형식으로 변환하는 함수
 function formatDate(date: Date): string {
@@ -18,6 +19,14 @@ function formatDate(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}년 ${month}월 ${day}일`;
+}
+
+// 날짜를 'YYYY-MM-DD' 형식으로 변환하는 함수
+function toYYYYMMDD(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 // 시간을 'HH:mm ~ HH:mm' 형식으로 변환하는 함수
@@ -66,7 +75,13 @@ function EventBar() {
   return <div className="h-2 w-full rounded-md" />;
 }
 
-export default function ReservationCalendar() {
+export default function ReservationCalendar({
+  dashboardData,
+  activityId,
+}: {
+  dashboardData: ReservationDashboard;
+  activityId: number;
+}) {
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState<CalEvent | null>(null);
   // 모달에 전달할 데이터의 타입을 명확하게 지정합니다.  --> 버그가 나서 확인 중인데 왜 이렇게 해야함? (공부중)
@@ -75,25 +90,68 @@ export default function ReservationCalendar() {
       nickname: string;
       people: number;
       status: ReservationStatus;
+      time: string;
     }[]
   >([]);
 
-  const handleEventClick = (ev: CalEvent) => {
-    setSelected(ev);
+  // API 응답(dashboardData)을 캘린더가 이해할 수 있는 CalEvent[] 형태로 변환합니다.
+  const calendarEvents = useMemo<CalEvent[]>(() => {
+    if (!dashboardData) return [];
+    return dashboardData.flatMap((item) => {
+      const date = new Date(item.date);
+      const events: CalEvent[] = [];
+      if (item.reservations.pending > 0)
+        events.push({
+          id: `${item.date}-pending`,
+          title: '예약 신청',
+          start: date,
+          end: date,
+          status: 'pending',
+        });
+      if (item.reservations.confirmed > 0)
+        events.push({
+          id: `${item.date}-confirmed`,
+          title: '예약 승인',
+          start: date,
+          end: date,
+          status: 'confirmed',
+        });
+      if (item.reservations.completed > 0)
+        // 'completed'도 'confirmed'로 처리
+        events.push({
+          id: `${item.date}-completed`,
+          title: '예약 완료',
+          start: date,
+          end: date,
+          status: 'confirmed',
+        });
+      return events;
+    });
+  }, [dashboardData]);
 
-    // 같은 날 여러 데이터(신청,승인,거절)가 있다면 탭 이동할 수 있도록
-    const clickedDate = ev.start.toDateString();
-    const dailyReservations = mockCalEvents.filter(
-      (event) => event.start.toDateString() === clickedDate
-    );
-    setReservationsForDate(
-      dailyReservations.map((e) => ({
-        ...e,
-        nickname: e.nickname || '',
-        people: e.people || 0, // people이 없으면 0을 기본값으로 사용
-      }))
-    );
-    setOpenModal(true);
+  const handleEventClick = async (ev: CalEvent) => {
+    setSelected(ev);
+    try {
+      // 클릭된 날짜의 상세 예약 목록을 API로 조회합니다.
+      const data = await getReservationsByDateAction({
+        activityId,
+        date: toYYYYMMDD(ev.start),
+      });
+
+      // API 응답을 모달이 필요로 하는 형태로 가공합니다.
+      const formattedReservations = data.reservations.map((r) => ({
+        nickname: r.nickname,
+        people: r.headCount,
+        status: r.status === 'declined' ? 'canceled' : r.status, // API의 'declined'를 UI의 'canceled'로 변환
+        time: `${r.startTime}~${r.endTime}`,
+      }));
+
+      setReservationsForDate(formattedReservations);
+      setOpenModal(true);
+    } catch (error) {
+      console.error(error);
+      // TODO: 사용자에게 에러 알림
+    }
   };
 
   const handleCloseModal = () => {
@@ -125,8 +183,8 @@ export default function ReservationCalendar() {
         localizer={localizer}
         views={[Views.MONTH]}
         defaultView={Views.MONTH}
-        events={mockCalEvents}
-        defaultDate={mockCalEvents[0].start}
+        events={calendarEvents}
+        defaultDate={new Date(2025, 9, 1)} // TODO: 현재 날짜 또는 데이터에 기반한 날짜로 변경
         startAccessor="start"
         endAccessor="end"
         formats={formats}
@@ -162,9 +220,7 @@ export default function ReservationCalendar() {
               onClose={handleCloseModal}
               status={selected.status}
               date={formatDate(selected.start)}
-              time={
-                selected.time || formatTimeRange(selected.start, selected.end)
-              }
+              time="" // time prop은 이제 ReservationModalBase에서 관리됩니다.
               reservations={reservationsForDate}
               onApprove={handleApprove}
               onReject={handleReject}
@@ -177,9 +233,7 @@ export default function ReservationCalendar() {
               onClose={handleCloseModal}
               status={selected.status}
               date={formatDate(selected.start)}
-              time={
-                selected.time || formatTimeRange(selected.start, selected.end)
-              }
+              time=""
               reservations={reservationsForDate}
             />
           )}
@@ -190,9 +244,7 @@ export default function ReservationCalendar() {
               onClose={handleCloseModal}
               status={selected.status}
               date={formatDate(selected.start)}
-              time={
-                selected.time || formatTimeRange(selected.start, selected.end)
-              }
+              time=""
               reservations={reservationsForDate}
             />
           )}
