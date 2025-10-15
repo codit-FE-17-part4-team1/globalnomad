@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, ChangeEvent, useActionState, useEffect } from 'react';
+import { useState, ChangeEvent, useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import FormInput from '@/components/Input/FormInput';
@@ -26,7 +25,6 @@ function SubmitButton({ disabled }: { disabled: boolean }) {
 }
 
 export default function LoginPage() {
-  const router = useRouter();
   const [form, setForm] = useState({ email: '', password: '' });
   const [state, formAction] = useActionState(loginAction, initialState);
 
@@ -35,10 +33,6 @@ export default function LoginPage() {
   };
 
   const disabled = !form.email || !form.password;
-
-  useEffect(() => {
-    if (state.status) router.push('/');
-  }, [state.status, router]);
 
   return (
     <div className="flex min-h-screen items-center justify-center">

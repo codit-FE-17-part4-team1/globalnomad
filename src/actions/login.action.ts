@@ -2,6 +2,7 @@
 
 import { cookies } from 'next/headers';
 import { loginRequest } from '@/lib/auth/api';
+import { redirect } from 'next/navigation';
 
 export type LoginState = {
   status: boolean;
@@ -65,13 +66,6 @@ export async function loginAction(
       path: '/',
       maxAge: 60 * 60 * 24 * 7, // 7d
     });
-
-    return {
-      status: true,
-      fetchErrorText: '',
-      isError: { email: false, password: false },
-      errors: {},
-    };
   } catch (e) {
     return {
       status: false,
@@ -80,4 +74,12 @@ export async function loginAction(
       errors,
     };
   }
+  redirect('/');
+
+  return {
+    status: true,
+    fetchErrorText: '',
+    isError: { email: false, password: false },
+    errors: {},
+  };
 }
