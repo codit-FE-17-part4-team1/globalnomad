@@ -18,6 +18,7 @@ type FormInputProps = {
   labelText: string;
   placeholder?: string;
   value: string;
+  disabled: boolean;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   passwordValue?: string;
 
@@ -36,6 +37,7 @@ export default function FormInput({
   labelText,
   placeholder,
   value,
+  disabled,
   onChange,
   passwordValue,
   wrapperClassName,
@@ -92,6 +94,7 @@ export default function FormInput({
           type={changeType}
           placeholder={placeholder}
           value={value}
+          disabled={disabled}
           onChange={onChange}
           onBlur={handleBlur}
           maxLength={getMaxLength(type)}
