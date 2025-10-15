@@ -25,15 +25,13 @@ export default function ReservationStatusPage() {
       />
       {/* 공통 컴포넌트 적용 - title 유선님 작업하신 거 조립 완료 */}
       <Header title="예약 현황" />
-      {/* 카테고리 필터 공통 컴포넌트 적용 필요 */}
+      {/* 카테고리 필터 공통 컴포넌트 적용 필요 - 따로 생성해서 조립 완료! */}
       <ExperienceSelect
         experiences={experiences}
         selectedExperience={selectedExperience}
         onSelectExperience={setSelectedExperience}
       />
-      {/* <div>
-        <input placeholder="카테고리 선택" className="border" />
-      </div> */}
+      {/* 여기서 조립해야 할 듯? - 체험이 없을 경우를 조건부로! */}
       <div className="h-[560px] md:h-[620px] lg:h-[680px]">
         <ReservationCalendar />
       </div>

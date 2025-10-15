@@ -5,12 +5,31 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 import { Calendar, Views } from 'react-big-calendar';
 import { useMemo, useState } from 'react';
-import { localizer } from '@/lib/calendarLocalizer';
+import { localizer } from '@/types/calendarLocalizer';
 import type { CalEvent, ReservationStatus } from '@/types/calendar';
 import { mockCalEvents } from '@/app/Profile/ReservationStatus/mock/CalendarMockdata';
 import PendingModal from '@/components/Modal/ReservationModal/PendingModal';
 import ConfirmedModal from '@/components/Modal/ReservationModal/ConfirmedModal';
 import CanceledModal from '@/components/Modal/ReservationModal/CanceledModal';
+
+// 날짜를 'YYYY. MM. DD' 형식으로 변환하는 함수
+function formatDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}년 ${month}월 ${day}일`;
+}
+
+// 시간을 'HH:mm ~ HH:mm' 형식으로 변환하는 함수
+function formatTimeRange(start: Date, end: Date): string {
+  const startTime = `${String(start.getHours()).padStart(2, '0')}:${String(
+    start.getMinutes()
+  ).padStart(2, '0')}`;
+  const endTime = `${String(end.getHours()).padStart(2, '0')}:${String(
+    end.getMinutes()
+  ).padStart(2, '0')}`;
+  return `${startTime} ~ ${endTime}`;
+}
 
 type ToolbarProps = {
   date: Date;
@@ -142,8 +161,10 @@ export default function ReservationCalendar() {
               isOpen={openModal}
               onClose={handleCloseModal}
               status={selected.status}
-              // date={formatDate(selected.start)}
-              // time={formatTimeRange(selected.start, selected.end)}
+              date={formatDate(selected.start)}
+              time={
+                selected.time || formatTimeRange(selected.start, selected.end)
+              }
               reservations={reservationsForDate}
               onApprove={handleApprove}
               onReject={handleReject}
@@ -155,8 +176,10 @@ export default function ReservationCalendar() {
               isOpen={openModal}
               onClose={handleCloseModal}
               status={selected.status}
-              // date={formatDate(selected.start)}
-              // time={formatTimeRange(selected.start, selected.end)}
+              date={formatDate(selected.start)}
+              time={
+                selected.time || formatTimeRange(selected.start, selected.end)
+              }
               reservations={reservationsForDate}
             />
           )}
@@ -166,6 +189,10 @@ export default function ReservationCalendar() {
               isOpen={openModal}
               onClose={handleCloseModal}
               status={selected.status}
+              date={formatDate(selected.start)}
+              time={
+                selected.time || formatTimeRange(selected.start, selected.end)
+              }
               reservations={reservationsForDate}
             />
           )}
