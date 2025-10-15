@@ -11,7 +11,10 @@ import type { CalEvent, ReservationStatus } from '@/types/calendar';
 import PendingModal from '@/components/Modal/ReservationModal/PendingModal';
 import ConfirmedModal from '@/components/Modal/ReservationModal/ConfirmedModal';
 import CanceledModal from '@/components/Modal/ReservationModal/CanceledModal';
-import type { ReservationDashboard } from '@/types/api/myactivities';
+import type {
+  ReservationDashboard,
+  ReservationsTime,
+} from '@/types/api/myactivities';
 
 // 날짜를 'YYYY. MM. DD' 형식으로 변환하는 함수
 function formatDate(date: Date): string {
@@ -94,7 +97,7 @@ export default function ReservationCalendar({
     }[]
   >([]);
 
-  // API 응답(dashboardData)을 캘린더가 이해할 수 있는 CalEvent[] 형태로 변환합니다.
+  // API 응답(dashboardData)을 캘린더가 이해할 수 있는 CalEvent[] 형태로 변환
   const calendarEvents = useMemo<CalEvent[]>(() => {
     if (!dashboardData) return [];
     return dashboardData.flatMap((item) => {
@@ -129,29 +132,61 @@ export default function ReservationCalendar({
     });
   }, [dashboardData]);
 
+  // [개발용 임시 데이터]
+  const mockReservationsByDate: ReservationsTime = {
+    cursorId: 0,
+    totalCount: 2,
+    reservations: [
+      {
+        id: 1,
+        nickname: '짱구',
+        userId: 1,
+        teamId: '17-1',
+        activityId: 1,
+        scheduleId: 1,
+        status: 'pending',
+        reviewSubmitted: false,
+        totalPrice: 10000,
+        headCount: 2,
+        date: '2025-10-10',
+        startTime: '10:00',
+        endTime: '12:00',
+        createdAt: '',
+        updatedAt: '',
+      },
+      {
+        id: 2,
+        nickname: '짱아',
+        userId: 2,
+        teamId: '17-1',
+        activityId: 1,
+        scheduleId: 1,
+        status: 'confirmed',
+        reviewSubmitted: false,
+        totalPrice: 10000,
+        headCount: 1,
+        date: '2025-10-10',
+        startTime: '10:00',
+        endTime: '12:00',
+        createdAt: '',
+        updatedAt: '',
+      },
+    ],
+  };
+
   const handleEventClick = async (ev: CalEvent) => {
     setSelected(ev);
-    try {
-      // 클릭된 날짜의 상세 예약 목록을 API로 조회합니다.
-      const data = await getReservationsByDateAction({
-        activityId,
-        date: toYYYYMMDD(ev.start),
-      });
 
-      // API 응답을 모달이 필요로 하는 형태로 가공합니다.
-      const formattedReservations = data.reservations.map((r) => ({
-        nickname: r.nickname,
-        people: r.headCount,
-        status: r.status === 'declined' ? 'canceled' : r.status, // API의 'declined'를 UI의 'canceled'로 변환
-        time: `${r.startTime}~${r.endTime}`,
-      }));
-
-      setReservationsForDate(formattedReservations);
-      setOpenModal(true);
-    } catch (error) {
-      console.error(error);
-      // TODO: 사용자에게 에러 알림
-    }
+    // [개발용 임시 로직] API 호출 대신 목업 데이터를 사용합니다.
+    const data = mockReservationsByDate;
+    const formattedReservations = data.reservations.map((r) => ({
+      nickname: r.nickname,
+      people: r.headCount,
+      status: r.status === 'declined' ? 'canceled' : r.status,
+      time: `${r.startTime}~${r.endTime}`,
+    }));
+    setReservationsForDate(formattedReservations);
+    setOpenModal(true);
   };
 
   const handleCloseModal = () => {
@@ -184,7 +219,7 @@ export default function ReservationCalendar({
         views={[Views.MONTH]}
         defaultView={Views.MONTH}
         events={calendarEvents}
-        defaultDate={new Date(2025, 9, 1)} // TODO: 현재 날짜 또는 데이터에 기반한 날짜로 변경
+        defaultDate={new Date(2025, 9, 15)}
         startAccessor="start"
         endAccessor="end"
         formats={formats}

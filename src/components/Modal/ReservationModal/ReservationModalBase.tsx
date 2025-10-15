@@ -57,7 +57,7 @@ export default function ReservationModalBase({
       isOpen={isOpen}
       onClose={onClose}
       title="예약 정보"
-      className="[w-380px] bg-white"
+      className="lg:w-[430px] md:w-[430px] xs:w-[375px] bg-white"
     >
       <div className="p-6">
         <Image
