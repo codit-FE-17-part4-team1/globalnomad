@@ -2,8 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import type { TimeOption } from '@/app/Profile/ReservationStatus/_components/TimeDropdown';
 import BaseModal from '@/components/Modal/BaseModal';
 import type { ReservationStatus } from '@/types/calendar';
+import Button from '@/components/Button/Button';
+import Chips from '@/components/chips/Chips';
 import TimeDropdown from '@/app/Profile/ReservationStatus/_components/TimeDropdown';
 
 interface ReservationModalBaseProps {
@@ -16,11 +19,11 @@ interface ReservationModalBaseProps {
     nickname: string;
     people: number;
     status: ReservationStatus;
+    time: string;
+    id: number; // reservationId
   }[];
-  renderActionButtons?: (item: {
-    nickname: string;
-    people: number;
-  }) => React.ReactNode;
+  onApprove?: (reservationId: number) => void;
+  onReject?: (reservationId: number) => void;
 }
 
 export default function ReservationModalBase({
@@ -30,25 +33,48 @@ export default function ReservationModalBase({
   date,
   time,
   reservations,
-  renderActionButtons,
+  onApprove,
+  onReject,
 }: ReservationModalBaseProps) {
   const [activeTab, setActiveTab] = useState<ReservationStatus>(status);
+  const [selectedTime, setSelectedTime] = useState<string>('all');
 
-  // 모달이 열릴 때마다 바꿔줘야 함
+  // 모달이 열릴 때마다 탭과 시간 상태를 초기화합니다.
   useEffect(() => {
     if (isOpen) {
       setActiveTab(status);
+      // 현재 탭의 첫 번째 예약 시간을 찾아 기본 선택값으로 설정합니다.
+      const initialReservations = reservations.filter(
+        (item) => item.status === status
+      );
+      const firstTime = initialReservations[0]?.time;
+      setSelectedTime(firstTime || 'all');
     }
-  }, [isOpen, status]);
+  }, [isOpen, status, reservations]);
 
-  const tabs = [
+  // 현재 활성화된 탭(신청/승인/거절)에 해당하는 예약 목록
+  const reservationsByStatus = reservations.filter(
+    (item) => item.status === activeTab
+  );
+
+  // 시간 선택 드롭다운에 표시할 옵션 목록 생성
+  const timeOptions: TimeOption[] = [
+    { value: 'all', label: '시간 전체' },
+    // 중복된 시간을 제거하고 드롭다운 옵션 형태로 변환
+    ...Array.from(new Set(reservationsByStatus.map((r) => r.time))).map(
+      (t) => ({ value: t, label: t })
+    ),
+  ];
+
+  const tabs: { key: ReservationStatus; label: string }[] = [
     { key: 'pending', label: '신청' },
     { key: 'confirmed', label: '승인' },
     { key: 'canceled', label: '거절' },
   ];
 
-  const filteredReservations = reservations.filter(
-    (item) => item.status === activeTab
+  // 선택된 탭과 시간에 따라 최종적으로 보여줄 예약 목록 필터링
+  const filteredReservations = reservationsByStatus.filter((item) =>
+    selectedTime === 'all' ? true : item.time === selectedTime
   );
 
   return (
@@ -56,7 +82,7 @@ export default function ReservationModalBase({
       isOpen={isOpen}
       onClose={onClose}
       title="예약 정보"
-      className="[w-380px] bg-white"
+      className="lg:w-[430px] md:w-[430px] xs:w-[375px] bg-white"
     >
       <div className="p-6">
         <Image
@@ -73,7 +99,15 @@ export default function ReservationModalBase({
           {tabs.map((tab) => (
             <button
               key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => {
+                const newTab = tab.key;
+                setActiveTab(newTab);
+                // 새로 선택된 탭의 첫 번째 예약 시간을 찾아 기본 선택값으로 설정합니다.
+                const reservationsInNewTab = reservations.filter(
+                  (item) => item.status === newTab
+                );
+                setSelectedTime(reservationsInNewTab[0]?.time || 'all');
+              }}
               className={`pb-2 pr-4 flex justify-evenly font-semibold ${
                 activeTab === tab.key
                   ? 'text-[var(--color-green-dark)] border-b-3 border-[var(--color-green-dark)]'
@@ -91,15 +125,16 @@ export default function ReservationModalBase({
           <p className="text-lg font-semibold mb-2">예약 날짜</p>
           <p className="mb-1">{date}</p>
           {/* 시간 - button & dropdown 으로 구현 필요할 듯 */}
-          <TimeDropdown
-            className="mt-2"
-            value={time}
-            options={[]}
-            onChange={() => {}}
-          />
-          {/* <div className="mt-2 border border-[var(--color-gray-500)] px-4 py-2 rounded-md">
-            {time}
-          </div> */}
+          {/* 시간 옵션이 '전체' 외에 더 있을 때만 드롭다운 표시 */}
+          {timeOptions.length > 1 && (
+            <TimeDropdown
+              className="mt-2"
+              value={selectedTime}
+              options={timeOptions}
+              onChange={setSelectedTime}
+              placeholder="예약 시간"
+            />
+          )}
         </div>
 
         {/* 예약 내역 */}
@@ -124,7 +159,32 @@ export default function ReservationModalBase({
                   </span>
                 </p>
               </div>
-              {renderActionButtons && renderActionButtons(item)}
+              {activeTab === 'pending' && onApprove && onReject && (
+                <div className="flex space-x-2">
+                  <Button
+                    className="bg-[var(--color-green-dark)] p-2 text-white text-sm"
+                    onClick={() => onApprove(item.id)}
+                  >
+                    승인하기
+                  </Button>
+                  <Button
+                    className="p-2 text-black border-[var(--color-gray-400)] text-sm "
+                    onClick={() => onReject(item.id)}
+                  >
+                    거절하기
+                  </Button>
+                </div>
+              )}
+              {activeTab === 'confirmed' && (
+                <Chips color="orange" variant="round">
+                  예약 승인
+                </Chips>
+              )}
+              {activeTab === 'canceled' && (
+                <Chips color="red" variant="round">
+                  예약 거절
+                </Chips>
+              )}
             </div>
           ))}
         </div>

@@ -1,27 +1,28 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
+import type { Activity } from '@/types/api/myactivities';
 
 // 이건 유저가 선택을 해야 하는 컴포넌트라서 prop으로 타이틀만 받으면 안될 듯, prop으로 다 받아야 선택이 가능함 (선택된 항목, 여러 항목 등?)
 interface ExperienceSelectProps {
-  experiences: string[];
-  selectedExperience: string;
-  onSelectExperience: (experience: string) => void;
+  experiences: Activity[];
+  selectedExperienceId?: number;
+  onSelectExperience: (id: number) => void;
   label?: string;
   //   title: string;
 }
 
 export default function ExperienceSelect({
   experiences,
-  selectedExperience,
+  selectedExperienceId,
   onSelectExperience,
   label = '체험명',
 }: ExperienceSelectProps) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex flex-col w-full mb-6 relative">
+    <div className="flex flex-col w-full mb-6 mt-2 relative">
       {/* 라벨이 보더 사이? 위? 에 위치해야 함 */}
       <label
         className="
@@ -38,7 +39,10 @@ export default function ExperienceSelect({
         onClick={() => setOpen((v) => !v)}
         className="w-full rounded-md border px-4 py-4 text-left border-[var(--color-gray-800)] bg-white text-[var(--color-gray-800)] flex items-center justify-between"
       >
-        <span className="truncate">{selectedExperience || '체험명 선택'}</span>
+        <span className="truncate">
+          {experiences.find((exp) => exp.id === selectedExperienceId)?.title ||
+            '체험명 선택'}
+        </span>
         <Image
           src="/icon/btn/down_arrow.svg"
           alt="펼치기"
@@ -61,22 +65,22 @@ export default function ExperienceSelect({
             </li>
           )}
           {experiences.map((exp) => (
-            <li key={exp}>
+            <li key={exp.id}>
               <button
                 type="button"
                 onClick={() => {
-                  onSelectExperience(exp);
+                  onSelectExperience(exp.id);
                   setOpen(false);
                 }}
                 className={`
                   w-full text-left px-4 py-3 border-b-[var(--color-gray-800)]
                   hover:bg-[var(--color-green-light)] hover:text-black
-                  ${exp === selectedExperience ? 'bg-[var(--color-gray-200)]' : ''}
+                  ${exp.id === selectedExperienceId ? 'bg-[var(--color-gray-200)]' : ''}
                 `}
                 role="option"
-                aria-selected={exp === selectedExperience} // 접근성을 위함 (자동 생성되어 확인해봄)
+                aria-selected={exp.id === selectedExperienceId} // 접근성을 위함 (자동 생성되어 확인해봄)
               >
-                {exp}
+                {exp.title}
               </button>
             </li>
           ))}

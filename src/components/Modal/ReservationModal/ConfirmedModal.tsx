@@ -1,7 +1,6 @@
 'use client';
 
 import ReservationModalBase from './ReservationModalBase';
-import Chips from '@/components/chips/Chips';
 import type { ReservationStatus } from '@/types/calendar';
 
 interface ConfirmModalProps {
@@ -13,8 +12,12 @@ interface ConfirmModalProps {
     nickname: string;
     people: number;
     status: ReservationStatus;
+    time: string;
+    id: number;
   }[];
   status: ReservationStatus;
+  onApprove: (reservationId: number) => void;
+  onReject: (reservationId: number) => void;
 }
 
 export default function ConfirmModal({
@@ -24,6 +27,8 @@ export default function ConfirmModal({
   time,
   reservations,
   status,
+  onApprove,
+  onReject,
 }: ConfirmModalProps) {
   return (
     <ReservationModalBase
@@ -33,11 +38,8 @@ export default function ConfirmModal({
       date={date}
       time={time}
       reservations={reservations}
-      renderActionButtons={() => (
-        <Chips color="orange" variant="round">
-          예약 승인
-        </Chips>
-      )}
+      onApprove={onApprove}
+      onReject={onReject}
     />
     // chips가 어떻게 들어가야 하는건가? -> prop으로 내려줬는데 확인 필요할 듯 -> 확인 완료!
   );
