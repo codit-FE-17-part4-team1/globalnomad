@@ -54,7 +54,6 @@ export default function AlertModal({
             key={item.id}
             className="bg-white rounded-sm shadow-sm p-4 relative"
           >
-            {/* <Image src="/icon/btn/X_lg.svg" alt="닫기" width={20} height={20} /> */}
             {/* 2. 점 표시 (승인/거절 색상 구분) */}
             <div
               className={`absolute top-4 left-4 w-2 h-2 rounded-full ${

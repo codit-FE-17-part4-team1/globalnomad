@@ -1,11 +1,9 @@
+// 전체적으로 api 연동 시 코드 수정 필요!
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import {
-  getMyActivitiesAction,
-  getReservationDashboardAction,
-} from '@/actions/myactivities.actions';
 import ReservationCalendar from './_components/ReservationCalendar';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
 import AlertModal from '@/components/Modal/AlertModal';
@@ -13,7 +11,7 @@ import { mockAlerts } from '@/app/Profile/ReservationStatus/mock/AlertMockdata';
 import ExperienceSelect from '@/app/Profile/ReservationStatus/_components/ExperienceSelect';
 import type { Activity, ReservationDashboard } from '@/types/api/myactivities';
 
-// [개발용 임시 데이터]
+// 임시 mock 데이터
 const mockActivities: Activity[] = [
   {
     id: 1,
@@ -73,52 +71,9 @@ export default function ReservationStatusPage() {
   const [dashboardData, setDashboardData] =
     useState<ReservationDashboard>(mockDashboardData);
 
-  // // [개발용 임시 주석] API 연동을 잠시 비활성화합니다.
-  // // 내 체험 목록(myActivities) 불러오기
-  // useEffect(() => {
-  //   const fetchMyActivities = async () => {
-  //     try {
-  //       const data = await getMyActivitiesAction({});
-  //       const activities = data.activities || [];
-  //       setMyActivities(activities);
-  //       if (activities.length > 0) {
-  //         setSelectedActivityId(activities[0].id);
-  //       }
-  //     } catch (error) {
-  //       console.error('내 체험 목록을 불러오는 데 실패했습니다:', error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-  //   fetchMyActivities();
-  // }, []);
-
-  // // [개발용 임시 주석] API 연동을 잠시 비활성화합니다.
-  // // 체험 또는 날짜가 변경될 때마다 월별 예약 현황 데이터 보여주기
-  // useEffect(() => {
-  //   if (!selectedActivityId) return;
-
-  //   const fetchDashboard = async () => {
-  //     try {
-  //       // TODO: year, month는 현재 캘린더가 보고 있는 연/월을 받아와야 함
-  //       const data = await getReservationDashboardAction({
-  //         teamId: '17-1',
-  //         activityId: selectedActivityId,
-  //         year: '2025',
-  //         month: '10',
-  //       });
-  //       setDashboardData(data);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-
-  //   fetchDashboard();
-  // }, [selectedActivityId]);
-
   return (
     <div className="mx-auto max-w-screen-xl ">
-      {/* 임시 확인, 나중에 알림 이모티콘? 에 연결할 예정 */}
+      {/* 임시 확인, 나중에 알림 이모티콘? 에 연결할 예정 - 알림이 없을 경우도 조건부로? */}
       <AlertModal
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}

@@ -178,7 +178,7 @@ export default function ReservationCalendar({
   const handleEventClick = async (ev: CalEvent) => {
     setSelected(ev);
 
-    // [개발용 임시 로직] API 호출 대신 목업 데이터를 사용합니다.
+    // 임시로 mock 데이터 사용
     const data = mockReservationsByDate;
     const formattedReservations = data.reservations.map((r) => ({
       nickname: r.nickname,
@@ -257,7 +257,7 @@ export default function ReservationCalendar({
               onClose={handleCloseModal}
               status={selected.status}
               date={formatDate(selected.start)}
-              time="" // time prop은 이제 ReservationModalBase에서 관리됩니다.
+              time="" // time prop은 ReservationModalBase에서 관리
               reservations={reservationsForDate}
               onApprove={handleApprove}
               onReject={handleReject}
