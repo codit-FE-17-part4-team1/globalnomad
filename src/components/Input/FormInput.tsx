@@ -18,7 +18,7 @@ type FormInputProps = {
   labelText: string;
   placeholder?: string;
   value: string;
-  disabled: boolean;
+  disabled?: boolean;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   passwordValue?: string;
 
