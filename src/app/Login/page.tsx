@@ -1,29 +1,38 @@
 'use client';
 
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import Image from 'next/image';
+import Link from 'next/link';
 import FormInput from '@/components/Input/FormInput';
 import MyButton from '@/components/Button/Button';
-import Link from 'next/link';
+import { loginAction, type LoginState } from '@/actions/login.action';
+
+const initialState: LoginState = {
+  status: false,
+  fetchErrorText: '',
+  isError: { email: false, password: false },
+  errors: {},
+};
+
+function SubmitButton({ disabled }: { disabled: boolean }) {
+  const { pending } = useFormStatus();
+  return (
+    <MyButton className="w-full py-3 mt-4" disabled={disabled || pending}>
+      {pending ? '로그인 중...' : '로그인 하기'}
+    </MyButton>
+  );
+}
 
 export default function LoginPage() {
-  const [form, setForm] = useState({
-    email: '',
-    password: '',
-  });
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [state, formAction] = useActionState(loginAction, initialState);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('로그인 정보:', form);
-    //로그인 API 연동
-  };
+  const disabled = !form.email || !form.password;
 
   return (
     <div className="flex min-h-screen items-center justify-center">
@@ -41,7 +50,7 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <form onSubmit={handleSubmit} autoComplete="off">
+        <form action={formAction} autoComplete="off">
           <FormInput
             id="email"
             name="email"
@@ -66,14 +75,12 @@ export default function LoginPage() {
             labelUnstyled
           />
 
-          <MyButton
-            className="w-full py-3 mt-4"
-            disabled={!form.email || !form.password}
-            onClick={() => {}}
-          >
-            로그인 하기
-          </MyButton>
+          <SubmitButton disabled={disabled} />
         </form>
+
+        {state.fetchErrorText && (
+          <p className="mt-3 text-sm text-red-600">{state.fetchErrorText}</p>
+        )}
 
         <p className="mt-6 text-center text-sm text-gray-600">
           아직 계정이 없으신가요?{' '}
