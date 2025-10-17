@@ -6,8 +6,6 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import ReservationCalendar from './_components/ReservationCalendar';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
-import AlertModal from '@/components/Modal/AlertModal';
-import { mockAlerts } from '@/app/Profile/ReservationStatus/mock/AlertMockdata';
 import ExperienceSelect from '@/app/Profile/ReservationStatus/_components/ExperienceSelect';
 import type { Activity, ReservationDashboard } from '@/types/api/myactivities';
 
@@ -58,7 +56,6 @@ const mockDashboardData: ReservationDashboard = [
 ];
 
 export default function ReservationStatusPage() {
-  const [isAlertOpen, setIsAlertOpen] = useState(true); // 테스트를 위해 true로 설정 (임시) 추후엔 흠 ..
   // const [myActivities, setMyActivities] = useState<Activity[]>([]);
   // const [selectedActivityId, setSelectedActivityId] = useState<number>();
   // const [isLoading, setIsLoading] = useState(true);
@@ -73,12 +70,13 @@ export default function ReservationStatusPage() {
 
   return (
     <div className="mx-auto max-w-screen-xl ">
-      {/* 임시 확인, 나중에 알림 이모티콘? 에 연결할 예정 - 알림이 없을 경우도 조건부로? */}
-      <AlertModal
+      {/* 임시 확인, 나중에 알림 이모티콘? 에 연결할 예정 - 알림이 없을 경우도 조건부로? --> 근데 이 페이지에서 작업하는게 아닌 것 같음(공통이라서) */}
+      {/* <AlertModal
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}
         alerts={mockAlerts}
-      />
+      /> */}
+
       {/* 공통 컴포넌트 적용 - title 유선님 작업하신 거 조립 완료 */}
       <Header title="예약 현황" />
       {/* 카테고리 필터 공통 컴포넌트 적용 필요 - 따로 생성해서 조립 완료! */}

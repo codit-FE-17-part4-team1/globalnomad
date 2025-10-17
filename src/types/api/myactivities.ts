@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 // 내 체험리스트 조회
-// 체험리스트 조회의 activities가 객체임
 export const activitySchema = z.object({
   id: z.number(),
   userId: z.number(),
@@ -127,5 +126,4 @@ export type ReservationStatus = z.infer<typeof reservationStatus>;
 export type UpdateReservationStatus = z.infer<
   typeof updateReservationStatusSchema
 >;
-
 export type DeleteActivityRes = z.infer<typeof deleteActivityResZ>;

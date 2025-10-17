@@ -1,3 +1,6 @@
+// 목표: 여긴 UI만 남겨두고 api가 들어가는 기능은 따로 구분하기 !
+// 그럼 뭐를 빼야하는지 구분을 해봐야겠다.
+
 'use client';
 
 import '@/styles/global.css';
@@ -5,7 +8,6 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 import { Calendar, Views } from 'react-big-calendar';
 import { useMemo, useState } from 'react';
-import { getReservationsByDateAction } from '@/actions/myactivities.actions';
 import { localizer } from '@/types/calendarLocalizer';
 import type { CalEvent, ReservationStatus } from '@/types/calendar';
 import PendingModal from '@/components/Modal/ReservationModal/PendingModal';
@@ -15,34 +17,9 @@ import type {
   ReservationDashboard,
   ReservationsTime,
 } from '@/types/api/myactivities';
+import { formatDate } from '@/utils/timechanges';
 
-// 날짜를 'YYYY. MM. DD' 형식으로 변환하는 함수
-function formatDate(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}년 ${month}월 ${day}일`;
-}
-
-// 날짜를 'YYYY-MM-DD' 형식으로 변환하는 함수
-function toYYYYMMDD(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-// 시간을 'HH:mm ~ HH:mm' 형식으로 변환하는 함수
-function formatTimeRange(start: Date, end: Date): string {
-  const startTime = `${String(start.getHours()).padStart(2, '0')}:${String(
-    start.getMinutes()
-  ).padStart(2, '0')}`;
-  const endTime = `${String(end.getHours()).padStart(2, '0')}:${String(
-    end.getMinutes()
-  ).padStart(2, '0')}`;
-  return `${startTime} ~ ${endTime}`;
-}
-
+// 이것도 따로 빼도 될까나?
 type ToolbarProps = {
   date: Date;
   localizer: any;
@@ -78,6 +55,7 @@ function EventBar() {
   return <div className="h-2 w-full rounded-md" />;
 }
 
+// 해당 상태는 따로 api랑 같이 빼야 할 듯
 export default function ReservationCalendar({
   dashboardData,
   activityId,
@@ -87,7 +65,7 @@ export default function ReservationCalendar({
 }) {
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState<CalEvent | null>(null);
-  // 모달에 전달할 데이터의 타입을 명확하게 지정합니다.  --> 버그가 나서 확인 중인데 왜 이렇게 해야함? (공부중)
+  // 모달에 전달할 데이터의 타입을 지정  --> 버그가 나서 확인 중인데 왜 이렇게 해야함? (공부중)
   const [reservationsForDate, setReservationsForDate] = useState<
     {
       nickname: string;
@@ -133,7 +111,7 @@ export default function ReservationCalendar({
     });
   }, [dashboardData]);
 
-  // [개발용 임시 데이터]
+  // 임시 mock 데이터
   const mockReservationsByDate: ReservationsTime = {
     cursorId: 0,
     totalCount: 2,
@@ -175,6 +153,7 @@ export default function ReservationCalendar({
     ],
   };
 
+  //return 전까지는 다 빼도 되지 않을까 싶음
   const handleEventClick = async (ev: CalEvent) => {
     setSelected(ev);
 

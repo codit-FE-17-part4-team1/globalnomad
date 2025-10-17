@@ -1,4 +1,3 @@
-// src/lib/api/myactivities/api.ts
 import { BASE_API_URL } from '@/types/constants';
 import {
   myactivitiesSchema,
@@ -50,9 +49,6 @@ export async function getMyActivities(opts: {
   const data = await res.json();
   return myactivitiesSchema.parse(data);
 }
-
-//   const data = await res.json();
-//   return myactivitiesSchema.parse(data);
 
 /**
  * 내 체험 월별 예약 현황 조회
@@ -109,8 +105,22 @@ export async function getReservationsByDate(opts: {
   }
 
   const data = await res.json();
-  return reservationsTimeSchema.parse(data);
+  return reservationsTimeSchema.parse(data); // 이건 날짜별이 아니라 시간대별인데다, status도 신청,승인,거절을 모두 받아서 넘겨줘야 함
 }
+
+/**
+ * 내 체험 예약 시간대별 예약 조회
+ */
+// export async function getReservationsByTime(opts: {
+//   activityId: number;
+//   scheduleId: number;
+//   status: string;
+//   accessToken?: string;
+// }): Promise<ReservationsTime> {
+//   const { activityId, scheduleId, status, accessToken } = opts;
+//   assertToken(accessToken);
+
+// }
 
 /**
  * 내 체험 예약 상태(승인,거절) 업데이트
