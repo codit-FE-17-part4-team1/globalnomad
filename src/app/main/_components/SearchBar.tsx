@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 import MyButton from '@/components/Button/Button';
 
 const SearchBar: React.FC = () => {
+  const router = useRouter();
   const [keyword, setkeyword] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const router = useRouter();
 
   const handleSearch = () => {
     if (!keyword.trim()) {

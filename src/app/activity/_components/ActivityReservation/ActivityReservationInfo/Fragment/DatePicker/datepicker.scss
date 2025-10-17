@@ -1,0 +1,146 @@
+// Mixin 정의,  기본 라이브러리에 있는 배경과 선을 모두 지움
+@mixin bgWhiteWithNoneBorder {
+  background-color: white;
+  border: none;
+  border-radius: 0;
+}
+
+// 적용
+div.react-datepicker {
+  @include bgWhiteWithNoneBorder();
+
+  .react-datepicker__header {
+    @include bgWhiteWithNoneBorder();
+    padding: 0;
+  }
+
+  /* 모든 날짜 기본 */
+  .base-date {
+    color: #4b4b4b;
+    background: white;
+  }
+
+  .sunday-date {
+    color: #ff472e !important; // 일요일은 빨간색
+  }
+
+  /* 오늘 이전 날짜 */
+  .disabled-date {
+    color: #ccc !important;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* 오늘 날짜 */
+  .today-date {
+    color: #00ac07 !important;
+    font-weight: 700;
+    background: white;
+    border-radius: 0.3rem;
+    position: relative;
+
+    &::after {
+      content: '오늘';
+      position: absolute;
+      bottom: 0.3rem; // 날짜 아래쪽에 표시
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: #00ac07;
+      white-space: nowrap; // 줄바꿈 방지
+    }
+  }
+
+  /* 예약 가능한 날짜 */
+  .available-date {
+    color: #333333 !important;
+    background: #ced8d5;
+    border-radius: 0.3rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* 예약 선택한 날짜 */
+  .react-datepicker__day--selected {
+    color: #fff !important;
+    background-color: #0b3b2d !important;
+    border-radius: 0.3rem;
+  }
+
+  /* 오늘 날짜이면서 예약 선택한 경우 */
+  .today-date.react-datepicker__day--selected {
+    border: none !important;
+    color: #fff !important;
+    background-color: #0b3b2d !important;
+    border-radius: 0.3rem;
+
+    &::after {
+      color: #fff; // 오늘 텍스트 색상 변경
+    }
+  }
+
+  /* 달력 전체 폭: 7열 * 35px + gap */
+  .react-datepicker {
+    width: calc(7 * 35px); // 날짜 사이 gap 4px 가정
+  }
+
+  /* 달력 월 컨테이너: 7열 그리드로 설정 */
+  .react-datepicker__month {
+    display: block;
+    grid-template-columns: repeat(7, 35px); // 날짜/요일 7열 고정
+    gap: 0;
+    justify-content: center;
+    margin: 0;
+    text-align: center;
+  }
+
+  /* 요일 헤더 컨테이너 */
+  .react-datepicker__day-names {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* 요일 */
+  .react-datepicker__day-name {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 100%;
+    color: #4b4b4b;
+    text-align: center;
+
+    /* 개별 요일 셀 크기 */
+    width: 35px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 주간 */
+  .react-datepicker__week {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin: 0;
+  }
+
+  /* 개별 날짜 셀 크기 */
+  .react-datepicker__day {
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 8px;
+    color: #333333;
+    text-align: center;
+
+    width: 35px;
+    height: 37px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 10px;
+  }
+}

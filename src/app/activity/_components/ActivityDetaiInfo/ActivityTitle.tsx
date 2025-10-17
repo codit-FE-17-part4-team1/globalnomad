@@ -2,9 +2,11 @@
 
 import React from 'react';
 import Image from 'next/image';
+import MoreDropdown from './MoreDropdown';
 import type { ActivityDetailInfo } from '@/types/activity';
 
 export interface ActivityTitleProps {
+  id: ActivityDetailInfo['id'];
   category: ActivityDetailInfo['category'];
   title: ActivityDetailInfo['title'];
   rating: ActivityDetailInfo['rating'];
@@ -13,6 +15,7 @@ export interface ActivityTitleProps {
 }
 
 const ActivityTitle: React.FC<ActivityTitleProps> = ({
+  id,
   category,
   title,
   rating,
@@ -30,17 +33,7 @@ const ActivityTitle: React.FC<ActivityTitleProps> = ({
           {title}
         </h1>
         {/* 더보기 버튼 */}
-        <button
-          className="flex items-center justify-center w-10 h-10 hover:bg-gray-100 transition"
-          aria-label="더보기 메뉴"
-        >
-          <Image
-            src="/icon/btn/meatball.svg"
-            alt="더보기"
-            width={40}
-            height={40}
-          />
-        </button>
+        <MoreDropdown activityId={id} />
       </div>
 
       {/* 평점 + 주소 */}
