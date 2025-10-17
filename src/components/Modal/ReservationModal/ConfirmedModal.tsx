@@ -1,9 +1,9 @@
 'use client';
 
 import ReservationModalBase from './ReservationModalBase';
-import type { CalEvent, ReservationStatus } from '@/types/calendar';
+import type { ReservationStatus } from '@/types/calendar';
 
-interface PendingModalProps {
+interface ConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
   date: string;
@@ -15,21 +15,21 @@ interface PendingModalProps {
     time: string;
     id: number;
   }[];
+  status: ReservationStatus;
   onApprove: (reservationId: number) => void;
   onReject: (reservationId: number) => void;
-  status: ReservationStatus;
 }
 
-export default function PendingModal({
+export default function ConfirmModal({
   isOpen,
   onClose,
   date,
   time,
   reservations,
+  status,
   onApprove,
   onReject,
-  status,
-}: PendingModalProps) {
+}: ConfirmModalProps) {
   return (
     <ReservationModalBase
       isOpen={isOpen}
@@ -41,5 +41,6 @@ export default function PendingModal({
       onApprove={onApprove}
       onReject={onReject}
     />
+    // chips가 어떻게 들어가야 하는건가? -> prop으로 내려줬는데 확인 필요할 듯 -> 확인 완료!
   );
 }

@@ -12,5 +12,5 @@ export function useInputValue<T extends Record<string, string>>(initial: T) {
     }));
   }
 
-  return [input, handleInputChange] as const;
+  return [input, setInput, handleInputChange] as const;
 }

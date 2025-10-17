@@ -1,8 +1,6 @@
 // app/page.tsx
 'use client';
 
-import Header from '@/components/Header/Header';
-import Footer from '@/components/Footer/Footer';
 import MainBanner from './main/_components/MainBanner';
 import SearchBar from './main/_components/SearchBar';
 import PopularExperiences from './main/_components/PopularActivities';
@@ -20,8 +18,6 @@ const SectionContainer: React.FC<{
 const MainPage: React.FC = () => {
   return (
     <>
-      <Header isLoggedIn={false} />
-
       <main className="w-full flex flex-col items-center">
         {/* 배너 + 검색 영역 */}
         <div className="relative w-full">
@@ -41,8 +37,6 @@ const MainPage: React.FC = () => {
           <AllExperiences />
         </SectionContainer>
       </main>
-
-      <Footer />
     </>
   );
 };

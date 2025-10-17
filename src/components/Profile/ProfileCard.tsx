@@ -14,33 +14,29 @@ export default function ProfileCard() {
       label: '내 정보',
       href: '/Profile/MyInfo',
       icon: '/icon/account_checkout.svg',
-      active: false,
     },
     {
       key: 'reservations',
       label: '예약 내역',
       href: '/Profile/ReservationHistory',
       icon: '/icon/check.svg',
-      active: false,
     },
     {
       key: 'manage',
       label: '내 체험 관리',
       href: '/Profile/ExperienceSet',
       icon: '/icon/setting.svg',
-      active: false,
     },
     {
       key: 'status',
       label: '예약 현황',
       href: '/Profile/ReservationStatus',
       icon: '/icon/calendar_check.svg',
-      active: true,
     },
   ];
 
   return (
-    <div className="rounded-2xl border border-[var(--color-gray-200)] lg:w-[370px] shadow h-[430px] bg-white p-6">
+    <div className="hidden md:block w-full rounded-2xl border border-[var(--color-gray-200)] shadow h-[430px] bg-white p-6 lg:w-[370px] md:w-[250px]">
       {/* 프로필 이미지 수정*/}
       <div className="relative mx-auto mb-6 h-28 w-28">
         <Image
@@ -65,14 +61,14 @@ export default function ProfileCard() {
       {/* 메뉴 */}
       <nav className="space-y-3">
         {MENU.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname.startsWith(item.href);
           return (
             <Link
               key={item.key}
               href={item.href}
               className={[
                 'flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors duration-200',
-                item.active
+                isActive
                   ? 'bg-[var(--color-green-light)] text-[var(--color-green-dark)] font-bold'
                   : 'text-[var(--color-gray-400)] font-semibold',
               ].join(' ')}

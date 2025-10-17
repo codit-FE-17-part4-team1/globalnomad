@@ -1,29 +1,25 @@
 // app/layout.tsx
-'use client';
-
 import '../styles/global.css';
 
 import React from 'react';
-import { usePathname } from 'next/navigation';
-import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
+import HeaderGate from '@/components/Header/HeaderGate';
+import HeaderServer from '@/components/Header/HeaderServer';
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  const hiddenRoutes = ['/', '/Login', '/Signup'];
-
-  const showLayout = !hiddenRoutes.includes(pathname);
-
   return (
     <html lang="ko">
       <body className="min-h-screen bg-background text-foreground">
-        {showLayout && <Header isLoggedIn={false} />}
+        <HeaderGate>
+          <HeaderServer />
+        </HeaderGate>
+
         <main className="mx-auto">{children}</main>
-        {showLayout && <Footer />}
+        <Footer />
       </body>
     </html>
   );

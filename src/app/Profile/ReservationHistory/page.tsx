@@ -2,20 +2,40 @@
 import { useState } from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
+import { useMyReservations } from './useMyReservations';
 import { data } from './mockData';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
 import Button from '@/components/Button/Button';
 import CancelModal from '@/app/Profile/ReservationHistory/_components/Modal/CancelModal.tsx';
 import ReviewModal from '@/app/Profile/ReservationHistory/_components/Modal/ReviewModal';
 export default function ReservationHistory() {
+  const { myData, loading } = useMyReservations();
   const BUTTONSTYLE =
     'absolute bottom-6 right-6 rounded-md w-20 h-8 text-md md:h-11 md:w-36 xs:w-[112px] xs:h-10 xs:text-lg';
   const [isRawOpen, setRawOpen] = useState(false);
   const [modal, setModal] = useState('');
+  const [selected, setSelected] = useState('');
+  const selectList = [
+    '예약 신청',
+    '예약 취소',
+    '예약 승인',
+    '예약 거절',
+    '체험 완료',
+  ];
+
+  console.log(myData);
   return (
     <div>
-      <Header title="예약 내역" />
-      {data.reservations.map((list) => {
+      <Header
+        title="예약 내역"
+        type="filter"
+        selected={selected}
+        setSelected={setSelected}
+        selectList={selectList}
+      />
+      {data.map((list) => {
+        console.log('선택된 값', selected);
+        console.log(selected === list.status);
         return (
           <div
             key={list.id}
