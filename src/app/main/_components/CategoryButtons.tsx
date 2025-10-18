@@ -15,7 +15,7 @@ const CategoryButtons: React.FC<CategoryButtonsProps> = ({
   onSelectCategory,
 }) => {
   return (
-    <div className="flex md:flex-nowrap overflow-x-auto scrollbar-hide mb-7">
+    <ul className="flex md:flex-nowrap overflow-x-auto scrollbar-hide mb-7">
       {categories.map((category, idx) => (
         <MyButton
           key={category}
@@ -30,7 +30,7 @@ const CategoryButtons: React.FC<CategoryButtonsProps> = ({
           {category}
         </MyButton>
       ))}
-    </div>
+    </ul>
   );
 };
 

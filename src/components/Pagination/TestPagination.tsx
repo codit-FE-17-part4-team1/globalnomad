@@ -8,8 +8,6 @@ export default function TestPagination() {
 
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-gray-50 gap-6 p-4">
-      <h1 className="text-2xl font-bold text-green-dark">Pagination 테스트</h1>
-
       <Pagination
         totalItems={42} // 총 아이템 수
         currentPage={currentPage}
