@@ -35,6 +35,7 @@ export async function getMyActivities(opts: {
   qs.set('size', String(size));
 
   const url = `${BASE_API_URL}/my-activities?${qs.toString()}`;
+  console.log(url);
   const res = await fetch(url, {
     method: 'GET',
     headers: {
@@ -44,10 +45,12 @@ export async function getMyActivities(opts: {
     cache: 'no-store',
   });
 
+  console.log(res);
+
   if (!res.ok) throw new Error('내 체험 목록을 불러오는 데 실패했습니다.');
 
   const data = await res.json();
-  return myactivitiesSchema.parse(data);
+  return data;
 }
 
 /**
@@ -77,7 +80,7 @@ export async function getReservationDashboard(opts: {
   }
 
   const data = await res.json();
-  return reservationsDashboardListSchema.parse(data);
+  return data;
 }
 
 /**
@@ -105,7 +108,7 @@ export async function getReservationsByDate(opts: {
   }
 
   const data = await res.json();
-  return reservationsTimeSchema.parse(data); // 이건 날짜별이 아니라 시간대별인데다, status도 신청,승인,거절을 모두 받아서 넘겨줘야 함
+  return reservationsTimeSchema.parse(data); // 이건 날짜별이 아니라 시간대별인데다, status도 신청,승인,거절을 모두 받아서 넘겨줘야 함  --> 다시 수정 필요?
 }
 
 /**
@@ -148,8 +151,6 @@ export async function updateReservationStatus(opts: {
   if (!res.ok) {
     throw new Error('예약 상태 업데이트에 실패했습니다.');
   }
-
-  // 204 No Content 응답을 기대하므로, 별도의 body 파싱 없이 종료
 }
 
 /**

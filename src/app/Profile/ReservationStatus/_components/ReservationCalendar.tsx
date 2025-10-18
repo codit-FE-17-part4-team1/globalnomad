@@ -6,8 +6,8 @@
 import '@/styles/global.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-import { Calendar, Views } from 'react-big-calendar';
-import { useMemo, useState } from 'react';
+import { Calendar, Views, SlotInfo } from 'react-big-calendar';
+import { useMemo, useState, useEffect } from 'react';
 import { localizer } from '@/types/calendarLocalizer';
 import type { CalEvent, ReservationStatus } from '@/types/calendar';
 import PendingModal from '@/components/Modal/ReservationModal/PendingModal';
@@ -18,6 +18,7 @@ import type {
   ReservationsTime,
 } from '@/types/api/myactivities';
 import { formatDate } from '@/utils/timechanges';
+import dayjs from 'dayjs';
 
 // 이것도 따로 빼도 될까나?
 type ToolbarProps = {
@@ -55,30 +56,32 @@ function EventBar() {
   return <div className="h-2 w-full rounded-md" />;
 }
 
-// 해당 상태는 따로 api랑 같이 빼야 할 듯
+interface ReservationCalendarProps {
+  dashboardData: ReservationDashboard;
+  activityId: number;
+  onNavigate: (newDate: Date) => void;
+  onSelectDate: (date: string | null) => void;
+  reservationsForDate: ReservationsTime | null;
+  isLoadingReservations: boolean;
+  onApprove: (reservationId: number) => void;
+  onReject: (reservationId: number) => void;
+}
+
 export default function ReservationCalendar({
   dashboardData,
   activityId,
-}: {
-  dashboardData: ReservationDashboard;
-  activityId: number;
-}) {
-  const [openModal, setOpenModal] = useState(false);
+  onNavigate,
+  onSelectDate,
+  reservationsForDate,
+  isLoadingReservations,
+  onApprove,
+  onReject,
+}: ReservationCalendarProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selected, setSelected] = useState<CalEvent | null>(null);
-  // 모달에 전달할 데이터의 타입을 지정  --> 버그가 나서 확인 중인데 왜 이렇게 해야함? (공부중)
-  const [reservationsForDate, setReservationsForDate] = useState<
-    {
-      nickname: string;
-      people: number;
-      status: ReservationStatus;
-      time: string;
-      id: number;
-    }[]
-  >([]);
 
   // API 응답(dashboardData)을 캘린더가 이해할 수 있는 CalEvent[] 형태로 변환
   const calendarEvents = useMemo<CalEvent[]>(() => {
-    if (!dashboardData) return [];
     return dashboardData.flatMap((item) => {
       const date = new Date(item.date);
       const events: CalEvent[] = [];
@@ -111,77 +114,32 @@ export default function ReservationCalendar({
     });
   }, [dashboardData]);
 
-  // 임시 mock 데이터
-  const mockReservationsByDate: ReservationsTime = {
-    cursorId: 0,
-    totalCount: 2,
-    reservations: [
-      {
-        id: 1,
-        nickname: '짱구',
-        userId: 1,
-        teamId: '17-1',
-        activityId: 1,
-        scheduleId: 1,
-        status: 'pending',
-        reviewSubmitted: false,
-        totalPrice: 10000,
-        headCount: 2,
-        date: '2025-10-10',
-        startTime: '10:00',
-        endTime: '12:00',
-        createdAt: '',
-        updatedAt: '',
-      },
-      {
-        id: 2,
-        nickname: '짱아',
-        userId: 2,
-        teamId: '17-1',
-        activityId: 1,
-        scheduleId: 1,
-        status: 'confirmed',
-        reviewSubmitted: false,
-        totalPrice: 10000,
-        headCount: 1,
-        date: '2025-10-10',
-        startTime: '10:00',
-        endTime: '12:00',
-        createdAt: '',
-        updatedAt: '',
-      },
-    ],
-  };
-
-  //return 전까지는 다 빼도 되지 않을까 싶음
-  const handleEventClick = async (ev: CalEvent) => {
-    setSelected(ev);
-
-    // 임시로 mock 데이터 사용
-    const data = mockReservationsByDate;
-    const formattedReservations = data.reservations.map((r) => ({
+  const formattedReservationsForModal = useMemo(() => {
+    if (!reservationsForDate) return [];
+    return reservationsForDate.reservations.map((r) => ({
+      id: r.id,
       nickname: r.nickname,
       people: r.headCount,
       status: r.status === 'declined' ? 'canceled' : r.status,
       time: `${r.startTime}~${r.endTime}`,
-      id: r.id,
     }));
-    setReservationsForDate(formattedReservations);
-    setOpenModal(true);
+  }, [reservationsForDate]);
+
+  const handleEventClick = async (ev: CalEvent) => {
+    setSelected(ev);
+    const dateString = dayjs(ev.start).format('YYYY-MM-DD');
+    onSelectDate(dateString);
+    setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setOpenModal(false);
+    setIsModalOpen(false);
     setSelected(null);
+    onSelectDate(null);
   };
 
-  // API 연동으로 받을 항목! async 어쩌고 ..
-  const handleApprove = (reservationId: number) => {
-    console.log(`예약 ID ${reservationId} 승인`);
-  };
-
-  const handleReject = (reservationId: number) => {
-    console.log(`예약 ID ${reservationId} 거절`);
+  const handleNavigate = (newDate: Date) => {
+    onNavigate(newDate);
   };
 
   const formats = useMemo(
@@ -199,10 +157,11 @@ export default function ReservationCalendar({
         localizer={localizer}
         views={[Views.MONTH]}
         defaultView={Views.MONTH}
+        onNavigate={handleNavigate}
         events={calendarEvents}
-        defaultDate={new Date(2025, 9, 15)}
         startAccessor="start"
         endAccessor="end"
+        selectable
         formats={formats}
         onSelectEvent={handleEventClick}
         components={{
@@ -228,44 +187,42 @@ export default function ReservationCalendar({
       />
 
       {/* 모달 조립해보기 (신청, 승인, 거절) - 전달해야하는 Props와 Type들이 어렵군, 타입때문에 오류가 나는 듯 ㅠ*/}
-      {openModal && selected && (
+      {isModalOpen && selected && (
         <>
           {selected.status === 'pending' && (
             <PendingModal
-              isOpen={openModal}
+              isOpen={isModalOpen}
               onClose={handleCloseModal}
               status={selected.status}
               date={formatDate(selected.start)}
               time="" // time prop은 ReservationModalBase에서 관리
-              reservations={reservationsForDate}
-              onApprove={handleApprove}
-              onReject={handleReject}
+              reservations={formattedReservationsForModal}
+              onApprove={onApprove}
+              onReject={onReject}
             />
           )}
 
           {selected.status === 'confirmed' && (
             <ConfirmedModal
-              isOpen={openModal}
+              isOpen={isModalOpen}
               onClose={handleCloseModal}
               status={selected.status}
               date={formatDate(selected.start)}
               time=""
-              reservations={reservationsForDate}
-              onApprove={handleApprove}
-              onReject={handleReject}
+              reservations={formattedReservationsForModal}
+              onApprove={onApprove}
+              onReject={onReject}
             />
           )}
 
           {selected.status === 'canceled' && (
             <CanceledModal
-              isOpen={openModal}
+              isOpen={isModalOpen}
               onClose={handleCloseModal}
               status={selected.status}
               date={formatDate(selected.start)}
               time=""
-              reservations={reservationsForDate}
-              onApprove={handleApprove}
-              onReject={handleReject}
+              reservations={formattedReservationsForModal}
             />
           )}
         </>

@@ -2,71 +2,51 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import ReservationCalendar from './_components/ReservationCalendar';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
 import ExperienceSelect from '@/app/Profile/ReservationStatus/_components/ExperienceSelect';
-import type { Activity, ReservationDashboard } from '@/types/api/myactivities';
-
-// 임시 mock 데이터
-const mockActivities: Activity[] = [
-  {
-    id: 1,
-    title: '피오르 체험',
-    userId: 1,
-    description: '',
-    category: '',
-    price: 0,
-    address: '',
-    bannerImageUrl: '',
-    rating: 0,
-    reviewCount: 0,
-    createdAt: '',
-    updatedAt: '',
-  },
-  {
-    id: 2,
-    title: '열기구 페스티벌',
-    userId: 1,
-    description: '',
-    category: '',
-    price: 0,
-    address: '',
-    bannerImageUrl: '',
-    rating: 0,
-    reviewCount: 0,
-    createdAt: '',
-    updatedAt: '',
-  },
-];
-const mockDashboardData: ReservationDashboard = [
-  {
-    date: '2025-10-10',
-    reservations: { completed: 0, confirmed: 1, pending: 1 },
-  },
-  {
-    date: '2025-10-15',
-    reservations: { completed: 0, confirmed: 0, pending: 1 },
-  },
-  {
-    date: '2025-10-16',
-    reservations: { completed: 1, confirmed: 1, pending: 0 },
-  },
-];
+// 훅 추가
+import useReservationsDashboard from '@/hooks/useReservationsDashboard';
+import useReservationsStatus from '@/hooks/useReservationsStatus';
 
 export default function ReservationStatusPage() {
-  // const [myActivities, setMyActivities] = useState<Activity[]>([]);
-  // const [selectedActivityId, setSelectedActivityId] = useState<number>();
-  // const [isLoading, setIsLoading] = useState(true);
-  // const [dashboardData, setDashboardData] = useState<ReservationDashboard>([]);
-  const [myActivities, setMyActivities] = useState<Activity[]>(mockActivities);
-  const [selectedActivityId, setSelectedActivityId] = useState<
-    number | undefined
-  >(mockActivities[0]?.id);
-  const [isLoading, setIsLoading] = useState(false); // 로딩 상태를 false로 변경
-  const [dashboardData, setDashboardData] =
-    useState<ReservationDashboard>(mockDashboardData);
+  // 인증 기능 구현 후 실제 accessToken 연결 필요
+  const accessToken =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MDY5NDQ5NiwiZXhwIjoxNzYwNjk2Mjk2LCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.jLYiQiMRmymNnuaqVuxwQTbxhhELAb8cLCoRD8mKqDY';
+  // props로 받기?
+  const {
+    myActivities,
+    isLoadingActivities,
+    selectedActivityId,
+    setSelectedActivityId,
+    dashboardData,
+    isLoadingDashboard,
+    setCurrentDate,
+    reservationsForDate,
+    isLoadingReservations,
+    handleDateSelect,
+    selectedDate,
+  } = useReservationsDashboard(accessToken);
+
+  const { handleUpdateStatus, isUpdating } = useReservationsStatus(
+    accessToken,
+    selectedActivityId
+  );
+
+  const handleApprove = (reservationId: number) => {
+    handleUpdateStatus(reservationId, 'confirmed', () => {
+      // 성공 시 데이터 재조회
+      if (selectedDate) handleDateSelect(selectedDate);
+    });
+  };
+
+  const handleReject = (reservationId: number) => {
+    handleUpdateStatus(reservationId, 'declined', () => {
+      // 성공 시 데이터 재조회
+      if (selectedDate) handleDateSelect(selectedDate);
+    });
+  };
 
   return (
     <div className="mx-auto max-w-screen-xl ">
@@ -87,7 +67,7 @@ export default function ReservationStatusPage() {
       />
       {/* 여기서 조립해야 할 듯? - 체험이 없을 경우를 조건부로! */}
       <div className="h-[560px] md:h-[620px] lg:h-[680px]">
-        {isLoading ? (
+        {isLoadingActivities || isLoadingDashboard ? (
           <div className="flex items-center justify-center h-full text-gray-500">
             Loading...
           </div>
@@ -95,6 +75,12 @@ export default function ReservationStatusPage() {
           <ReservationCalendar
             dashboardData={dashboardData}
             activityId={selectedActivityId}
+            onNavigate={(newDate) => setCurrentDate(newDate)}
+            onSelectDate={handleDateSelect}
+            reservationsForDate={reservationsForDate}
+            isLoadingReservations={isLoadingReservations || isUpdating}
+            onApprove={handleApprove}
+            onReject={handleReject}
           />
         ) : (
           <div className="flex flex-col items-center mt-50 h-full text-gray-500">
