@@ -1,18 +1,21 @@
 'use client';
 
 import clsx from 'clsx';
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TimePicker.css';
 
-type DatePickerType = {
+type EndTimePickerProps = {
   className?: string;
+  value: Date | null;
+  onChange: (date: Date | null) => void;
 };
-export default function EndTimePicker({ className }: DatePickerType) {
-  const [endTime, setEndTime] = useState<Date | null>(
-    new Date(new Date().getTime() + 15 * 60000) // 시작 기준 +15분
-  );
+export default function EndTimePicker({
+  className,
+  value,
+  onChange,
+}: EndTimePickerProps) {
   const endRef = useRef<DatePicker | null>(null);
 
   const handleEndClick = () => endRef.current?.setOpen(true);
@@ -21,14 +24,14 @@ export default function EndTimePicker({ className }: DatePickerType) {
     <div className="relative">
       <DatePicker
         ref={endRef}
-        selected={endTime}
-        onChange={(date: Date | null) => setEndTime(date)}
+        selected={value}
+        onChange={onChange}
         showTimeSelect
         showTimeSelectOnly
         timeIntervals={15}
         timeCaption="시간"
         dateFormat="HH:mm"
-        placeholderText="종료 시간"
+        placeholderText="0:00"
         className={clsx(
           className,
           'border px-3 py-2 rounded w-[80px] text-center cursor-pointer text-md',

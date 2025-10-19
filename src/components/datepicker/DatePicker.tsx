@@ -9,8 +9,14 @@ import './datePicker.css';
 
 type DatePickerType = {
   className?: string;
+  selected?: Date | null;
+  onChange?: (date: Date | null) => void;
 };
-export default function DatePickerComponent({ className }: DatePickerType) {
+export default function DatePickerComponent({
+  className,
+  selected,
+  onChange,
+}: DatePickerType) {
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const datePickerRef = useRef<DatePicker>(null);
   const handleDatePickerClick = () => {
@@ -23,8 +29,8 @@ export default function DatePickerComponent({ className }: DatePickerType) {
     <div className="relative w-fit rounded-sm border border-gray-700">
       <DatePicker
         ref={datePickerRef}
-        selected={startDate}
-        onChange={(date) => setStartDate(date)}
+        selected={selected}
+        onChange={onChange}
         placeholderText="YY/MM/DD"
         className={clsx(
           className,

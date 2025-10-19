@@ -13,18 +13,21 @@ const DropdownContext = React.createContext<{
   setOpen: (open: boolean) => void;
   selected: string;
   setSelected: (val: string) => void;
+  onSelect?: (value: string) => void;
 }>({
   open: false,
   setOpen: () => {},
   selected: '',
   setSelected: () => {},
+  onSelect: undefined,
 });
 
 interface DropdownProps {
   children: ReactNode;
+  onSelect?: (value: string) => void;
 }
 
-export default function Dropdown({ children }: DropdownProps) {
+export default function Dropdown({ children, onSelect }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -43,7 +46,9 @@ export default function Dropdown({ children }: DropdownProps) {
   }, [open]);
 
   return (
-    <DropdownContext.Provider value={{ open, setOpen, selected, setSelected }}>
+    <DropdownContext.Provider
+      value={{ open, setOpen, selected, setSelected, onSelect }}
+    >
       <div ref={dropdownRef} className="relative">
         {children}
       </div>
@@ -176,12 +181,13 @@ function DropdownItem({
   children,
   color = 'dropdownPrimary',
 }: DropdownItemProps) {
-  const { setSelected, setOpen } = useContext(DropdownContext);
+  const { setSelected, setOpen, onSelect } = useContext(DropdownContext);
 
   const handleClick = () => {
     if (color === 'dropdownPrimary') {
       setSelected(value);
     }
+    onSelect?.(value);
     setOpen(false);
   };
 
