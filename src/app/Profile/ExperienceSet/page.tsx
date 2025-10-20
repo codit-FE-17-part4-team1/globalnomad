@@ -1,17 +1,24 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Dropdown from '@/components/Dropdown/Dropdown';
 import MypageHeader from '@/app/Profile/_components/MypageHeader/MypageHeader';
 import Image from 'next/image';
+import ConfirmModal from '@/components/Modal/ConfirmModal';
 
 export default function Experience() {
+  const router = useRouter();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+
   return (
     <div className="w-[100%] md:pl-[16px] lg:w-[800px]">
       <MypageHeader
         title="내 체험 관리"
         type="button"
         buttonText="체험 등록하기"
-        onClick={() => {}}
+        onClick={() => router.push('/Profile/ExperienceAdd')}
       />
       <div>
         <ul className="bg-white rounded-3xl flex shadow-xl mb-[24px]">
@@ -39,7 +46,11 @@ export default function Experience() {
             <div>
               <p className="float-left leading-[40px]">\10,000 / 인</p>
               <div className="float-right">
-                <Dropdown>
+                <Dropdown
+                  onSelect={(value) => {
+                    if (value === '삭제하기') setIsDeleteModalOpen(true);
+                  }}
+                >
                   <Dropdown.Button color="dropdownSet">
                     <div>
                       <Image
@@ -66,6 +77,17 @@ export default function Experience() {
           </li>
         </ul>
       </div>
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        message="삭제가 완료되었습니다."
+        confirmLabel="확인"
+        className="bg-white"
+        onConfirm={() => {
+          console.log('삭제 실행:', selectedItem);
+          setIsDeleteModalOpen(false);
+        }}
+      />
     </div>
   );
 }
