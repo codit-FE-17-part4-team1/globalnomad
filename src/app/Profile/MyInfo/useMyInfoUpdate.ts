@@ -49,8 +49,10 @@ export const useMyInfoUpdate = () => {
     }
     const updateData: UpDateUserInfo = {
       nickname: form.nickname,
-      profileImageUrl: getMyInfo?.profileImageUrl || '',
     };
+    if (getMyInfo?.profileImageUrl?.startsWith('http')) {
+      updateData.profileImageUrl = getMyInfo.profileImageUrl;
+    }
     if (form.password) {
       updateData.newPassword = form.password;
     }
