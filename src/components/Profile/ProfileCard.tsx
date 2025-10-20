@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import ProfileImage from './ProfileImage';
 
 export default function ProfileCard() {
   const pathname = usePathname();
@@ -38,26 +39,7 @@ export default function ProfileCard() {
   return (
     <div className="hidden md:block w-full rounded-2xl border border-[var(--color-gray-200)] shadow h-[430px] bg-white p-6 lg:w-[370px] md:w-[250px]">
       {/* 프로필 이미지 수정*/}
-      <div className="relative mx-auto mb-6 h-28 w-28">
-        <Image
-          src="/images/zootopia_asloth.jpg"
-          alt="프로필"
-          fill
-          className="rounded-full object-cover"
-        />
-        <button
-          type="button"
-          aira-label="프로필 사진 수정"
-          className="absolute -bottom-1 -right-1 grid h-10 w-10 z-10 place-items-center rounded-full cursor-pointer"
-        >
-          <Image
-            src="/icon/edit.svg"
-            alt="프로필 수정"
-            width={30}
-            height={30}
-          />
-        </button>
-      </div>
+      <ProfileImage />
       {/* 메뉴 */}
       <nav className="space-y-3">
         {MENU.map((item) => {
