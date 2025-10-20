@@ -30,7 +30,7 @@ export const DummyActivityData: ActivityDetailInfo = {
 
 export const DummyAvailableScheduleData: AvailableSchedule[] = [
   {
-    date: '2025-10-14',
+    date: '2025-10-18',
     times: [
       { id: 1, startTime: '10:00', endTime: '11:00' },
       { id: 2, startTime: '13:00', endTime: '14:30' },
@@ -38,14 +38,14 @@ export const DummyAvailableScheduleData: AvailableSchedule[] = [
     ],
   },
   {
-    date: '2025-10-17',
+    date: '2025-10-20',
     times: [
       { id: 4, startTime: '09:30', endTime: '10:30' },
       { id: 5, startTime: '11:00', endTime: '12:30' },
     ],
   },
   {
-    date: '2025-10-18',
+    date: '2025-10-21',
     times: [
       { id: 6, startTime: '10:00', endTime: '11:00' },
       { id: 7, startTime: '14:00', endTime: '15:00' },
@@ -58,10 +58,20 @@ export const DummyAvailableScheduleData: AvailableSchedule[] = [
       { id: 14, startTime: '17:30', endTime: '18:30' },
       { id: 15, startTime: '17:30', endTime: '18:30' },
       { id: 16, startTime: '17:30', endTime: '18:30' },
+      { id: 17, startTime: '14:00', endTime: '15:00' },
+      { id: 18, startTime: '17:30', endTime: '18:30' },
+      { id: 19, startTime: '17:30', endTime: '18:30' },
+      { id: 20, startTime: '17:30', endTime: '18:30' },
+      { id: 21, startTime: '17:30', endTime: '18:30' },
+      { id: 22, startTime: '17:30', endTime: '18:30' },
+      { id: 23, startTime: '17:30', endTime: '18:30' },
+      { id: 24, startTime: '17:30', endTime: '18:30' },
+      { id: 25, startTime: '17:30', endTime: '18:30' },
+      { id: 26, startTime: '17:30', endTime: '18:30' },
     ],
   },
   {
-    date: '2025-10-19',
+    date: '2025-10-22',
     times: [
       { id: 9, startTime: '09:00', endTime: '10:00' },
       { id: 10, startTime: '11:30', endTime: '12:30' },

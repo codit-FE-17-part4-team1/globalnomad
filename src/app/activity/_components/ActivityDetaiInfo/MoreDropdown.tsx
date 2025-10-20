@@ -29,8 +29,8 @@ const MoreDropdown: React.FC<MoreDropdownProps> = ({ activityId }) => {
 
   const handleEdit = () => {
     try {
-      // 예시: 수정 페이지로 이동
-      router.push(`/my-activities/${activityId}`);
+      // 수정 페이지로 이동
+      router.push(`/Profile/ExperienceAdd`);
     } catch (error: any) {
       alert(error?.message || '수정할 수 없습니다.');
     }
@@ -41,7 +41,7 @@ const MoreDropdown: React.FC<MoreDropdownProps> = ({ activityId }) => {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`/my-activities/${activityId}`, {
+      const res = await fetch(`/Profile/ExperienceAdd`, {
         method: 'DELETE',
       });
 

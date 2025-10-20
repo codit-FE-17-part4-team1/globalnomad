@@ -2,15 +2,15 @@
 
 import React from 'react';
 
-interface DateSelectButtonProps {
+interface OptionSelectButtonProps {
   onClick: () => void;
-  label?: string;
+  label: string;
   className?: string;
 }
 
-const DateSelectButton: React.FC<DateSelectButtonProps> = ({
+const OptionSelectButton: React.FC<OptionSelectButtonProps> = ({
   onClick,
-  label = '날짜 선택하기',
+  label,
   className = '',
 }) => {
   return (
@@ -23,4 +23,4 @@ const DateSelectButton: React.FC<DateSelectButtonProps> = ({
   );
 };
 
-export default DateSelectButton;
+export default OptionSelectButton;

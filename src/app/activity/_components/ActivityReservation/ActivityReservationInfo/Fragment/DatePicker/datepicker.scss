@@ -33,7 +33,7 @@ div.react-datepicker {
 
   /* 오늘 날짜 */
   .today-date {
-    color: #00ac07 !important;
+    color: #00ac07;
     font-weight: 700;
     background: white;
     border-radius: 0.3rem;
@@ -58,6 +58,12 @@ div.react-datepicker {
     border-radius: 0.3rem;
     font-weight: 600;
     cursor: pointer;
+
+    &.today-date {
+      &::after {
+        color: #333333; //오늘 텍스트 색상 변경
+      }
+    }
   }
 
   /* 예약 선택한 날짜 */
@@ -65,17 +71,11 @@ div.react-datepicker {
     color: #fff !important;
     background-color: #0b3b2d !important;
     border-radius: 0.3rem;
-  }
 
-  /* 오늘 날짜이면서 예약 선택한 경우 */
-  .today-date.react-datepicker__day--selected {
-    border: none !important;
-    color: #fff !important;
-    background-color: #0b3b2d !important;
-    border-radius: 0.3rem;
-
-    &::after {
-      color: #fff; // 오늘 텍스트 색상 변경
+    &.today-date {
+      &::after {
+        color: #fff; // 오늘 텍스트 색상 변경
+      }
     }
   }
 
