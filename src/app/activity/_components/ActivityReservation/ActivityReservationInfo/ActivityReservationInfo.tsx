@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Price from './Fragment/Price';
 import DatePickerBox from './Fragment/DatePicker/DatePickerBox';
-import DateSelectButton from './Fragment/DateSelectButton';
+import OptionSelectButton from './Fragment/OptionSelectButton';
 import TimePicker from './Fragment/TimePicker';
 import ParticipantsCounter from './Fragment/ParticipantsCounter';
 import MyButton from '@/components/Button/Button';
@@ -36,7 +36,7 @@ const ActivityReservationInfo: React.FC<ActivityReservationInfoProps> = ({
     setParticipants((prev) => Math.max(1, prev - 1));
 
   const handleReserve = () => {
-    if (!selectedDate || !selectedTimeId) return;
+    if (!selectedDate || !selectedTimeId || participants <= 0) return;
     console.log('예약하기 클릭!', {
       selectedDate,
       selectedTimeId,
@@ -45,7 +45,7 @@ const ActivityReservationInfo: React.FC<ActivityReservationInfoProps> = ({
   };
 
   return (
-    <div className="w-full min-w-[220px] max-w-[400px] flex flex-col mx-auto gap-4 px-6 py-10 bg-white">
+    <div className="w-full flex flex-col mx-auto gap-5 px-6 py-10">
       {/* 가격 */}
       <Price price={activity.price} />
 
@@ -71,9 +71,9 @@ const ActivityReservationInfo: React.FC<ActivityReservationInfoProps> = ({
 
         {/* 태블릿에서는 달력 대신 버튼 */}
         <div className="hidden md:flex lg:hidden">
-          <DateSelectButton
+          <OptionSelectButton
             onClick={onOpenDateModal}
-            label={selectedDateText}
+            label={selectedDateText || '날짜 선택하기'}
           />
         </div>
       </div>
@@ -95,12 +95,13 @@ const ActivityReservationInfo: React.FC<ActivityReservationInfoProps> = ({
         participants={participants}
         onIncrement={handleIncrement}
         onDecrement={handleDecrement}
+        label="참여 인원 수"
       />
 
       {/* 예약 버튼 */}
       <MyButton
         color="buttonPrimary"
-        disabled={!selectedDate || !selectedTimeId}
+        disabled={!selectedDate || !selectedTimeId || participants <= 0}
         onClick={handleReserve}
         className="flex items-center justify-center p-4"
       >

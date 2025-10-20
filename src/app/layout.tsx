@@ -2,9 +2,9 @@
 import '../styles/global.css';
 
 import React from 'react';
-import Footer from '@/components/Footer/Footer';
 import HeaderGate from '@/components/Header/HeaderGate';
 import HeaderServer from '@/components/Header/HeaderServer';
+import Footer from '@/components/Footer/Footer';
 
 export default function RootLayout({
   children,
