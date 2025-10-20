@@ -11,11 +11,47 @@ export type LoginState = {
   errors: Record<string, string>;
 };
 
-async function getMutableCookies() {
-  const c = cookies();
-
-  return typeof c?.then === 'function' ? await c : c;
+// Promise인지 판별하기 위한 타입 가드 함수
+function isPromiseLike<T>(v: unknown): v is Promise<T> {
+  return typeof (v as { then?: unknown }).then === 'function';
 }
+type CookieStoreResolved =
+  ReturnType<typeof cookies> extends Promise<infer P>
+    ? P
+    : ReturnType<typeof cookies>;
+// 쿠키 객체 반환
+async function cookieStore(): Promise<CookieStoreResolved> {
+  const c = cookies() as unknown;
+  return isPromiseLike<CookieStoreResolved>(c)
+    ? await c
+    : (c as CookieStoreResolved);
+}
+
+function cookieOpts(maxAgeSeconds: number) {
+  const isProd = process.env.NODE_ENV === 'production';
+  return {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: 'lax' as const,
+    path: '/',
+    maxAge: maxAgeSeconds,
+  };
+}
+
+async function setAuthCookies(accessToken: string, refreshToken: string) {
+  const c = await cookieStore();
+  c.set('accessToken', accessToken, cookieOpts(60 * 60)); // 1h
+  c.set('refreshToken', refreshToken, cookieOpts(60 * 60 * 24 * 14)); // 14d
+}
+
+async function clearAuthCookies() {
+  const c = await cookieStore();
+  c.delete('accessToken');
+  c.delete('refreshToken');
+}
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_SERVER_URL;
+type TokenPair = { refreshToken: string; accessToken: string };
 
 export async function loginAction(
   _prev: LoginState | null,
@@ -41,45 +77,16 @@ export async function loginAction(
   }
 
   try {
-    //1. 외부 백엔드 로그인 호출
     const { accessToken, refreshToken } = await loginRequest({
       email,
       password,
     });
-
-    //2. 서버 액션에서 httpOnly 쿠키 설정
-    const cookieStore = await getMutableCookies();
-    const isProd = process.env.NODE_ENV === 'production';
-
-    cookieStore.set('accessToken', accessToken, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60, // 1h
-    });
-
-    cookieStore.set('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7d
-    });
+    await setAuthCookies(accessToken, refreshToken);
   } catch (e) {
-    return {
-      status: false,
-      fetchErrorText: (e as Error).message || '로그인 실패',
-      isError,
-      errors,
-    };
+    await clearAuthCookies();
+    const msg = e instanceof Error ? e.message : '로그인 실패';
+    return { status: false, fetchErrorText: msg, isError, errors };
   }
-  redirect('/');
 
-  return {
-    status: true,
-    fetchErrorText: '',
-    isError: { email: false, password: false },
-    errors: {},
-  };
+  redirect('/');
 }

@@ -1,18 +1,18 @@
 import 'server-only';
 
-type SignupPayload = {
+export type SignupPayload = {
   email: string;
   nickname: string;
   password: string;
   passwordConfirmation: string;
 };
 
-type LoginPayload = {
+export type LoginPayload = {
   email: string;
   password: string;
 };
 
-type AuthResponse = {
+export type AuthResponse = {
   user: {
     id: number;
     email: string;
@@ -25,7 +25,7 @@ type AuthResponse = {
   accessToken: string;
 };
 
-type MeResponse = {
+export type MeResponse = {
   id: number;
   email: string;
   nickname: string;
@@ -42,16 +42,21 @@ export async function signupRequest(
   const res = await fetch(`${BASE_URL}/users`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    // 서버에서만 호출: 클라이언트 캐시/프리패치 방지
     cache: 'no-store',
     body: JSON.stringify(payload),
   });
 
+  const json = (await res.json().catch(() => ({}))) as Partial<AuthResponse> & {
+    message?: string;
+  };
+
   if (!res.ok) {
-    const err = (await res.json().catch(() => ({}))) as { message?: string };
-    throw new Error(err?.message || '회원가입 실패');
+    throw new Error(json?.message || '회원가입 실패');
   }
-  return res.json();
+  if (!json.accessToken || !json.refreshToken) {
+    throw new Error('회원가입 응답에 토큰이 없습니다.');
+  }
+  return json as AuthResponse;
 }
 
 export async function loginRequest(
@@ -64,25 +69,27 @@ export async function loginRequest(
     body: JSON.stringify(payload),
   });
 
-  const data = await res.json().catch(() => ({}));
+  const json = (await res.json().catch(() => ({}))) as Partial<AuthResponse> & {
+    message?: string;
+  };
+
   if (!res.ok) {
-    const err = (await res.json().catch(() => ({}))) as { message?: string };
-    throw new Error(err?.message || '로그인 실패');
+    throw new Error(json?.message || '로그인 실패');
   }
-  return data as AuthResponse;
+  if (!json.accessToken || !json.refreshToken) {
+    throw new Error('로그인 응답에 토큰이 없습니다.');
+  }
+  return json as AuthResponse;
 }
 
 export async function getMe(accessToken: string): Promise<MeResponse> {
   const res = await fetch(`${BASE_URL}/users/me`, {
     method: 'GET',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    headers: { Authorization: `Bearer ${accessToken}` },
     cache: 'no-store',
   });
 
   if (!res.ok) {
-    // 토큰 만료/무효 등 일 수 있음
     throw new Error(`me failed: ${res.status}`);
   }
   return res.json();

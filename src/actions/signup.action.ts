@@ -22,11 +22,45 @@ export type ActionState = {
   errors: Record<string, string>;
 };
 
-async function getMutableCookies() {
-  const c = cookies();
-
-  return typeof c?.then === 'function' ? await c : c;
+function isPromiseLike<T>(v: unknown): v is Promise<T> {
+  return typeof (v as { then?: unknown }).then === 'function';
 }
+type CookieStoreResolved =
+  ReturnType<typeof cookies> extends Promise<infer P>
+    ? P
+    : ReturnType<typeof cookies>;
+async function cookieStore(): Promise<CookieStoreResolved> {
+  const c = cookies() as unknown;
+  return isPromiseLike<CookieStoreResolved>(c)
+    ? await c
+    : (c as CookieStoreResolved);
+}
+
+function cookieOpts(maxAgeSeconds: number) {
+  const isProd = process.env.NODE_ENV === 'production';
+  return {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: 'lax' as const,
+    path: '/',
+    maxAge: maxAgeSeconds,
+  };
+}
+
+async function setAuthCookies(accessToken: string, refreshToken: string) {
+  const c = await cookieStore();
+  c.set('accessToken', accessToken, cookieOpts(60 * 60)); // 1h
+  c.set('refreshToken', refreshToken, cookieOpts(60 * 60 * 24 * 14)); // 14d
+}
+
+async function clearAuthCookies() {
+  const c = await cookieStore();
+  c.delete('accessToken');
+  c.delete('refreshToken');
+}
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_SERVER_URL as string;
+type TokenPair = { refreshToken: string; accessToken: string };
 
 export async function signupAction(
   _prev: ActionState | null,
@@ -46,7 +80,6 @@ export async function signupAction(
   const passwordConfirmation =
     formData.get('passwordConfirmation')?.toString() ?? '';
 
-  // 서버 유효성 검사
   let msg = validateEmail(email);
   if (!email) {
     errors.email = '이메일은 필수입력입니다.';
@@ -88,53 +121,17 @@ export async function signupAction(
   }
 
   try {
-    //1. 외부 백엔드 로그인 호출
     await signupRequest({ email, nickname, password, passwordConfirmation });
-
     const { accessToken, refreshToken } = await loginRequest({
       email,
       password,
     });
-
-    //2. 서버 액션에서 httpOnly 쿠키 설정
-    const cookieStore = await getMutableCookies();
-    const isProd = process.env.NODE_ENV === 'production';
-
-    cookieStore.set('accessToken', accessToken, {
-      httpOnly: true,
-      secure: isProd,
-      path: '/',
-      sameSite: 'lax',
-      maxAge: 60 * 60, // 1h
-    });
-
-    cookieStore.set('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: isProd,
-      path: '/',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7d
-    });
+    await setAuthCookies(accessToken, refreshToken);
   } catch (err) {
-    return {
-      status: false,
-      fetchErrorText: (err as Error).message || '회원가입 실패',
-      isError,
-      errors,
-    };
+    await clearAuthCookies();
+    const msg2 = err instanceof Error ? err.message : '회원가입 실패';
+    return { status: false, fetchErrorText: msg2, isError, errors };
   }
 
   redirect('/');
-
-  return {
-    status: true,
-    fetchErrorText: '',
-    isError: {
-      email: false,
-      password: false,
-      nickname: false,
-      passwordConfirmation: false,
-    },
-    errors: {},
-  };
 }
