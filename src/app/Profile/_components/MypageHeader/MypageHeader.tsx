@@ -9,6 +9,7 @@ type HeaderType = {
   selected?: string;
   setSelected?: React.Dispatch<React.SetStateAction<string>>;
   selectList?: string[];
+  disabled?: boolean;
 };
 export default function MypageHeader({
   title,
@@ -18,6 +19,7 @@ export default function MypageHeader({
   selected,
   setSelected,
   selectList,
+  disabled = false,
 }: HeaderType) {
   return (
     <div
@@ -32,7 +34,11 @@ export default function MypageHeader({
         <Button
           color="buttonPrimary"
           onClick={onClick ?? (() => {})}
-          className="h-12 px-8 rounded-sm"
+          disabled={disabled}
+          className={clsx(
+            'h-12 px-8 rounded-sm',
+            disabled && 'cursor-not-allowed'
+          )}
         >
           {buttonText}
         </Button>

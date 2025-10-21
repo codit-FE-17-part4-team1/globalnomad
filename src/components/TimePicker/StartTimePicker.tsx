@@ -1,16 +1,21 @@
 'use client';
 
 import clsx from 'clsx';
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TimePicker.css';
 
-type DatePickerType = {
+type StartTimePickerProps = {
   className?: string;
+  value: Date | null;
+  onChange: (date: Date | null) => void;
 };
-export default function StartTimePicker({ className }: DatePickerType) {
-  const [startTime, setStartTime] = useState<Date | null>(new Date());
+export default function StartTimePicker({
+  className,
+  value,
+  onChange,
+}: StartTimePickerProps) {
   const startRef = useRef<DatePicker | null>(null);
 
   const handleStartClick = () => startRef.current?.setOpen(true);
@@ -19,14 +24,14 @@ export default function StartTimePicker({ className }: DatePickerType) {
     <div className="relative">
       <DatePicker
         ref={startRef}
-        selected={startTime}
-        onChange={(date: Date | null) => setStartTime(date)}
+        selected={value}
+        onChange={onChange}
         showTimeSelect
         showTimeSelectOnly
         timeIntervals={15}
         timeCaption="시간"
         dateFormat="HH:mm"
-        placeholderText="시작 시간"
+        placeholderText="0:00"
         className={clsx(
           className,
           'border px-3 py-2 rounded w-[80px] text-center cursor-pointer text-md',

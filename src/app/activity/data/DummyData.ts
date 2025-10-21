@@ -1,5 +1,6 @@
-import { ActivityDetailInfo } from '@/types/activity';
-import { ReviewList } from '@/types/review';
+import type { ActivityDetailInfo } from '@/types/activity';
+import type { ReviewList } from '@/types/review';
+import type { AvailableSchedule } from '@/types/activity';
 
 export const DummyActivityData: ActivityDetailInfo = {
   id: 7,
@@ -26,6 +27,58 @@ export const DummyActivityData: ActivityDetailInfo = {
   createdAt: '2023-12-31T21:28:50.589Z',
   updatedAt: '2023-12-31T21:28:50.589Z',
 };
+
+export const DummyAvailableScheduleData: AvailableSchedule[] = [
+  {
+    date: '2025-10-18',
+    times: [
+      { id: 1, startTime: '10:00', endTime: '11:00' },
+      { id: 2, startTime: '13:00', endTime: '14:30' },
+      { id: 3, startTime: '16:00', endTime: '17:00' },
+    ],
+  },
+  {
+    date: '2025-10-20',
+    times: [
+      { id: 4, startTime: '09:30', endTime: '10:30' },
+      { id: 5, startTime: '11:00', endTime: '12:30' },
+    ],
+  },
+  {
+    date: '2025-10-21',
+    times: [
+      { id: 6, startTime: '10:00', endTime: '11:00' },
+      { id: 7, startTime: '14:00', endTime: '15:00' },
+      { id: 8, startTime: '17:30', endTime: '18:30' },
+      { id: 9, startTime: '17:30', endTime: '18:30' },
+      { id: 10, startTime: '17:30', endTime: '18:30' },
+      { id: 11, startTime: '17:30', endTime: '18:30' },
+      { id: 12, startTime: '17:30', endTime: '18:30' },
+      { id: 13, startTime: '17:30', endTime: '18:30' },
+      { id: 14, startTime: '17:30', endTime: '18:30' },
+      { id: 15, startTime: '17:30', endTime: '18:30' },
+      { id: 16, startTime: '17:30', endTime: '18:30' },
+      { id: 17, startTime: '14:00', endTime: '15:00' },
+      { id: 18, startTime: '17:30', endTime: '18:30' },
+      { id: 19, startTime: '17:30', endTime: '18:30' },
+      { id: 20, startTime: '17:30', endTime: '18:30' },
+      { id: 21, startTime: '17:30', endTime: '18:30' },
+      { id: 22, startTime: '17:30', endTime: '18:30' },
+      { id: 23, startTime: '17:30', endTime: '18:30' },
+      { id: 24, startTime: '17:30', endTime: '18:30' },
+      { id: 25, startTime: '17:30', endTime: '18:30' },
+      { id: 26, startTime: '17:30', endTime: '18:30' },
+    ],
+  },
+  {
+    date: '2025-10-22',
+    times: [
+      { id: 9, startTime: '09:00', endTime: '10:00' },
+      { id: 10, startTime: '11:30', endTime: '12:30' },
+      { id: 11, startTime: '15:00', endTime: '16:30' },
+    ],
+  },
+];
 
 export const DummyReviewData: ReviewList = {
   averageRating: 4.2,

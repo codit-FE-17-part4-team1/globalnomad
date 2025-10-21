@@ -37,3 +37,14 @@ export interface ActivityListResponse {
   totalCount: number;
   activities: Activity[];
 }
+
+export interface AvailableTime {
+  id: number;
+  startTime: string;
+  endTime: string;
+}
+
+export interface AvailableSchedule {
+  date: string; // YYYY-MM-DD
+  times: AvailableTime[];
+}
