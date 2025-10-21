@@ -35,7 +35,6 @@ export default function BaseModal({
   }
 
   return (
-    // <Portal>
     <div
       ref={overlayRef}
       className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4"
@@ -62,6 +61,5 @@ export default function BaseModal({
         {children}
       </div>
     </div>
-    // </Portal>
   );
 }

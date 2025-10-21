@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 // 내 체험리스트 조회
-// 체험리스트 조회의 activities가 객체임
 export const activitySchema = z.object({
   id: z.number(),
   userId: z.number(),
@@ -43,26 +42,15 @@ export const reservationsDashboardListSchema = z.array(
   reservationsDashboardSchema
 );
 
-// -- 내 체험 날짜별 예약 정보 조회(신청,승인,거절) --
-export const reservedScheduleCountSchema = z.object({
-  // 정수 (0 이상만) 만 허용하도록
-  declined: z.number().int().nonnegative(),
-  confirmed: z.number().int().nonnegative(),
-  pending: z.number().int().nonnegative(),
-});
-
-export const reservedScheduleMonthSchema = z.object({
-  scheduleId: z.number(),
-  startTime: z.string(),
-  endTime: z.string(),
-  count: reservedScheduleCountSchema,
-});
-
-export const reservedScheduleListSchema = z.array(reservedScheduleMonthSchema);
-
 // -- 내 체험 예약 시간대별 예약 조회 --
 // 상태 값
-export const reservationStatus = z.enum(['confirmed', 'pending', 'declined']);
+export const reservationStatus = z.enum([
+  'confirmed',
+  'pending',
+  'declined',
+  'completed',
+  'canceled',
+]);
 
 export const reservationSchema = z.object({
   id: z.number(),
@@ -83,12 +71,27 @@ export const reservationSchema = z.object({
 });
 
 export const reservationsTimeSchema = z.object({
-  cursorId: z.number(),
+  cursorId: z.number().nullable(),
   totalCount: z.number(),
   reservations: z.array(reservationSchema),
 });
 
 // -- 내 체험 예약 상태(승인,거절) 업데이트 --
+export const reservationCountSchema = z.object({
+  declined: z.number(),
+  confirmed: z.number(),
+  pending: z.number(),
+});
+
+export const reservedScheduleItemSchema = z.object({
+  scheduleId: z.number(),
+  startTime: z.string(),
+  endTime: z.string(),
+  count: reservationCountSchema,
+});
+
+export const reservedScheduleSchema = z.array(reservedScheduleItemSchema);
+
 export const updateReservationStatusSchema = z.object({
   status: z.enum(['confirmed', 'declined']),
 });
@@ -120,12 +123,14 @@ export type MyActivitiesResponse = z.infer<typeof myactivitiesSchema>;
 export type ReservationDashboard = z.infer<
   typeof reservationsDashboardListSchema
 >;
-export type ReservedScheduleItem = z.infer<typeof reservedScheduleMonthSchema>;
-export type ReservedSchedule = z.infer<typeof reservedScheduleListSchema>;
+export type ReservedScheduleItem = z.infer<typeof reservedScheduleItemSchema>;
+export type ReservedSchedule = z.infer<typeof reservedScheduleSchema>;
 export type ReservationsTime = z.infer<typeof reservationsTimeSchema>;
 export type ReservationStatus = z.infer<typeof reservationStatus>;
 export type UpdateReservationStatus = z.infer<
   typeof updateReservationStatusSchema
 >;
-
 export type DeleteActivityRes = z.infer<typeof deleteActivityResZ>;
+export type Reservation = z.infer<typeof reservationSchema>;
+export type ReservationCount = z.infer<typeof reservationCountSchema>;
+export type ModifyMyActivity = z.infer<typeof modifyActivitySchema>;

@@ -39,11 +39,11 @@ export default function ReservationModalBase({
   const [activeTab, setActiveTab] = useState<ReservationStatus>(status);
   const [selectedTime, setSelectedTime] = useState<string>('all');
 
-  // 모달이 열릴 때마다 탭과 시간 상태를 초기화합니다.
+  // 모달이 열릴 때마다 탭과 시간 상태를 초기화
   useEffect(() => {
     if (isOpen) {
       setActiveTab(status);
-      // 현재 탭의 첫 번째 예약 시간을 찾아 기본 선택값으로 설정합니다.
+      // 1. 현재 탭의 첫 번째 예약 시간을 찾아 기본 선택값으로 설정
       const initialReservations = reservations.filter(
         (item) => item.status === status
       );
@@ -52,7 +52,7 @@ export default function ReservationModalBase({
     }
   }, [isOpen, status, reservations]);
 
-  // 현재 활성화된 탭(신청/승인/거절)에 해당하는 예약 목록
+  // 2. 현재 활성화된 탭(신청/승인/거절)에 해당하는 예약 목록
   const reservationsByStatus = reservations.filter(
     (item) => item.status === activeTab
   );
@@ -102,7 +102,7 @@ export default function ReservationModalBase({
               onClick={() => {
                 const newTab = tab.key;
                 setActiveTab(newTab);
-                // 새로 선택된 탭의 첫 번째 예약 시간을 찾아 기본 선택값으로 설정합니다.
+                // 새로 선택된 탭의 첫 번째 예약 시간을 찾아 기본 선택값으로 설정
                 const reservationsInNewTab = reservations.filter(
                   (item) => item.status === newTab
                 );
@@ -124,7 +124,7 @@ export default function ReservationModalBase({
         <div className="mb-4">
           <p className="text-lg font-semibold mb-2">예약 날짜</p>
           <p className="mb-1">{date}</p>
-          {/* 시간 - button & dropdown 으로 구현 필요할 듯 */}
+          {/* 시간 - button & dropdown 으로 구현 필요할 듯 -> Dropdown 모달 생성해서 추가 완료!*/}
           {/* 시간 옵션이 '전체' 외에 더 있을 때만 드롭다운 표시 */}
           {timeOptions.length > 1 && (
             <TimeDropdown

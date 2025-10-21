@@ -1,17 +1,11 @@
-// src/lib/api/myactivities/api.ts
 import { BASE_API_URL } from '@/types/constants';
 import {
-  myactivitiesSchema,
-  reservationsDashboardListSchema,
-  reservationsTimeSchema,
-  updateReservationStatusSchema,
-  modifyActivitySchema,
-  activitySchema,
   type MyActivitiesResponse,
   type ReservationDashboard,
+  type ReservedSchedule,
   type ReservationsTime,
-  type UpdateReservationStatus,
   type Activity,
+  type Reservation,
 } from '@/types/api/myactivities';
 
 function assertToken(token?: string): asserts token is string {
@@ -48,11 +42,8 @@ export async function getMyActivities(opts: {
   if (!res.ok) throw new Error('내 체험 목록을 불러오는 데 실패했습니다.');
 
   const data = await res.json();
-  return myactivitiesSchema.parse(data);
+  return data;
 }
-
-//   const data = await res.json();
-//   return myactivitiesSchema.parse(data);
 
 /**
  * 내 체험 월별 예약 현황 조회
@@ -81,21 +72,26 @@ export async function getReservationDashboard(opts: {
   }
 
   const data = await res.json();
-  return reservationsDashboardListSchema.parse(data);
+  return data;
 }
 
 /**
- * 내 체험 날짜별 예약 정보 조회
+ * 내 체험 날짜별 예약 정보 조회 (특정 날짜의 시간대 목록 조회)
  */
-export async function getReservationsByDate(opts: {
+export async function getSchedulesForDate(opts: {
   activityId: number;
-  date: string; // YYYY-MM-DD
+  date: string;
   accessToken?: string;
-}): Promise<ReservationsTime> {
+}): Promise<ReservedSchedule> {
   const { activityId, date, accessToken } = opts;
   assertToken(accessToken);
 
-  const url = `${BASE_API_URL}/my-activities/${activityId}/reservations?date=${date}`;
+  const dateObj = new Date(date);
+  const year = String(dateObj.getFullYear());
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+
+  const url = `${BASE_API_URL}/my-activities/${activityId}/reserved-schedule?date=${date}`;
+  console.log('🔗 Request URL:', url); // --> 콘솔 확인됨
   const res = await fetch(url, {
     method: 'GET',
     headers: {
@@ -104,12 +100,209 @@ export async function getReservationsByDate(opts: {
     },
     cache: 'no-store',
   });
+
   if (!res.ok) {
-    throw new Error('날짜별 예약 정보를 불러오는 데 실패했습니다.');
+    if (res.status === 404 || res.status === 400) {
+      return [];
+    }
+    throw new Error('예약 스케줄을 불러오는 데 실패했습니다.');
   }
 
   const data = await res.json();
-  return reservationsTimeSchema.parse(data);
+  return data;
+}
+
+export async function getReservationsBySchedule(opts: {
+  activityId: number;
+  scheduleId: number;
+  status?: 'pending' | 'confirmed' | 'declined';
+  accessToken?: string;
+}): Promise<ReservationsTime> {
+  const { activityId, scheduleId, status, accessToken } = opts;
+
+  assertToken(accessToken);
+
+  const params = new URLSearchParams();
+  params.set('scheduleId', String(scheduleId));
+
+  if (status) {
+    params.set('status', status);
+  }
+
+  console.log('🔗 Request params:', { scheduleId, status });
+
+  const url = `${BASE_API_URL}/my-activities/${activityId}/reservations?${params.toString()}`;
+
+  console.log('🔗 Request URL:', url);
+
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    cache: 'no-store',
+  });
+
+  console.log('📡 Response status:', res.status);
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('❌ Error response:', errorText);
+
+    if (res.status === 404 || res.status === 400) {
+      return { reservations: [], totalCount: 0, cursorId: null };
+    }
+    throw new Error('예약 정보를 불러오는 데 실패했습니다.');
+  }
+
+  const data = await res.json();
+  console.log('📦 Reservation data:', data);
+
+  return data;
+}
+
+export async function getReservationsByDate(opts: {
+  activityId: number;
+  date: string;
+  accessToken?: string;
+}): Promise<ReservationsTime> {
+  const { activityId, date, accessToken } = opts;
+
+  console.log('🔍 Fetching reservations for date:', date); // --> 콘솔 확인됨
+
+  try {
+    // 1. 해당 월의 스케줄 가져오기
+    const allSchedules = await getSchedulesForDate({
+      activityId,
+      date,
+      accessToken,
+    });
+
+    console.log('📅 Schedules found:', allSchedules.length); // --> 콘솔 확인됨
+
+    if (allSchedules.length === 0) {
+      return {
+        reservations: [],
+        totalCount: 0,
+        cursorId: null,
+      };
+    }
+
+    // 2. 예약이 있는 스케줄만 필터링
+    const schedulesWithReservations = allSchedules.filter(
+      (schedule) =>
+        schedule.count.pending > 0 ||
+        schedule.count.confirmed > 0 ||
+        schedule.count.declined > 0
+    );
+
+    console.log(
+      '✅ Schedules with reservations:',
+      schedulesWithReservations.length
+    ); // --> 콘솔 확인됨
+
+    if (schedulesWithReservations.length === 0) {
+      return {
+        reservations: [],
+        totalCount: 0,
+        cursorId: null,
+      };
+    }
+
+    // 3. 각 스케줄의 예약자 정보 가져오기
+    const reservationPromises = schedulesWithReservations.flatMap(
+      (schedule) => {
+        const promises = [];
+
+        // pending 예약이 있으면 조회
+        if (schedule.count.pending > 0) {
+          promises.push(
+            getReservationsBySchedule({
+              activityId,
+              scheduleId: schedule.scheduleId,
+              status: 'pending',
+              accessToken,
+            })
+          );
+        }
+
+        // confirmed 예약이 있으면 조회
+        if (schedule.count.confirmed > 0) {
+          promises.push(
+            getReservationsBySchedule({
+              activityId,
+              scheduleId: schedule.scheduleId,
+              status: 'confirmed',
+              accessToken,
+            })
+          );
+        }
+
+        // declined 예약이 있으면 조회
+        if (schedule.count.declined > 0) {
+          promises.push(
+            getReservationsBySchedule({
+              activityId,
+              scheduleId: schedule.scheduleId,
+              status: 'declined',
+              accessToken,
+            })
+          );
+        }
+
+        return promises;
+      }
+    );
+
+    //   async (schedule) => {
+    //     console.log(
+    //       `⏰ Fetching reservations for schedule ${schedule.scheduleId}`
+    //     ); // --> 콘솔 확인됨
+
+    //     const result = await getReservationsBySchedule({
+    //       activityId,
+    //       scheduleId: schedule.scheduleId,
+    //       accessToken,
+    //     });
+
+    //     // 해당 날짜의 예약만 필터링
+    //     const filteredReservations = result.reservations.filter(
+    //       (reservation: Reservation) => reservation.date === date
+    //     );
+
+    //     console.log(
+    //       `✅ Found ${filteredReservations.length} reservations for ${date}` // --> filteredReservations.length 확인 불가, date 확인 완료
+    //     );
+
+    //     return filteredReservations;
+    //   }
+    // );
+
+    const reservationArrays = await Promise.all(reservationPromises);
+    const allReservations = reservationArrays.flat();
+
+    console.log('🎉 Total reservations:', allReservations.length); // --> 확인 불가
+    console.log('🎉 Reservations detail:', allReservations);
+
+    return {
+      reservations: allReservations,
+      totalCount: allReservations.length,
+      cursorId: null,
+    };
+  } catch (error) {
+    console.error('❌ Failed to fetch reservations:', error);
+
+    if (error instanceof Error) {
+      console.error('Error details:', error.message);
+    }
+
+    return {
+      reservations: [],
+      totalCount: 0,
+      cursorId: null,
+    };
+  }
 }
 
 /**
@@ -138,8 +331,6 @@ export async function updateReservationStatus(opts: {
   if (!res.ok) {
     throw new Error('예약 상태 업데이트에 실패했습니다.');
   }
-
-  // 204 No Content 응답을 기대하므로, 별도의 body 파싱 없이 종료
 }
 
 /**
@@ -168,8 +359,6 @@ export async function deleteMyActivity(opts: {
 
 /**
  * 내 체험 수정
- * 참고: 체험 수정은 FormData를 사용할 가능성이 높아, customFetch 대신 직접 fetch를 사용
- * 파일 업로드가 포함된 경우 body는 FormData 객체가 되어야 함
  */
 export async function modifyMyActivity(
   activityId: number,
@@ -188,5 +377,5 @@ export async function modifyMyActivity(
 
   const data = await res.json();
   // 수정 후 업데이트된 activity 정보를 반환한다고 가정
-  return activitySchema.parse(data);
+  return data;
 }

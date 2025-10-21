@@ -34,10 +34,16 @@ export default function ProfileCard() {
       href: '/Profile/ReservationStatus',
       icon: '/icon/calendar_check.svg',
     },
+    {
+      key: 'logout',
+      label: '로그아웃',
+      href: '/logout',
+      icon: '/icon/logout.svg',
+    },
   ];
 
   return (
-    <div className="hidden md:block w-full rounded-2xl border border-[var(--color-gray-200)] shadow h-[430px] bg-white p-6 lg:w-[370px] md:w-[250px]">
+    <div className="hidden md:block w-full rounded-2xl border border-[var(--color-gray-200)] shadow h-[470px] bg-white p-6 lg:w-[370px] md:w-[250px]">
       {/* 프로필 이미지 수정*/}
       <ProfileImage />
       {/* 메뉴 */}
