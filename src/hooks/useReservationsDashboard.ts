@@ -62,7 +62,7 @@ export default function useReservationsDashboard(accessToken?: string) {
         if (response.activities.length > 0) {
           setSelectedActivityId(response.activities[0].id);
         } else {
-          // 체험이 없으면 대시보드 데이터도 비웁니다.
+          // 체험이 없으면 대시보드 데이터도 없음
           setDashboardData([]);
           setSelectedActivityId(undefined);
         }
@@ -113,7 +113,6 @@ export default function useReservationsDashboard(accessToken?: string) {
   // 날짜별 예약 정보 조회
   useEffect(() => {
     if (!accessToken || !selectedActivityId || !selectedDate) {
-      setReservationsForDate(null);
       return;
     }
 
@@ -141,6 +140,18 @@ export default function useReservationsDashboard(accessToken?: string) {
   const handleDateSelect = (date: string | null) => {
     setSelectedDate(date);
   };
+
+  // 날짜별 예약 정보 로딩이 완료된 후 실행할 콜백
+  useEffect(() => {
+    // selectedDate가 있고, 로딩이 끝났으며, 데이터가 준비되었을 때
+    if (selectedDate && !isLoadingReservations && reservationsForDate) {
+      // 이 로직은 ReservationCalendar에서 모달을 열기 위해 사용됩니다.
+      // 현재는 특별한 동작이 필요 없지만, 향후 확장성을 위해 구조를 유지합니다.
+      // 예를 들어, 여기서 모달을 열라는 신호를 보낼 수 있습니다.
+      // onDataLoaded?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoadingReservations, reservationsForDate]);
 
   return {
     myActivities,

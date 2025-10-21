@@ -13,7 +13,7 @@ import useReservationsStatus from '@/hooks/useReservationsStatus';
 export default function ReservationStatusPage() {
   // 인증 기능 구현 후 실제 accessToken 연결 필요
   const accessToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MDY5NDQ5NiwiZXhwIjoxNzYwNjk2Mjk2LCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.jLYiQiMRmymNnuaqVuxwQTbxhhELAb8cLCoRD8mKqDY';
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTAwOTY5MywiZXhwIjoxNzYxMDExNDkzLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.oBooVcTPLMc_yM7Y0tV-splW72mYZo22-EBplwjNJaQ';
   // props로 받기?
   const {
     myActivities,

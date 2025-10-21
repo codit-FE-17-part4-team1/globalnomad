@@ -16,10 +16,7 @@ export default function useReservationsStatus(
   const [updateError, setUpdateError] = useState<string | null>(null);
 
   /**
-   * 예약 상태를 '승인' 또는 '거절'로 업데이트합니다.
-   * @param reservationId - 상태를 변경할 예약의 ID
-   * @param status - 변경할 상태 ('confirmed' 또는 'declined')
-   * @param onSuccess - 상태 변경 성공 시 호출될 콜백 함수
+   * 예약 상태를 '승인' 또는 '거절'로 업데이트
    */
   const handleUpdateStatus = async (
     reservationId: number,
@@ -27,7 +24,7 @@ export default function useReservationsStatus(
     onSuccess?: () => void
   ) => {
     if (!accessToken || !activityId) {
-      setUpdateError('인증 정보 또는 체험 ID가 없습니다.');
+      setUpdateError('체험 정보가 없습니다.');
       return;
     }
 
@@ -40,7 +37,7 @@ export default function useReservationsStatus(
         reservationId,
         status,
       });
-      onSuccess?.(); // 성공 콜백 실행 (데이터 재조회 등)
+      onSuccess?.();
     } catch (e) {
       setUpdateError(
         e instanceof Error ? e.message : '상태 업데이트에 실패했습니다.'
