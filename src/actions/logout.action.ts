@@ -27,6 +27,5 @@ async function clearAuthCookies() {
 export async function logoutAction(): Promise<never> {
   await clearAuthCookies();
 
-  // 원하는 경로로 변경 가능: '/', '/Login' 등
   redirect('/');
 }
