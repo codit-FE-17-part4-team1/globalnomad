@@ -16,7 +16,7 @@ export interface Review {
   updatedAt: string;
 }
 
-export interface ReviewList {
+export interface Reviews {
   averageRating: number;
   totalCount: number;
   reviews: Review[];

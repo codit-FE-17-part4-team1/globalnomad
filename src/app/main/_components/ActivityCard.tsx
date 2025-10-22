@@ -13,7 +13,7 @@ export type ActivityCardProps = Pick<
   | 'rating'
   | 'reviewCount'
   | 'createdAt'
-> & { type?: 'sm' | 'lg' };
+> & { type?: 'sm' | 'lg'; onClick?: () => void };
 
 // 카드 래퍼 크기
 // SmallCard에서는 cardSize.sm와 imageSize.sm을 사용하지 않음 (그리드 컬럼 폭에 맞게 카드 폭을 100% 로 지정)
@@ -64,8 +64,9 @@ const LargeCard: React.FC<ActivityCardProps> = ({
   price,
   rating,
   reviewCount,
+  onClick,
 }) => (
-  <div className={`relative ${cardSize.lg}`}>
+  <div className={`relative ${cardSize.lg} cursor-pointer`} onClick={onClick}>
     {/* 카드 이미지 */}
     <Image
       src={bannerImageUrl}
@@ -111,8 +112,9 @@ const SmallCard: React.FC<ActivityCardProps> = ({
   price,
   rating,
   reviewCount,
+  onClick,
 }) => (
-  <div className={`flex flex-col w-full`}>
+  <div className={`flex flex-col w-full cursor-pointer`} onClick={onClick}>
     {/* 카드 이미지 */}
     <div className={`relative w-full aspect-square`}>
       <Image

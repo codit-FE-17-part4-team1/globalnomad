@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useParams } from 'next/navigation';
+
 import ActivityTitle from '../_components/ActivityDetaiInfo/ActivityTitle';
 import ImageGallery from '../_components/ActivityDetaiInfo/ImageGallery';
 import ActivityDescription from '../_components/ActivityDetaiInfo/ActivityDescription';
@@ -15,13 +17,17 @@ import DateModal from '../_components/ActivityReservation/ReservationContainer/D
 import type { ActivityDetailInfo } from '@/types/activity';
 import type { Reviews, Review } from '@/types/review';
 
-interface ActivityDetailPageProps {
-  activityId: number;
-}
+export default function Page() {
+  const params = useParams();
+  const activityId = Number(params.activityId);
 
-const ActivityDetailPage: React.FC<ActivityDetailPageProps> = ({
-  activityId,
-}) => {
+  if (isNaN(activityId) || activityId <= 0) {
+    return <div>잘못된 체험 아이디입니다.</div>;
+  }
+
+  // numericActivityId 추가
+  const numericActivityId = activityId;
+
   const [activity, setActivity] = useState<ActivityDetailInfo | null>(null);
   const [reviews, setReviews] = useState<Reviews>({
     reviews: [],
@@ -72,16 +78,19 @@ const ActivityDetailPage: React.FC<ActivityDetailPageProps> = ({
 
   // 예약하기 핸들러
   const handleReserve = async () => {
+    // 예약 가능 상태 체크
     if (!isReservationEnabled || !selectedTimeId) return;
 
     try {
       const res = await fetch(
-        `https://sp-globalnomad-api.vercel.app/17/activities/${activityId}/reservations`,
+        `https://sp-globalnomad-api.vercel.app/17/activities/${numericActivityId}/reservations`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            // 쿠키 기반이므로 Authorization 헤더는 필요 없는듯
           },
+          credentials: 'include', // 쿠키 전송 필수!
           body: JSON.stringify({
             scheduleId: selectedTimeId,
             headCount: participants,
@@ -93,7 +102,9 @@ const ActivityDetailPage: React.FC<ActivityDetailPageProps> = ({
         const data = await res.json();
         console.log('예약 완료:', data);
         alert('예약이 완료되었습니다!');
-        // 예약 완료 후 필요한 후처리 (예: 모달 닫기, 초기화 등)
+      } else if (res.status === 401) {
+        // 로그인 안 된 상태
+        alert('로그인이 필요합니다. 로그인 후 예약해주세요.');
       } else {
         const errorData = await res.json();
         console.error('예약 실패:', errorData);
@@ -111,7 +122,7 @@ const ActivityDetailPage: React.FC<ActivityDetailPageProps> = ({
       try {
         setLoading(true);
         const res = await fetch(
-          `https://sp-globalnomad-api.vercel.app/17/activities/${activityId}`
+          `https://sp-globalnomad-api.vercel.app/17/activities/${numericActivityId}`
         );
         if (!res.ok) {
           throw new Error('체험 상세 조회 실패');
@@ -127,14 +138,14 @@ const ActivityDetailPage: React.FC<ActivityDetailPageProps> = ({
     };
 
     fetchActivity();
-  }, [activityId]);
+  }, [numericActivityId]);
 
   // 체험 리뷰 API 호출
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         const res = await fetch(
-          `https://sp-globalnomad-api.vercel.app/17/activities/${activityId}/reviews?page=1&size=3`
+          `https://sp-globalnomad-api.vercel.app/17/activities/${numericActivityId}/reviews?page=1&size=3`
         );
         if (!res.ok) throw new Error('리뷰 조회 실패');
         const data: {
@@ -143,7 +154,6 @@ const ActivityDetailPage: React.FC<ActivityDetailPageProps> = ({
           averageRating: number;
         } = await res.json();
 
-        // ReviewList 컴포넌트가 기대하는 형태로 전달
         setReviews({
           reviews: data.reviews,
           totalCount: data.totalCount,
@@ -151,13 +161,12 @@ const ActivityDetailPage: React.FC<ActivityDetailPageProps> = ({
         });
       } catch (err) {
         console.error(err);
-        // 빈 상태 전달
         setReviews({ reviews: [], totalCount: 0, averageRating: 0 });
       }
     };
 
     fetchReviews();
-  }, [activityId]);
+  }, [numericActivityId]);
 
   if (loading) return <div>로딩중...</div>;
   if (error) return <div>에러 발생: {error}</div>;
@@ -190,21 +199,18 @@ const ActivityDetailPage: React.FC<ActivityDetailPageProps> = ({
         <div className="flex flex-col gap-5 flex-1 md:max-w-[800px]">
           <div className="hidden md:block border-b border-black-nomad/25"></div>
 
-          {/* 체험 설명 섹션 */}
           <section className="w-full py-6">
             <ActivityDescription description={activity.description} />
           </section>
 
           <div className="border-b border-black-nomad/25 -mx-5 md:mx-0"></div>
 
-          {/* 지도 섹션 */}
           <section className="w-full py-6">
             <ActivityLocation address={activity.address} />
           </section>
 
           <div className="border-b border-black-nomad/25 -mx-5 md:mx-0"></div>
 
-          {/* 리뷰 섹션 */}
           <section className="w-full pt-6 pb-80">
             <ReviewList data={reviews} />
           </section>
@@ -232,7 +238,6 @@ const ActivityDetailPage: React.FC<ActivityDetailPageProps> = ({
           onReserve={handleReserve}
         />
 
-        {/* 참여 인원 선택 모달 */}
         {isParticipantsModalOpen && (
           <ParticipantsModal
             onClose={() => setIsParticipantsModalOpen(false)}
@@ -240,17 +245,14 @@ const ActivityDetailPage: React.FC<ActivityDetailPageProps> = ({
           />
         )}
 
-        {/* 날짜 선택 모달 */}
         {isDateModalOpen && (
           <DateModal
             onClose={handleCloseDateModal}
             onSelectDateTime={handleUpdateDateTime}
-            activityId={activityId}
+            activityId={numericActivityId}
           />
         )}
       </section>
     </main>
   );
-};
-
-export default ActivityDetailPage;
+}

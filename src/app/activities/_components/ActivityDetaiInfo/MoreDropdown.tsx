@@ -30,32 +30,58 @@ const MoreDropdown: React.FC<MoreDropdownProps> = ({ activityId }) => {
   const handleEdit = () => {
     try {
       // 수정 페이지로 이동
-      router.push(`/Profile/ExperienceAdd`);
+      router.push(`/my-activities/${activityId}`);
     } catch (error: any) {
       alert(error?.message || '수정할 수 없습니다.');
     }
   };
 
+  // 삭제 버튼 클릭
   const handleDelete = async () => {
     const confirmDelete = confirm('체험을 삭제하시겠습니까?');
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`/Profile/ExperienceAdd`, {
-        method: 'DELETE',
-      });
+      const teamId = '17';
 
-      const data = await res.json();
+      const res = await fetch(
+        `https://sp-globalnomad-api.vercel.app/${teamId}/my-activities/${activityId}`,
+        {
+          method: 'DELETE',
+          credentials: 'include', // 쿠키 포함
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-      if (!res.ok) {
-        alert(data.message || '삭제할 수 없습니다.');
+      const data = await res.json().catch(() => ({}));
+
+      if (res.status === 204) {
+        alert('체험이 삭제되었습니다.');
+        router.refresh(); // 삭제 후 목록 갱신
         return;
       }
 
-      alert('체험이 삭제되었습니다.');
-      router.refresh(); // 삭제 후 목록 갱신
+      switch (res.status) {
+        case 400:
+          alert(data.message || '신청 예약이 있는 체험은 삭제할 수 없습니다.');
+          break;
+        case 401:
+          alert(data.message || '로그인이 필요합니다.');
+          break;
+        case 403:
+          alert(data.message || '본인의 체험만 삭제할 수 있습니다.');
+          break;
+        case 404:
+          alert(data.message || '존재하지 않는 체험입니다.');
+          break;
+        default:
+          alert(data.message || '삭제 처리 중 오류가 발생했습니다.');
+      }
     } catch (error: any) {
-      alert(error?.message || '삭제 처리 중 오류가 발생했습니다.');
+      alert('삭제 처리 중 오류가 발생했습니다. 로그인 여부를 확인해주세요.');
+      console.error(error);
     }
   };
 
