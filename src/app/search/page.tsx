@@ -1,21 +1,117 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import MainBanner from '@/app/main/_components/MainBanner';
 import SearchBar from '@/app/main/_components/SearchBar';
 import SearchResultsList from './_components/SearchResultsList';
-
-import { DummyActivities } from '@/app/main/data/DummyData';
+import type { Activity } from '@/types/activity';
 
 const SearchPage: React.FC = () => {
   const searchParams = useSearchParams();
   const keyword = searchParams.get('keyword') || '';
+  const teamId = 17;
 
-  // 임시로 더미데이터를 필터링해서 keyword와 연동
-  const filteredResults = DummyActivities.filter((item) =>
-    item.title.includes(keyword)
+  // 상태 관리
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [sortOption, setSortOption] = useState<'relevance' | 'latest'>(
+    'relevance'
   );
+
+  // 화면 크기에 따라 itemsPerPage 설정
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (window.innerWidth >= 1024) setItemsPerPage(12);
+      else if (window.innerWidth >= 768) setItemsPerPage(9);
+      else setItemsPerPage(8);
+    };
+    updateItemsPerPage();
+    window.addEventListener('resize', updateItemsPerPage);
+    return () => window.removeEventListener('resize', updateItemsPerPage);
+  }, []);
+
+  // 세션 스토리지에서 초기값 불러오기
+  useEffect(() => {
+    const savedPage = sessionStorage.getItem('searchCurrentPage');
+    const savedPerPage = sessionStorage.getItem('searchItemsPerPage');
+    const savedSort = sessionStorage.getItem('searchSortOption');
+
+    if (savedPage) setCurrentPage(Number(savedPage));
+    if (savedPerPage) setItemsPerPage(Number(savedPerPage));
+    if (savedSort === 'relevance' || savedSort === 'latest')
+      setSortOption(savedSort);
+  }, []);
+
+  // API 호출 + 키워드 필터링
+  useEffect(() => {
+    const fetchActivities = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await fetch(
+          `https://sp-globalnomad-api.vercel.app/${teamId}/activities?method=offset&page=1&size=50`,
+          { headers: { accept: 'application/json' } }
+        );
+
+        if (!res.ok) throw new Error('체험 리스트를 가져오는 데 실패했습니다.');
+
+        const data = await res.json();
+        let results: Activity[] = data.activities;
+
+        if (keyword) {
+          results = results.filter((item) =>
+            item.title.toLowerCase().includes(keyword.toLowerCase())
+          );
+        }
+
+        setActivities(results);
+        setCurrentPage(1); // 키워드 변경 시 페이지 초기화
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchActivities();
+  }, [teamId, keyword]);
+
+  // 정렬 및 sessionStorage 저장
+  useEffect(() => {
+    sessionStorage.setItem('searchCurrentPage', currentPage.toString());
+    sessionStorage.setItem('searchItemsPerPage', itemsPerPage.toString());
+    sessionStorage.setItem('searchSortOption', sortOption);
+  }, [currentPage, itemsPerPage, sortOption]);
+
+  // 정렬 적용 (관련도순 | 최신순)
+  const sortedResults = React.useMemo(() => {
+    const sorted = [...activities];
+    if (sortOption === 'relevance') {
+      const relevanceScore = (item: Activity) => {
+        let score = 0;
+        const kw = keyword.toLowerCase();
+        const title = item.title.toLowerCase();
+        const desc = item.description?.toLowerCase() ?? '';
+        if (title === kw) score += 10;
+        else if (title.includes(kw)) score += 5;
+        if (desc.includes(kw)) score += 2;
+        return score;
+      };
+      sorted.sort((a, b) => relevanceScore(b) - relevanceScore(a));
+    } else if (sortOption === 'latest') {
+      sorted.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    }
+    return sorted;
+  }, [activities, sortOption, keyword]);
 
   return (
     <main className="w-full flex flex-col items-center">
@@ -29,7 +125,19 @@ const SearchPage: React.FC = () => {
 
       {/* 검색 결과 리스트 */}
       <div className="w-full my-30 md:my-40">
-        <SearchResultsList results={filteredResults} keyword={keyword} />
+        {loading && <p className="text-center py-10">로딩 중...⏳</p>}
+        {error && <p className="text-center py-10 text-red-500">{error}</p>}
+        {!loading && !error && (
+          <SearchResultsList
+            results={sortedResults}
+            keyword={keyword}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            sortOption={sortOption}
+            onPageChange={setCurrentPage}
+            onSortChange={setSortOption}
+          />
+        )}
       </div>
     </main>
   );
