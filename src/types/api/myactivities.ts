@@ -30,6 +30,7 @@ export const reservationsSchema = z.object({
   completed: z.number(),
   confirmed: z.number(),
   pending: z.number(),
+  declined: z.number(),
 });
 
 export const ISODate = z

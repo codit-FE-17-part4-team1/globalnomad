@@ -100,7 +100,11 @@ export default function ReservationCalendar({
 
   // API 응답(dashboardData)을 캘린더가 이해할 수 있는 CalEvent[] 형태로 변환
   const calendarEvents = useMemo<CalEvent[]>(() => {
+    console.log('📊 dashboardData:', dashboardData);
+
     return dashboardData.flatMap((item) => {
+      console.log(`📅 ${item.date}:`, item.reservations);
+
       const date = new Date(item.date);
       const events: CalEvent[] = [];
 
@@ -122,21 +126,31 @@ export default function ReservationCalendar({
           statuses: ['confirmed', 'completed'],
         });
       }
+      if (item.reservations.declined > 0) {
+        console.log(
+          `✅ ${item.date}에 declined ${item.reservations.declined}건 추가`
+        );
+        events.push({
+          id: `${item.date}-declined`,
+          start: date,
+          end: date,
+          status: 'declined',
+          statuses: ['declined'],
+        });
+      }
+
+      console.log(`🎯 ${item.date} events:`, events);
       return events;
     });
   }, [dashboardData]);
 
   // 여기서 문제가 생김 -> 수정 완료
   const formattedReservationsForModal = useMemo(() => {
-    console.log('🔍 reservationsForDate 원본:', reservationsForDate);
-
     if (!reservationsForDate) return [];
 
     const flatReservations = reservationsForDate.reservations.flatMap((item) =>
       Array.isArray(item.reservations) ? item.reservations : [item]
     );
-
-    console.log('🔍 flatReservations:', flatReservations);
 
     return flatReservations.map((r) => ({
       id: r.id,
@@ -197,17 +211,18 @@ export default function ReservationCalendar({
           // event: EventBar,
         }}
         eventPropGetter={(event) => {
-          // 각 이벤트는 단일 상태를 가지므로, 그 상태에 맞는 색상을 지정
           const background =
             event.status === 'pending'
               ? '#0085FF' // 파랑
               : event.status === 'confirmed'
                 ? '#F6EAD9' // 베이지
-                : '#D1D5DB'; // 기타
+                : event.status === 'declined'
+                  ? '#D1D5DB' // 회색
+                  : '#D1D5DB'; // 기본값
 
           return {
             style: {
-              background,
+              backgroundColor: background,
               border: 'none',
               borderRadius: '4px',
               height: '16px',

@@ -85,8 +85,6 @@ export async function getSchedulesForDate(opts: {
 
   const url = `${BASE_URL}/my-activities/${activityId}/reserved-schedule?date=${date}`;
 
-  console.log('🔍 getSchedulesForDate URL:', url);
-
   const res = await fetch(url, {
     method: 'GET',
     headers: {
@@ -104,7 +102,6 @@ export async function getSchedulesForDate(opts: {
   }
 
   const data = await res.json();
-  console.log('✅ 스케줄 데이터:', data);
   return data;
 }
 
@@ -127,8 +124,6 @@ export async function getReservationsBySchedule(opts: {
 
   const url = `${BASE_URL}/my-activities/${activityId}/reservations?${params.toString()}`;
 
-  console.log('🌐 API 호출:', url, '| status:', status);
-
   const res = await fetch(url, {
     method: 'GET',
     headers: {
@@ -149,8 +144,6 @@ export async function getReservationsBySchedule(opts: {
   }
 
   const data = await res.json();
-  console.log('✅ API 응답 데이터:', data, '| status:', status);
-
   return data;
 }
 
@@ -218,8 +211,6 @@ export async function getReservationsByDate(opts: {
     targetDate.setHours(0, 0, 0, 0);
 
     if (targetDate < today) {
-      console.log('🔍 과거 날짜 - confirmed 상태로 모든 예약 조회');
-
       const allConfirmedUrl = `${BASE_URL}/my-activities/${activityId}/reservations?status=confirmed`;
 
       try {
@@ -234,8 +225,6 @@ export async function getReservationsByDate(opts: {
 
         if (res.ok) {
           const allConfirmedData = await res.json();
-          console.log('✅ 전체 confirmed 예약:', allConfirmedData);
-
           // 해당 날짜의 예약만 필터링
           const dateReservations = allConfirmedData.reservations.filter(
             (r: any) => r.date === date
@@ -261,8 +250,6 @@ export async function getReservationsByDate(opts: {
     const allReservations = reservationArrays.flatMap(
       (r) => r.reservations || []
     );
-
-    console.log('✅ 최종 예약 목록:', allReservations);
 
     return {
       reservations: allReservations,
