@@ -136,7 +136,7 @@ export default function useReservationsDashboard(accessToken?: string) {
     fetchReservationsByDate();
   }, [accessToken, selectedActivityId, selectedDate]);
 
-  // 캘린더에서 날짜 선택 시 호출될 핸들러
+  // 캘린더에서 날짜 선택 시 호출될 핸들러 -> 날짜를 클릭하면 모달이 나와야 할 것 같아 겹치는 것 같은데 .. 흠
   const handleDateSelect = (date: string | null) => {
     setSelectedDate(date);
   };
@@ -166,5 +166,7 @@ export default function useReservationsDashboard(accessToken?: string) {
     reservationsError,
     handleDateSelect,
     selectedDate,
+    activitiesError,
+    dashboardError,
   };
 }

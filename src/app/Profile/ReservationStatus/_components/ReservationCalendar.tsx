@@ -84,6 +84,7 @@ interface ReservationCalendarProps {
   isLoadingReservations: boolean;
   onApprove: (reservationId: number) => void;
   onReject: (reservationId: number) => void;
+  updateError: string | null;
 }
 
 export default function ReservationCalendar({
@@ -95,6 +96,7 @@ export default function ReservationCalendar({
   isLoadingReservations,
   onApprove,
   onReject,
+  updateError,
 }: ReservationCalendarProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selected, setSelected] = useState<CalEvent | null>(null);
@@ -128,27 +130,34 @@ export default function ReservationCalendar({
     });
   }, [dashboardData]);
 
+  // 여기서 문제가 생김 -> 수정 완료
   const formattedReservationsForModal = useMemo(() => {
     if (!reservationsForDate) return [];
-    return reservationsForDate.reservations.map((r) => ({
+
+    const flatReservations = reservationsForDate.reservations.flatMap((item) =>
+      Array.isArray(item.reservations) ? item.reservations : [item]
+    );
+
+    return flatReservations.map((r) => ({
       id: r.id,
       nickname: r.nickname,
       people: r.headCount,
-      status: r.status === 'declined' ? 'canceled' : r.status,
+      status: (r.status === 'declined'
+        ? 'canceled'
+        : r.status) as ReservationStatus,
       time: `${r.startTime}~${r.endTime}`,
     }));
   }, [reservationsForDate]);
 
-  console.log('reservationsForDate', reservationsForDate);
-  console.log('formattedReservationsForModal:', formattedReservationsForModal);
-
   const handleEventClick = (ev: CalEvent) => {
     setSelected(ev);
     const dateString = dayjs(ev.start).format('YYYY-MM-DD');
+
     onSelectDate(dateString);
     setIsModalOpen(true);
   };
 
+  // 이 부분도 겹치는데 .. -> 일단 hook에서는 제거함
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelected(null);

@@ -47,5 +47,9 @@ export default function useReservationsStatus(
     }
   };
 
-  return { handleUpdateStatus, isUpdating, updateError };
+  return {
+    handleUpdateStatus,
+    isUpdating,
+    updateError,
+  };
 }

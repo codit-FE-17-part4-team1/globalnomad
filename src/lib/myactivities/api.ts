@@ -1,4 +1,4 @@
-import { BASE_API_URL } from '@/types/constants';
+import { BASE_URL } from '@/lib/constants';
 import {
   type MyActivitiesResponse,
   type ReservationDashboard,
@@ -7,11 +7,6 @@ import {
   type Activity,
   type Reservation,
 } from '@/types/api/myactivities';
-
-function assertToken(token?: string): asserts token is string {
-  if (!token)
-    throw new Error('인증 토큰이 없습니다. 로그인 후 다시 시도해 주세요.');
-}
 
 /**
  * 내 체험 목록
@@ -23,13 +18,13 @@ export async function getMyActivities(opts: {
 }): Promise<MyActivitiesResponse> {
   const { cursorId, size = 20, accessToken } = opts;
 
-  assertToken(accessToken);
+  // assertToken(accessToken);
 
   const qs = new URLSearchParams();
   if (cursorId != null) qs.set('cursorId', String(cursorId));
   qs.set('size', String(size));
 
-  const url = `${BASE_API_URL}/my-activities?${qs.toString()}`;
+  const url = `${BASE_URL}/my-activities?${qs.toString()}`;
   const res = await fetch(url, {
     method: 'GET',
     headers: {
@@ -55,9 +50,9 @@ export async function getReservationDashboard(opts: {
   accessToken?: string;
 }): Promise<ReservationDashboard> {
   const { activityId, year, month, accessToken } = opts;
-  assertToken(accessToken);
+  // assertToken(accessToken);
 
-  const url = `${BASE_API_URL}/my-activities/${activityId}/reservation-dashboard?year=${year}&month=${month}`;
+  const url = `${BASE_URL}/my-activities/${activityId}/reservation-dashboard?year=${year}&month=${month}`;
   const res = await fetch(url, {
     method: 'GET',
     headers: {
@@ -84,13 +79,13 @@ export async function getSchedulesForDate(opts: {
   accessToken?: string;
 }): Promise<ReservedSchedule> {
   const { activityId, date, accessToken } = opts;
-  assertToken(accessToken);
+  // assertToken(accessToken);
 
   const dateObj = new Date(date);
   const year = String(dateObj.getFullYear());
   const month = String(dateObj.getMonth() + 1).padStart(2, '0');
 
-  const url = `${BASE_API_URL}/my-activities/${activityId}/reserved-schedule?date=${date}`;
+  const url = `${BASE_URL}/my-activities/${activityId}/reserved-schedule?date=${date}`;
   console.log('🔗 Request URL:', url); // --> 콘솔 확인됨
   const res = await fetch(url, {
     method: 'GET',
@@ -120,7 +115,7 @@ export async function getReservationsBySchedule(opts: {
 }): Promise<ReservationsTime> {
   const { activityId, scheduleId, status, accessToken } = opts;
 
-  assertToken(accessToken);
+  // assertToken(accessToken);
 
   const params = new URLSearchParams();
   params.set('scheduleId', String(scheduleId));
@@ -131,7 +126,7 @@ export async function getReservationsBySchedule(opts: {
 
   console.log('🔗 Request params:', { scheduleId, status });
 
-  const url = `${BASE_API_URL}/my-activities/${activityId}/reservations?${params.toString()}`;
+  const url = `${BASE_URL}/my-activities/${activityId}/reservations?${params.toString()}`;
 
   console.log('🔗 Request URL:', url);
 
@@ -255,30 +250,6 @@ export async function getReservationsByDate(opts: {
       }
     );
 
-    //   async (schedule) => {
-    //     console.log(
-    //       `⏰ Fetching reservations for schedule ${schedule.scheduleId}`
-    //     ); // --> 콘솔 확인됨
-
-    //     const result = await getReservationsBySchedule({
-    //       activityId,
-    //       scheduleId: schedule.scheduleId,
-    //       accessToken,
-    //     });
-
-    //     // 해당 날짜의 예약만 필터링
-    //     const filteredReservations = result.reservations.filter(
-    //       (reservation: Reservation) => reservation.date === date
-    //     );
-
-    //     console.log(
-    //       `✅ Found ${filteredReservations.length} reservations for ${date}` // --> filteredReservations.length 확인 불가, date 확인 완료
-    //     );
-
-    //     return filteredReservations;
-    //   }
-    // );
-
     const reservationArrays = await Promise.all(reservationPromises);
     const allReservations = reservationArrays.flat();
 
@@ -315,9 +286,9 @@ export async function updateReservationStatus(opts: {
   accessToken?: string;
 }): Promise<void> {
   const { activityId, reservationId, status, accessToken } = opts;
-  assertToken(accessToken);
+  // assertToken(accessToken);
 
-  const url = `${BASE_API_URL}/my-activities/${activityId}/reservations/${reservationId}`;
+  const url = `${BASE_URL}/my-activities/${activityId}/reservations/${reservationId}`;
   const res = await fetch(url, {
     method: 'PATCH',
     headers: {
@@ -341,9 +312,9 @@ export async function deleteMyActivity(opts: {
   accessToken?: string;
 }): Promise<void> {
   const { activityId, accessToken } = opts;
-  assertToken(accessToken);
+  // assertToken(accessToken);
 
-  const url = `${BASE_API_URL}/my-activities/${activityId}`;
+  const url = `${BASE_URL}/my-activities/${activityId}`;
   const res = await fetch(url, {
     method: 'DELETE',
     headers: {
@@ -365,8 +336,8 @@ export async function modifyMyActivity(
   formData: FormData,
   accessToken: string
 ): Promise<Activity> {
-  assertToken(accessToken);
-  const url = `${BASE_API_URL}/my-activities/${activityId}`;
+  // assertToken(accessToken);
+  const url = `${BASE_URL}/my-activities/${activityId}`;
   const res = await fetch(url, {
     method: 'PATCH',
     headers: { Authorization: `Bearer ${accessToken}` },
