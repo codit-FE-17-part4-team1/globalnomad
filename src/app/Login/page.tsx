@@ -133,6 +133,7 @@ export default function LoginPage() {
           onConfirm={handleConfirm}
           message={modalMsg}
           confirmLabel="확인"
+          className="bg-white"
         />
       </div>
     </div>
