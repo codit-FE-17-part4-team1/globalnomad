@@ -36,14 +36,6 @@ export default function ReservationModalBase({
   onApprove,
   onReject,
 }: ReservationModalBaseProps) {
-  console.log('🎯 Modal opened with:', {
-    isOpen,
-    status,
-    date,
-    reservations,
-    reservationsLength: reservations.length,
-  });
-
   const [activeTab, setActiveTab] = useState<ReservationStatus>(status);
   const [selectedTime, setSelectedTime] = useState<string>('all');
 
@@ -84,10 +76,6 @@ export default function ReservationModalBase({
   const filteredReservations = reservationsByStatus.filter((item) =>
     selectedTime === 'all' ? true : item.time === selectedTime
   );
-
-  console.log('📋 Filtered reservations:', filteredReservations);
-  console.log('🔖 Active tab:', activeTab);
-  console.log('⏰ Selected time:', selectedTime);
 
   return (
     <BaseModal
@@ -188,9 +176,19 @@ export default function ReservationModalBase({
                 </div>
               )}
               {activeTab === 'confirmed' && (
-                <Chips color="orange" variant="round">
-                  예약 승인
-                </Chips>
+                <>
+                  {item.status === 'confirmed' && (
+                    <Chips color="orange" variant="round">
+                      예약 승인
+                    </Chips>
+                  )}
+                  {item.status === 'completed' && (
+                    <Chips color="orange" variant="round">
+                      체험 완료{' '}
+                      {/* 예약 지난 것들이 갑자기 베이지 색으로 변경되어 확인해서 추가했는데.. 결론은 백엔드에서 주지 않아서.. 안되는 듯? */}
+                    </Chips>
+                  )}
+                </>
               )}
               {activeTab === 'canceled' && (
                 <Chips color="red" variant="round">

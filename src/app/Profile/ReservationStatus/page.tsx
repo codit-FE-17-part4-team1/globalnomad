@@ -13,7 +13,7 @@ import useReservationsStatus from '@/hooks/useReservationsStatus';
 export default function ReservationStatusPage() {
   // 인증 기능 구현 후 실제 accessToken 연결 필요
   const accessToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTEyNTE5MSwiZXhwIjoxNzYxMTI2OTkxLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.j1vxQD7Pqgd-csFcN2rxYMaQx42Tvq_5NBiGxbr9aaM';
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTE0NzE5NSwiZXhwIjoxNzYxMTQ4OTk1LCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.0IqGmCiqrpLG3fP03INAwdsxcXZMgc-JyBVinOI5lMs';
   // props로 받기?
   const {
     myActivities,
@@ -27,6 +27,7 @@ export default function ReservationStatusPage() {
     isLoadingReservations,
     handleDateSelect,
     selectedDate,
+    currentDate,
   } = useReservationsDashboard(accessToken);
 
   // 중복되는 값이 있는 것 같아서 제거하고 단순화로 진행
@@ -35,16 +36,15 @@ export default function ReservationStatusPage() {
     selectedActivityId
   );
 
+  // 승인, 거절 시 상태값 업데이트 되는 함수로 호출을 했는데, 왜 자동으로 다른 게 거절됨?
   const handleApprove = (reservationId: number) => {
     handleUpdateStatus(reservationId, 'confirmed', () => {
-      // 성공 시 데이터 재조회
       if (selectedDate) handleDateSelect(selectedDate);
     });
   };
 
   const handleReject = (reservationId: number) => {
     handleUpdateStatus(reservationId, 'declined', () => {
-      // 성공 시 데이터 재조회
       if (selectedDate) handleDateSelect(selectedDate);
     });
   };
@@ -76,6 +76,7 @@ export default function ReservationStatusPage() {
           <ReservationCalendar
             dashboardData={dashboardData}
             activityId={selectedActivityId}
+            currentDate={currentDate}
             onNavigate={(newDate) => setCurrentDate(newDate)}
             onSelectDate={handleDateSelect}
             reservationsForDate={reservationsForDate}

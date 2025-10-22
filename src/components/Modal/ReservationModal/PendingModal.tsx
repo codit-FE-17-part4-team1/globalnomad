@@ -1,7 +1,7 @@
 'use client';
 
 import ReservationModalBase from './ReservationModalBase';
-import type { CalEvent, ReservationStatus } from '@/types/calendar';
+import type { ReservationStatus } from '@/types/calendar';
 
 interface PendingModalProps {
   isOpen: boolean;
