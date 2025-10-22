@@ -11,19 +11,26 @@ export default function TimeDropdown({
   onChange,
   placeholder = '예약 시간', // 이걸 해줘야 할 지 고민인데, 일단 해둠
   className = '',
+  closeOnOverlay = true,
+  closeOnEsc = true,
 }: {
   value?: string;
   options: TimeOption[];
   onChange: (v: string) => void;
   placeholder?: string;
   className?: string;
+  closeOnOverlay?: boolean;
+  closeOnEsc?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
+    // 드롭다운 클릭 후에 바깥을 클릭하면 닫히도록 하고 싶음(모달 때 사용한 코드로 해볼까)
     const onDocClick = (e: MouseEvent) => {
+      if (!closeOnOverlay) return;
+
       if (
         !btnRef.current?.contains(e.target as Node) &&
         !listRef.current?.contains(e.target as Node)
@@ -31,15 +38,18 @@ export default function TimeDropdown({
         setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
+      if (!closeOnEsc) return;
+
       if (e.key === 'Escape') setOpen(false);
     };
+
     document.addEventListener('mousedown', onDocClick);
     document.addEventListener('keydown', onKey);
     return () => {
       document.removeEventListener('mousedown', onDocClick);
       document.removeEventListener('keydown', onKey);
     };
-  }, []);
+  }, [closeOnOverlay, closeOnEsc]);
 
   const selectedLabel = options.find((o) => o.value === value)?.label ?? '';
 

@@ -12,7 +12,7 @@ import {
   ToolbarProps as RBCToolbarProps,
   DateLocalizer,
 } from 'react-big-calendar';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { localizer } from '@/types/calendarLocalizer';
 import type { CalEvent, ReservationStatus } from '@/types/calendar';
 import PendingModal from '@/components/Modal/ReservationModal/PendingModal';
@@ -41,14 +41,10 @@ function MonthToolbar({
   const title = loc.format(date, 'yyyy년 M월');
 
   const handlePrev = () => {
-    // const newDate = new Date(date);
-    // newDate.setMonth(newDate.getMonth() - 1);
     onNavigate('PREV');
   };
 
   const handleNext = () => {
-    // const newDate = new Date(date);
-    // newDate.setMonth(newDate.getMonth() - 1);
     onNavigate('NEXT');
   };
 

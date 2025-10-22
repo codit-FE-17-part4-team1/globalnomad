@@ -133,6 +133,8 @@ export default function ReservationModalBase({
               options={timeOptions}
               onChange={setSelectedTime}
               placeholder="예약 시간"
+              closeOnOverlay={true}
+              closeOnEsc={true}
             />
           )}
         </div>

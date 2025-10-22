@@ -13,7 +13,7 @@ import useReservationsStatus from '@/hooks/useReservationsStatus';
 export default function ReservationStatusPage() {
   // 인증 기능 구현 후 실제 accessToken 연결 필요
   const accessToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTE1NDk5OCwiZXhwIjoxNzYxMTU2Nzk4LCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.AfidwSdJbwdPrgW-JMFHZI1VDfESkRwa_vXx3YsU0Ws';
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTE1OTI4NywiZXhwIjoxNzYxMTYxMDg3LCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.c3ME32B-4MVPNB6vt55JRc232FJgXTOh1PSLbPSIXQc';
   // props로 받기?
   const {
     myActivities,
@@ -65,6 +65,7 @@ export default function ReservationStatusPage() {
         experiences={myActivities}
         selectedExperienceId={selectedActivityId}
         onSelectExperience={setSelectedActivityId}
+        // onClick={handleOverLayClick}
       />
       {/* 여기서 조립해야 할 듯? - 체험이 없을 경우를 조건부로! */}
       <div className="h-[560px] md:h-[620px] lg:h-[680px]">

@@ -81,7 +81,7 @@ export async function getSchedulesForDate(opts: {
   const { activityId, date, accessToken } = opts;
   // assertToken(accessToken);
 
-  const dateObj = new Date(date);
+  // const dateObj = new Date(date);
 
   const url = `${BASE_URL}/my-activities/${activityId}/reserved-schedule?date=${date}`;
 
@@ -204,7 +204,7 @@ export async function getReservationsByDate(opts: {
       return promises;
     });
 
-    // 3. 과거 날짜는 completed 예약으로 조회
+    // 3. 과거 날짜는 completed 예약으로 조회 (이게 필요 없을 듯)
     const targetDate = new Date(date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);

@@ -1,9 +1,8 @@
 'use client';
 
 import { useRef } from 'react';
-// import Portal from '@/components/Modal/Portalmodal';
 
-// 모달 사이즈를 따로 잡고 싶은데, className으로 직접 작성해야 할 지, 상수로 빼서 관리할 지 고민
+// 모달 사이즈를 따로 잡고 싶은데, className으로 직접 작성해야 할 지, 상수로 빼서 관리할 지 고민 -> 공통에서는 빼버림! 각자 진행하도록!
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -22,7 +21,7 @@ export default function BaseModal({
   className,
   title,
   closeOnOverlay = true, // 기본값
-  closeOnEsc = true, // 얘도 추가해보고 싶은데 어떻게 쓸 수 있을까?(고민)
+  closeOnEsc = true, // 얘도 추가해보고 싶은데 어떻게 쓸 수 있을까?(고민, 공부필요)
 }: BaseModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const handleOverLayClick = (e: React.MouseEvent) => {
