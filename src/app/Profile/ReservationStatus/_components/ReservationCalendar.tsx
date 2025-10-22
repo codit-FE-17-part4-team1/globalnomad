@@ -6,7 +6,12 @@
 import '@/styles/global.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-import { Calendar, Views } from 'react-big-calendar';
+import {
+  Calendar,
+  Views,
+  ToolbarProps as RBCToolbarProps,
+  DateLocalizer,
+} from 'react-big-calendar';
 import { useEffect, useMemo, useState } from 'react';
 import { localizer } from '@/types/calendarLocalizer';
 import type { CalEvent, ReservationStatus } from '@/types/calendar';
@@ -21,25 +26,30 @@ import { formatDate } from '@/utils/timechanges';
 import dayjs from 'dayjs';
 
 // 이것도 따로 빼도 될까나?
-type ToolbarProps = {
-  date: Date;
-  localizer: any;
-  onNavigate: (date: Date) => void;
-};
+// type ToolbarProps = {
+//   date: Date;
+//   localizer: any;
+//   onNavigate: (date: Date) => void;
+// };
 
-function MonthToolbar({ date, localizer, onNavigate }: ToolbarProps) {
-  const title = localizer.format(date, 'yyyy년 M월');
+function MonthToolbar({
+  date,
+  localizer,
+  onNavigate,
+}: RBCToolbarProps<CalEvent>) {
+  const loc = localizer as DateLocalizer;
+  const title = loc.format(date, 'yyyy년 M월');
 
   const handlePrev = () => {
-    const newDate = new Date(date);
-    newDate.setMonth(newDate.getMonth() - 1);
-    onNavigate(newDate);
+    // const newDate = new Date(date);
+    // newDate.setMonth(newDate.getMonth() - 1);
+    onNavigate('PREV');
   };
 
   const handleNext = () => {
-    const newDate = new Date(date);
-    newDate.setMonth(newDate.getMonth() - 1);
-    onNavigate(newDate);
+    // const newDate = new Date(date);
+    // newDate.setMonth(newDate.getMonth() - 1);
+    onNavigate('NEXT');
   };
 
   return (
@@ -80,66 +90,49 @@ interface ReservationCalendarProps {
 
 export default function ReservationCalendar({
   dashboardData,
-  activityId,
   currentDate,
   onNavigate,
   onSelectDate,
   reservationsForDate,
-  isLoadingReservations,
   onApprove,
   onReject,
-  updateError,
 }: ReservationCalendarProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selected, setSelected] = useState<CalEvent | null>(null);
 
-  // 디버깅 코드
-  useEffect(() => {
-    console.log('ReservationCalendar currentDate 변경됨:', currentDate);
-  }, [currentDate]);
-
   // API 응답(dashboardData)을 캘린더가 이해할 수 있는 CalEvent[] 형태로 변환
   const calendarEvents = useMemo<CalEvent[]>(() => {
-    console.log('📊 dashboardData:', dashboardData);
-
     return dashboardData.flatMap((item) => {
-      console.log(`📅 ${item.date}:`, item.reservations);
-
       const date = new Date(item.date);
       const events: CalEvent[] = [];
 
       if (item.reservations.pending > 0) {
         events.push({
           id: `${item.date}-pending`,
+          title: '',
           start: date,
           end: date,
-          status: 'pending',
-          statuses: ['pending'],
+          status: ['pending'],
         });
       }
       if (item.reservations.confirmed > 0 || item.reservations.completed > 0) {
         events.push({
           id: `${item.date}-confirmed`,
+          title: '',
           start: date,
           end: date,
-          status: 'confirmed',
-          statuses: ['confirmed', 'completed'],
+          status: ['confirmed', 'completed'],
         });
       }
       if (item.reservations.declined > 0) {
-        console.log(
-          `✅ ${item.date}에 declined ${item.reservations.declined}건 추가`
-        );
         events.push({
           id: `${item.date}-declined`,
+          title: '',
           start: date,
           end: date,
-          status: 'declined',
-          statuses: ['declined'],
+          status: ['declined'],
         });
       }
-
-      console.log(`🎯 ${item.date} events:`, events);
       return events;
     });
   }, [dashboardData]);
@@ -148,11 +141,7 @@ export default function ReservationCalendar({
   const formattedReservationsForModal = useMemo(() => {
     if (!reservationsForDate) return [];
 
-    const flatReservations = reservationsForDate.reservations.flatMap((item) =>
-      Array.isArray(item.reservations) ? item.reservations : [item]
-    );
-
-    return flatReservations.map((r) => ({
+    return reservationsForDate.reservations.map((r) => ({
       id: r.id,
       nickname: r.nickname,
       people: r.headCount,
@@ -178,7 +167,6 @@ export default function ReservationCalendar({
   };
 
   const handleNavigate = (newDate: Date) => {
-    console.log('handleNavigate 확인', newDate);
     onNavigate(newDate);
   };
 
@@ -208,24 +196,22 @@ export default function ReservationCalendar({
         toolbar={true}
         components={{
           toolbar: MonthToolbar,
-          // event: EventBar,
         }}
         eventPropGetter={(event) => {
-          const background =
-            event.status === 'pending'
-              ? '#0085FF' // 파랑
-              : event.status === 'confirmed'
-                ? '#F6EAD9' // 베이지
-                : event.status === 'declined'
-                  ? '#D1D5DB' // 회색
-                  : '#D1D5DB'; // 기본값
+          const background = event.status.includes('pending')
+            ? '#0085FF' // 파랑
+            : event.status.includes('confirmed')
+              ? '#F6EAD9' // 베이지
+              : event.status.includes('declined')
+                ? '#D1D5DB' // 회색
+                : '#D1D5DB'; // 기본값
 
           return {
             style: {
               backgroundColor: background,
               border: 'none',
               borderRadius: '4px',
-              height: '16px',
+              height: '20px',
             },
           };
         }}
@@ -234,11 +220,12 @@ export default function ReservationCalendar({
       {/* 조건부로 모달 열리게 하기 */}
       {isModalOpen && selected && (
         <>
-          {selected.status === 'pending' && (
+          {/* 여긴 왜 자꾸 오류가 남아있는겨 !! */}
+          {selected.status.includes('pending') && (
             <PendingModal
               isOpen={isModalOpen}
               onClose={handleCloseModal}
-              status={selected.status}
+              status={selected.status[0]}
               date={formatDate(selected.start)}
               time=""
               reservations={formattedReservationsForModal}
@@ -246,22 +233,21 @@ export default function ReservationCalendar({
               onReject={onReject}
             />
           )}
-          {selected.status === 'confirmed' && (
+          {selected.status.includes('confirmed') && (
             <ConfirmedModal
               isOpen={isModalOpen}
               onClose={handleCloseModal}
-              status={selected.status}
+              status={selected.status[0]}
               date={formatDate(selected.start)}
               time=""
               reservations={formattedReservationsForModal}
             />
           )}
-          {(selected.status === 'declined' ||
-            selected.statuses.includes('confirmed')) && (
+          {selected.status.includes('declined') && (
             <CanceledModal
               isOpen={isModalOpen}
               onClose={handleCloseModal}
-              status={selected.status}
+              status={selected.status[0]}
               date={formatDate(selected.start)}
               time=""
               reservations={formattedReservationsForModal}
