@@ -13,7 +13,7 @@ import useReservationsStatus from '@/hooks/useReservationsStatus';
 export default function ReservationStatusPage() {
   // 인증 기능 구현 후 실제 accessToken 연결 필요
   const accessToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTAwOTY5MywiZXhwIjoxNzYxMDExNDkzLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.oBooVcTPLMc_yM7Y0tV-splW72mYZo22-EBplwjNJaQ';
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTEyNTE5MSwiZXhwIjoxNzYxMTI2OTkxLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.j1vxQD7Pqgd-csFcN2rxYMaQx42Tvq_5NBiGxbr9aaM';
   // props로 받기?
   const {
     myActivities,
@@ -29,7 +29,8 @@ export default function ReservationStatusPage() {
     selectedDate,
   } = useReservationsDashboard(accessToken);
 
-  const { handleUpdateStatus, isUpdating } = useReservationsStatus(
+  // 중복되는 값이 있는 것 같아서 제거하고 단순화로 진행
+  const { handleUpdateStatus, isUpdating, updateError } = useReservationsStatus(
     accessToken,
     selectedActivityId
   );
@@ -81,6 +82,7 @@ export default function ReservationStatusPage() {
             isLoadingReservations={isLoadingReservations || isUpdating}
             onApprove={handleApprove}
             onReject={handleReject}
+            updateError={updateError}
           />
         ) : (
           <div className="flex flex-col items-center mt-50 h-full text-gray-500">

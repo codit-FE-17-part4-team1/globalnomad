@@ -36,6 +36,14 @@ export default function ReservationModalBase({
   onApprove,
   onReject,
 }: ReservationModalBaseProps) {
+  console.log('🎯 Modal opened with:', {
+    isOpen,
+    status,
+    date,
+    reservations,
+    reservationsLength: reservations.length,
+  });
+
   const [activeTab, setActiveTab] = useState<ReservationStatus>(status);
   const [selectedTime, setSelectedTime] = useState<string>('all');
 
@@ -76,6 +84,10 @@ export default function ReservationModalBase({
   const filteredReservations = reservationsByStatus.filter((item) =>
     selectedTime === 'all' ? true : item.time === selectedTime
   );
+
+  console.log('📋 Filtered reservations:', filteredReservations);
+  console.log('🔖 Active tab:', activeTab);
+  console.log('⏰ Selected time:', selectedTime);
 
   return (
     <BaseModal
