@@ -12,7 +12,7 @@ import {
   ToolbarProps as RBCToolbarProps,
   DateLocalizer,
 } from 'react-big-calendar';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { localizer } from '@/types/calendarLocalizer';
 import type { CalEvent, ReservationStatus } from '@/types/calendar';
 import PendingModal from '@/components/Modal/ReservationModal/PendingModal';
@@ -41,14 +41,10 @@ function MonthToolbar({
   const title = loc.format(date, 'yyyy년 M월');
 
   const handlePrev = () => {
-    // const newDate = new Date(date);
-    // newDate.setMonth(newDate.getMonth() - 1);
     onNavigate('PREV');
   };
 
   const handleNext = () => {
-    // const newDate = new Date(date);
-    // newDate.setMonth(newDate.getMonth() - 1);
     onNavigate('NEXT');
   };
 
@@ -220,7 +216,7 @@ export default function ReservationCalendar({
       {/* 조건부로 모달 열리게 하기 */}
       {isModalOpen && selected && (
         <>
-          {/* 여긴 왜 자꾸 오류가 남아있는겨 !! */}
+          {/* 여긴 왜 자꾸 오류가 남아있는겨 !! ->  배열이어서 includes 메서드 사용, 포함되어있는지 확인해서 나타내기 */}
           {selected.status.includes('pending') && (
             <PendingModal
               isOpen={isModalOpen}

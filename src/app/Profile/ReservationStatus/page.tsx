@@ -1,11 +1,10 @@
-// 전체적으로 api 연동 시 코드 수정 필요!
-
 'use client';
 
 import Image from 'next/image';
 import ReservationCalendar from './_components/ReservationCalendar';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
 import ExperienceSelect from '@/app/Profile/ReservationStatus/_components/ExperienceSelect';
+// import AlertModal from '@/components/Modal/AlertModal'; // 임시
 // 훅 추가
 import useReservationsDashboard from '@/hooks/useReservationsDashboard';
 import useReservationsStatus from '@/hooks/useReservationsStatus';
@@ -13,8 +12,7 @@ import useReservationsStatus from '@/hooks/useReservationsStatus';
 export default function ReservationStatusPage() {
   // 인증 기능 구현 후 실제 accessToken 연결 필요
   const accessToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTE1NDk5OCwiZXhwIjoxNzYxMTU2Nzk4LCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.AfidwSdJbwdPrgW-JMFHZI1VDfESkRwa_vXx3YsU0Ws';
-  // props로 받기?
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTIyODg3MiwiZXhwIjoxNzYxMjMwNjcyLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.JDHOwIiEOgO-eRVJdhiyv5qSrS286HHRx68MjerZNH0';
   const {
     myActivities,
     isLoadingActivities,
@@ -30,7 +28,6 @@ export default function ReservationStatusPage() {
     currentDate,
   } = useReservationsDashboard(accessToken);
 
-  // 중복되는 값이 있는 것 같아서 제거하고 단순화로 진행
   const { handleUpdateStatus, isUpdating, updateError } = useReservationsStatus(
     accessToken,
     selectedActivityId
@@ -51,13 +48,6 @@ export default function ReservationStatusPage() {
 
   return (
     <div className="mx-auto max-w-screen-xl ">
-      {/* 임시 확인, 나중에 알림 이모티콘? 에 연결할 예정 - 알림이 없을 경우도 조건부로? --> 근데 이 페이지에서 작업하는게 아닌 것 같음(공통이라서) */}
-      {/* <AlertModal
-        isOpen={isAlertOpen}
-        onClose={() => setIsAlertOpen(false)}
-        alerts={mockAlerts}
-      /> */}
-
       {/* 공통 컴포넌트 적용 - title 유선님 작업하신 거 조립 완료 */}
       <Header title="예약 현황" />
       {/* 카테고리 필터 공통 컴포넌트 적용 필요 - 따로 생성해서 조립 완료! */}
