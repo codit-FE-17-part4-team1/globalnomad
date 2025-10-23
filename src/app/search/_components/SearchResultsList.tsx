@@ -49,7 +49,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, keyword }) => {
 
   // 정렬 및 페이지네이션 처리
   useEffect(() => {
-    let sortedResults = [...results];
+    const sortedResults = [...results];
 
     if (sortOption === 'relevance') {
       sortedResults.sort(

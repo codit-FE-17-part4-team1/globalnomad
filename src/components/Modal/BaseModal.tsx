@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 
 // 모달 사이즈를 따로 잡고 싶은데, className으로 직접 작성해야 할 지, 상수로 빼서 관리할 지 고민 -> 공통에서는 빼버림! 각자 진행하도록!
 
@@ -10,8 +10,8 @@ interface BaseModalProps {
   children: React.ReactNode;
   className?: string;
   title?: React.ReactNode;
-  closeOnOverlay?: boolean; // 추가
-  closeOnEsc?: boolean; // 추가
+  closeOnOverlay?: boolean;
+  closeOnEsc?: boolean;
   variant?: 'center' | 'dropdown';
 }
 
@@ -28,22 +28,26 @@ export default function BaseModal({
   const overlayRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // dropdown의 바깥 클릭 처리
+  // dropdown의 바깥 클릭 처리  --> 적용 안됨 일단 보류 ..
   useEffect(() => {
     if (!isOpen || variant !== 'dropdown' || !closeOnOverlay) return;
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      if (!modalRef.current) return;
+
+      if (!modalRef.current.contains(e.target as Node)) {
         onClose();
       }
     };
 
-    // 약간의 지연을 줘서 현재 클릭 이벤트가 처리된 후에 리스너 등록
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       document.addEventListener('mousedown', handleClickOutside);
     }, 0);
 
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isOpen, variant, closeOnOverlay, onClose]);
 
   const handleOverLayClick = (e: React.MouseEvent) => {
@@ -64,7 +68,7 @@ export default function BaseModal({
         className={[
           'absolute top-15 bg-[var(--color-green-light)]',
           'rounded-lg shadow-xl',
-          'max-h-[400px] overflow-auto z-[9999] w-[300px]',
+          'max-h-[400px] overflow-auto z-[9999] w-[330px]',
         ].join(' ')}
         onClick={(e) => e.stopPropagation()}
       >
