@@ -82,11 +82,9 @@ export async function getSchedulesForDate(opts: {
   // assertToken(accessToken);
 
   const dateObj = new Date(date);
-  const year = String(dateObj.getFullYear());
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
 
   const url = `${BASE_URL}/my-activities/${activityId}/reserved-schedule?date=${date}`;
-  console.log('🔗 Request URL:', url); // --> 콘솔 확인됨
+
   const res = await fetch(url, {
     method: 'GET',
     headers: {
@@ -110,7 +108,7 @@ export async function getSchedulesForDate(opts: {
 export async function getReservationsBySchedule(opts: {
   activityId: number;
   scheduleId: number;
-  status?: 'pending' | 'confirmed' | 'declined';
+  status?: 'pending' | 'confirmed' | 'declined' | 'completed';
   accessToken?: string;
 }): Promise<ReservationsTime> {
   const { activityId, scheduleId, status, accessToken } = opts;
@@ -124,11 +122,7 @@ export async function getReservationsBySchedule(opts: {
     params.set('status', status);
   }
 
-  console.log('🔗 Request params:', { scheduleId, status });
-
   const url = `${BASE_URL}/my-activities/${activityId}/reservations?${params.toString()}`;
-
-  console.log('🔗 Request URL:', url);
 
   const res = await fetch(url, {
     method: 'GET',
@@ -138,8 +132,6 @@ export async function getReservationsBySchedule(opts: {
     },
     cache: 'no-store',
   });
-
-  console.log('📡 Response status:', res.status);
 
   if (!res.ok) {
     const errorText = await res.text();
@@ -152,8 +144,6 @@ export async function getReservationsBySchedule(opts: {
   }
 
   const data = await res.json();
-  console.log('📦 Reservation data:', data);
-
   return data;
 }
 
@@ -164,8 +154,6 @@ export async function getReservationsByDate(opts: {
 }): Promise<ReservationsTime> {
   const { activityId, date, accessToken } = opts;
 
-  console.log('🔍 Fetching reservations for date:', date); // --> 콘솔 확인됨
-
   try {
     // 1. 해당 월의 스케줄 가져오기
     const allSchedules = await getSchedulesForDate({
@@ -174,87 +162,94 @@ export async function getReservationsByDate(opts: {
       accessToken,
     });
 
-    console.log('📅 Schedules found:', allSchedules.length); // --> 콘솔 확인됨
+    console.log('📅 해당 날짜의 전체 스케줄:', allSchedules);
 
-    if (allSchedules.length === 0) {
-      return {
-        reservations: [],
-        totalCount: 0,
-        cursorId: null,
-      };
-    }
+    // 2. 스케줄이 있는 경우 예약 조회
+    const schedulePromises = allSchedules.flatMap((schedule) => {
+      const promises = [];
 
-    // 2. 예약이 있는 스케줄만 필터링
-    const schedulesWithReservations = allSchedules.filter(
-      (schedule) =>
-        schedule.count.pending > 0 ||
-        schedule.count.confirmed > 0 ||
-        schedule.count.declined > 0
-    );
-
-    console.log(
-      '✅ Schedules with reservations:',
-      schedulesWithReservations.length
-    ); // --> 콘솔 확인됨
-
-    if (schedulesWithReservations.length === 0) {
-      return {
-        reservations: [],
-        totalCount: 0,
-        cursorId: null,
-      };
-    }
-
-    // 3. 각 스케줄의 예약자 정보 가져오기
-    const reservationPromises = schedulesWithReservations.flatMap(
-      (schedule) => {
-        const promises = [];
-
-        // pending 예약이 있으면 조회
-        if (schedule.count.pending > 0) {
-          promises.push(
-            getReservationsBySchedule({
-              activityId,
-              scheduleId: schedule.scheduleId,
-              status: 'pending',
-              accessToken,
-            })
-          );
-        }
-
-        // confirmed 예약이 있으면 조회
-        if (schedule.count.confirmed > 0) {
-          promises.push(
-            getReservationsBySchedule({
-              activityId,
-              scheduleId: schedule.scheduleId,
-              status: 'confirmed',
-              accessToken,
-            })
-          );
-        }
-
-        // declined 예약이 있으면 조회
-        if (schedule.count.declined > 0) {
-          promises.push(
-            getReservationsBySchedule({
-              activityId,
-              scheduleId: schedule.scheduleId,
-              status: 'declined',
-              accessToken,
-            })
-          );
-        }
-
-        return promises;
+      if (schedule.count.pending > 0) {
+        promises.push(
+          getReservationsBySchedule({
+            activityId,
+            scheduleId: schedule.scheduleId,
+            status: 'pending',
+            accessToken,
+          })
+        );
       }
+
+      if (schedule.count.confirmed > 0) {
+        promises.push(
+          getReservationsBySchedule({
+            activityId,
+            scheduleId: schedule.scheduleId,
+            status: 'confirmed',
+            accessToken,
+          })
+        );
+      }
+
+      if (schedule.count.declined > 0) {
+        promises.push(
+          getReservationsBySchedule({
+            activityId,
+            scheduleId: schedule.scheduleId,
+            status: 'declined',
+            accessToken,
+          })
+        );
+      }
+
+      return promises;
+    });
+
+    // 3. 과거 날짜는 completed 예약으로 조회
+    const targetDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    targetDate.setHours(0, 0, 0, 0);
+
+    if (targetDate < today) {
+      const allConfirmedUrl = `${BASE_URL}/my-activities/${activityId}/reservations?status=confirmed`;
+
+      try {
+        const res = await fetch(allConfirmedUrl, {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+          cache: 'no-store',
+        });
+
+        if (res.ok) {
+          const allConfirmedData = await res.json();
+          // 해당 날짜의 예약만 필터링
+          const dateReservations = allConfirmedData.reservations.filter(
+            (r: any) => r.date === date
+          );
+
+          if (dateReservations.length > 0) {
+            schedulePromises.push(
+              Promise.resolve({
+                reservations: dateReservations,
+                totalCount: dateReservations.length,
+                cursorId: null,
+              })
+            );
+          }
+        }
+      } catch (error) {
+        console.error('⚠️ confirmed 예약 조회 실패:', error);
+      }
+    }
+
+    // 4. 모든 예약 데이터
+    const reservationArrays = await Promise.all(schedulePromises);
+    const allReservations = reservationArrays.flatMap(
+      (r) => r.reservations || []
     );
-
-    const reservationArrays = await Promise.all(reservationPromises);
-    const allReservations = reservationArrays.flat();
-
-    console.log('🎉 Total reservations:', allReservations.length); // --> 확인 불가
-    console.log('🎉 Reservations detail:', allReservations);
 
     return {
       reservations: allReservations,
