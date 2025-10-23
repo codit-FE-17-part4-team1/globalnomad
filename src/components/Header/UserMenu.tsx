@@ -12,7 +12,7 @@ export interface UserMenuProps {
 }
 
 const accessToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTIyMjAyMSwiZXhwIjoxNzYxMjIzODIxLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.zdEk-0Fi6wu09g2-XFHjlv1ivmMIwZWhOguBAJt6wYQ';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTIyNTQ1NiwiZXhwIjoxNzYxMjI3MjU2LCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.bs1WnH2IUpx9LFH3ImqqsAgLYXdHGqe3Bk0vBbetvrA';
 
 export default function UserMenu({ userName, userImage }: UserMenuProps) {
   const [isAlertOpen, setIsAlertOpen] = useState(false);

@@ -36,7 +36,7 @@ export default function BaseModal({
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4"
+      className="fixed inset-0 z-[9999] grid place-items-center bg-black/50 p-4"
       aria-label="모달 오버레이"
       onClick={handleOverLayClick}
     >

@@ -47,6 +47,11 @@ export default function AlertModal({
     await onDelete(id);
   };
 
+  const handleCloseClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onClose();
+  };
+
   // 전체적으로 수정 필요 - 알림 이모지 밑에 위치하도록!
   return (
     <BaseModal
@@ -65,7 +70,6 @@ export default function AlertModal({
       )}
       {!isLoading && localAlerts.length === 0 && (
         <div className="flex flex-col  items-center justify-center mt-17 text-[var(--color-gray-500)]">
-          {' '}
           {/* 이건 반응형 수정 필요할 듯? 텍스트 위치 등 */}
           알림이 없습니다.
         </div>
@@ -77,7 +81,7 @@ export default function AlertModal({
         alt="닫기"
         width={30}
         height={30}
-        onClick={onClose}
+        onClick={handleCloseClick}
       />
       {/*  -------------------------------------------  */}
       {/* 1. 배경 넣기 */}
@@ -86,6 +90,7 @@ export default function AlertModal({
           <div
             key={item.id}
             className="bg-white rounded-sm shadow-sm p-4 relative"
+            onClick={(e) => e.stopPropagation()}
           >
             {/* 2. 점 표시 (승인/거절 색상 구분) */}
             <div
