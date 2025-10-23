@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import BaseModal from '@/components/Modal/BaseModal';
 
-type Alert = {
+export type Alert = {
   id: number;
   title: string;
   time: string;
@@ -36,7 +36,7 @@ export default function AlertModal({
       isOpen={isOpen}
       onClose={onClose}
       title={`알림 ${localAlerts.length}개`}
-      className="bg-[var(--color-green-light)] relative w-[368px]" // 일단 width는 피그마로 두고, 나중에 봐야 할 듯 (BaseModal의 width가 고정되어 있어서 흠)
+      className="bg-[var(--color-green-light)] w-[300px] h-[300px]" // 왜 width 는 조정이 안됨?
     >
       <Image
         className="absolute right-5 top-4 cursor-pointer"

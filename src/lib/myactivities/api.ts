@@ -5,7 +5,6 @@ import {
   type ReservedSchedule,
   type ReservationsTime,
   type Activity,
-  type Reservation,
 } from '@/types/api/myactivities';
 
 /**
@@ -20,11 +19,15 @@ export async function getMyActivities(opts: {
 
   // assertToken(accessToken);
 
-  const qs = new URLSearchParams();
-  if (cursorId != null) qs.set('cursorId', String(cursorId));
-  qs.set('size', String(size));
+  // 주소를 안정적으로 사용하기 위함 (URLSearchParams) - 통일해볼까
+  // const qs = new URLSearchParams();
+  // if (cursorId != null) qs.set('cursorId', String(cursorId));
+  // qs.set('size', String(size));
 
-  const url = `${BASE_URL}/my-activities?${qs.toString()}`;
+  const queryString =
+    cursorId != null ? `cursorId=${cursorId}&size=${size}` : `size=${size}`;
+
+  const url = `${BASE_URL}/my-activities?${queryString}`;
   const res = await fetch(url, {
     method: 'GET',
     headers: {
@@ -80,8 +83,6 @@ export async function getSchedulesForDate(opts: {
 }): Promise<ReservedSchedule> {
   const { activityId, date, accessToken } = opts;
   // assertToken(accessToken);
-
-  // const dateObj = new Date(date);
 
   const url = `${BASE_URL}/my-activities/${activityId}/reserved-schedule?date=${date}`;
 

@@ -1,11 +1,10 @@
-// 전체적으로 api 연동 시 코드 수정 필요!
-
 'use client';
 
 import Image from 'next/image';
 import ReservationCalendar from './_components/ReservationCalendar';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
 import ExperienceSelect from '@/app/Profile/ReservationStatus/_components/ExperienceSelect';
+// import AlertModal from '@/components/Modal/AlertModal'; // 임시
 // 훅 추가
 import useReservationsDashboard from '@/hooks/useReservationsDashboard';
 import useReservationsStatus from '@/hooks/useReservationsStatus';
@@ -13,8 +12,7 @@ import useReservationsStatus from '@/hooks/useReservationsStatus';
 export default function ReservationStatusPage() {
   // 인증 기능 구현 후 실제 accessToken 연결 필요
   const accessToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTE1OTI4NywiZXhwIjoxNzYxMTYxMDg3LCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.c3ME32B-4MVPNB6vt55JRc232FJgXTOh1PSLbPSIXQc';
-  // props로 받기?
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTIwOTQ4NywiZXhwIjoxNzYxMjExMjg3LCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.ikjroCK-gvqhmEKQij_ANaPAOfOwpnYp04C95_LX2ic';
   const {
     myActivities,
     isLoadingActivities,
@@ -30,7 +28,6 @@ export default function ReservationStatusPage() {
     currentDate,
   } = useReservationsDashboard(accessToken);
 
-  // 중복되는 값이 있는 것 같아서 제거하고 단순화로 진행
   const { handleUpdateStatus, isUpdating, updateError } = useReservationsStatus(
     accessToken,
     selectedActivityId
@@ -65,7 +62,6 @@ export default function ReservationStatusPage() {
         experiences={myActivities}
         selectedExperienceId={selectedActivityId}
         onSelectExperience={setSelectedActivityId}
-        // onClick={handleOverLayClick}
       />
       {/* 여기서 조립해야 할 듯? - 체험이 없을 경우를 조건부로! */}
       <div className="h-[560px] md:h-[620px] lg:h-[680px]">
