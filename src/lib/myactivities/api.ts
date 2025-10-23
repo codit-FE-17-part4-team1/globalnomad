@@ -19,11 +19,6 @@ export async function getMyActivities(opts: {
 
   // assertToken(accessToken);
 
-  // 주소를 안정적으로 사용하기 위함 (URLSearchParams) - 통일해볼까
-  // const qs = new URLSearchParams();
-  // if (cursorId != null) qs.set('cursorId', String(cursorId));
-  // qs.set('size', String(size));
-
   const queryString =
     cursorId != null ? `cursorId=${cursorId}&size=${size}` : `size=${size}`;
 

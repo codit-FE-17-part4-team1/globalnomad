@@ -16,19 +16,35 @@ export default function AlertModal({
   isOpen,
   onClose,
   alerts = [],
+  onDelete,
+  onLoadMore,
+  hasNext,
+  isLoading,
+  error,
 }: {
   isOpen: boolean;
   onClose: () => void;
   alerts?: Alert[];
+  onDelete: (id: number) => void;
+  onLoadMore: () => void;
+  hasNext: boolean;
+  isLoading: boolean;
+  error?: string;
 }) {
+  useEffect(() => {
+    console.log('AlertModal - alerts:', alerts);
+    console.log('AlertModal - alerts.length:', alerts.length);
+  }, [alerts]);
+
   const [localAlerts, setLocalAlerts] = useState<Alert[]>(alerts);
 
   useEffect(() => {
     setLocalAlerts(alerts);
   }, [alerts]);
 
-  const handleRemoveAlerts = (id: number) => {
+  const handleRemoveAlerts = async (id: number) => {
     setLocalAlerts((prev) => prev.filter((a) => a.id !== id));
+    await onDelete(id);
   };
 
   return (
@@ -38,6 +54,20 @@ export default function AlertModal({
       title={`알림 ${localAlerts.length}개`}
       className="bg-[var(--color-green-light)] w-[300px] h-[300px]" // 왜 width 는 조정이 안됨?
     >
+      {error && (
+        <div className="p-4 test-sm test-[var(--color-red)]">{error}</div>
+      )}
+      {isLoading && localAlerts.length === 0 && (
+        <div className="p-4 text-center text-[var(--color-gray-500)]">
+          Loading ...{' '}
+        </div>
+      )}
+      {!isLoading && localAlerts.length === 0 && (
+        <div className="p-4 text-center text-[var(--color-gray-500)]">
+          알림이 없습니다.
+        </div>
+      )}
+
       <Image
         className="absolute right-5 top-4 cursor-pointer"
         src="/icon/btn/X_lg.svg"
