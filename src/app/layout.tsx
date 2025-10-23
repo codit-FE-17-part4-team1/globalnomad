@@ -1,5 +1,6 @@
-// app/layout.tsx
-import '../styles/global.css';
+// src/app/layout.tsx
+import type { Metadata } from 'next';
+import '@/styles/global.css';
 
 import React from 'react';
 import HeaderGate from '@/components/Header/HeaderGate';
