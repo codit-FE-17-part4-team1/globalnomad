@@ -1,6 +1,7 @@
 import { BASE_URL } from '@/lib/constants';
 import {
   type MyActivitiesResponse,
+  type Reservation,
   type ReservationDashboard,
   type ReservedSchedule,
   type ReservationsTime,
@@ -223,7 +224,7 @@ export async function getReservationsByDate(opts: {
           const allConfirmedData = await res.json();
           // 해당 날짜의 예약만 필터링
           const dateReservations = allConfirmedData.reservations.filter(
-            (r: any) => r.date === date
+            (r: Reservation) => r.date === date
           );
 
           if (dateReservations.length > 0) {

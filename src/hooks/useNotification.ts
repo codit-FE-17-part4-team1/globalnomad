@@ -51,11 +51,7 @@ export default function useNotification(
 
   const fetchNotifications = useCallback(
     async (currentCursorId?: number) => {
-      console.log('🔑 fetchNotifications - accessToken:', accessToken);
-
       if (!hasNext && currentCursorId) return; // 더 이상 데이터가 없으면 요청하지 않음
-
-      console.log('🔍 fetchNotifications 시작', { currentCursorId, size }); // 추가
 
       setIsLoading(true);
       setError(undefined);
