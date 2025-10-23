@@ -4,15 +4,13 @@ import Image from 'next/image';
 import ReservationCalendar from './_components/ReservationCalendar';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
 import ExperienceSelect from '@/app/Profile/ReservationStatus/_components/ExperienceSelect';
-// import AlertModal from '@/components/Modal/AlertModal'; // 임시
-// 훅 추가
 import useReservationsDashboard from '@/hooks/useReservationsDashboard';
 import useReservationsStatus from '@/hooks/useReservationsStatus';
 
 export default function ReservationStatusPage() {
   // 인증 기능 구현 후 실제 accessToken 연결 필요
   const accessToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTI0Mjc1NywiZXhwIjoxNzYxMjQ0NTU3LCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.nSPtXQrDCDppTnMkT8DcqRM7C1-9t0D-QB8HAC41jBs';
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTIzMzU5MSwiZXhwIjoxNzYxMjM1MzkxLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.eHncKh8-9-EUTgZoWM7mcVqXqfuOykAEPP5SqzMNces';
   const {
     myActivities,
     isLoadingActivities,
@@ -33,7 +31,6 @@ export default function ReservationStatusPage() {
     selectedActivityId
   );
 
-  // 승인, 거절 시 상태값 업데이트 되는 함수로 호출을 했는데, 왜 자동으로 다른 게 거절됨?
   const handleApprove = (reservationId: number) => {
     handleUpdateStatus(reservationId, 'confirmed', () => {
       if (selectedDate) handleDateSelect(selectedDate);

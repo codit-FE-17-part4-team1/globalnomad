@@ -53,9 +53,9 @@ export async function signupRequest(
   if (!res.ok) {
     throw new Error(json?.message || '회원가입 실패');
   }
-  if (!json.accessToken || !json.refreshToken) {
-    throw new Error('회원가입 응답에 토큰이 없습니다.');
-  }
+  // if (!json.accessToken || !json.refreshToken) {
+  //   throw new Error('회원가입 응답에 토큰이 없습니다.');
+  // }
   return json as AuthResponse;
 }
 

@@ -1,35 +1,22 @@
 'use client';
 
-import { useState, ChangeEvent, useActionState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useEffect, useState, ChangeEvent, useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { signupAction, type ActionState } from '@/actions/signup.action';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+
+import { signupAction } from '@/actions/signup.action';
+import type { AuthResult } from '@/types/auth';
+import ConfirmModal from '@/components/Modal/ConfirmModal';
 import FormInput from '@/components/Input/FormInput';
 import MyButton from '@/components/Button/Button';
 
-const initialState: ActionState = {
-  status: false,
-  fetchErrorText: '',
-  isError: {
-    email: false,
-    password: false,
-    nickname: false,
-    passwordConfirmation: false,
-  },
-  errors: {},
-};
-
-function SubmitButton({ disabled }: { disabled: boolean }) {
-  const { pending } = useFormStatus();
-  return (
-    <MyButton className="w-full py-3 mt-4" disabled={disabled || pending}>
-      {pending ? '처리 중...' : '회원가입 하기'}
-    </MyButton>
-  );
-}
+const initialState: AuthResult = { ok: false, message: '' };
 
 export default function SignupPage() {
+  const router = useRouter();
+
   const [form, setForm] = useState({
     email: '',
     nickname: '',
@@ -38,16 +25,30 @@ export default function SignupPage() {
   });
   const [state, formAction] = useActionState(signupAction, initialState);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMsg, setModalMsg] = useState('');
 
   const disabled =
     !form.email ||
     !form.nickname ||
     !form.password ||
-    !form.passwordConfirmation ||
-    form.password !== form.passwordConfirmation;
+    !form.passwordConfirmation;
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  useEffect(() => {
+    if (state?.message) {
+      setModalMsg(state.message);
+      setIsModalOpen(true);
+    }
+  }, [state]);
+
+  const handleConfirm = () => {
+    setIsModalOpen(false);
+    if (state.ok) router.push('/'); // 성공 시 메인으로 이동
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center">
@@ -65,7 +66,7 @@ export default function SignupPage() {
           </Link>
         </div>
 
-        <form action={formAction} autoComplete="off">
+        <form action={formAction} autoComplete="off" className="space-y-4">
           <FormInput
             id="email"
             name="email"
@@ -77,6 +78,11 @@ export default function SignupPage() {
             labelClassName="text-black"
             labelUnstyled
           />
+          {!state.ok && state.fieldErrors?.email && (
+            <p className="mt-1 text-sm text-red-600">
+              {state.fieldErrors.email}
+            </p>
+          )}
 
           <FormInput
             id="nickname"
@@ -89,6 +95,11 @@ export default function SignupPage() {
             labelClassName="text-black"
             labelUnstyled
           />
+          {!state.ok && state.fieldErrors?.nickname && (
+            <p className="mt-1 text-sm text-red-600">
+              {state.fieldErrors.nickname}
+            </p>
+          )}
 
           <FormInput
             id="password"
@@ -101,6 +112,11 @@ export default function SignupPage() {
             labelClassName="text-black"
             labelUnstyled
           />
+          {!state.ok && state.fieldErrors?.password && (
+            <p className="mt-1 text-sm text-red-600">
+              {state.fieldErrors.password}
+            </p>
+          )}
 
           <FormInput
             id="passwordConfirmation"
@@ -110,23 +126,17 @@ export default function SignupPage() {
             placeholder="비밀번호를 다시 입력하세요"
             value={form.passwordConfirmation}
             onChange={handleChange}
-            passwordValue={form.password}
             labelClassName="text-black"
             labelUnstyled
           />
+          {!state.ok && state.fieldErrors?.passwordConfirmation && (
+            <p className="mt-1 text-sm text-red-600">
+              {state.fieldErrors.passwordConfirmation}
+            </p>
+          )}
 
           <SubmitButton disabled={disabled} />
         </form>
-
-        {state.fetchErrorText && (
-          <p className="mt-3 text-sm text-red-600">{state.fetchErrorText}</p>
-        )}
-
-        {state.status && (
-          <p className="mt-3 text-sm text-green-700">
-            회원가입이 완료되었습니다.
-          </p>
-        )}
 
         <p className="mt-6 text-center text-sm text-gray-600">
           이미 계정이 있으신가요?{' '}
@@ -135,27 +145,24 @@ export default function SignupPage() {
           </Link>
         </p>
 
-        <div className="flex items-center my-8">
-          <div className="flex-1 h-px bg-gray-300" />
-          <span className="px-3 text-gray-500 text-sm">
-            SNS 계정으로 로그인하기
-          </span>
-          <div className="flex-1 h-px bg-gray-300" />
-        </div>
-        <div className="flex justify-center gap-4">
-          <MyButton
-            className="w-12 h-12 rounded-full flex items-center justify-center bg-transparent border-none"
-            onClick={() => alert('카카오 로그인')}
-          >
-            <Image
-              src="/icon/social/kakao.svg"
-              alt="Kakao"
-              width={72}
-              height={72}
-            />
-          </MyButton>
-        </div>
+        <ConfirmModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleConfirm}
+          message={modalMsg}
+          confirmLabel="확인"
+          className="bg-white"
+        />
       </div>
     </div>
+  );
+}
+
+function SubmitButton({ disabled }: { disabled: boolean }) {
+  const { pending } = useFormStatus();
+  return (
+    <MyButton className="w-full py-3 mt-4" disabled={disabled || pending}>
+      {pending ? '회원가입 중...' : '회원가입 하기'}
+    </MyButton>
   );
 }
