@@ -1,38 +1,48 @@
 'use client';
 
-import { useState, ChangeEvent, useActionState } from 'react';
+import { useEffect, useState, ChangeEvent, useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { loginAction } from '@/actions/login.action';
+import type { AuthResult } from '@/types/auth';
+import ConfirmModal from '@/components/Modal/ConfirmModal';
 import FormInput from '@/components/Input/FormInput';
 import MyButton from '@/components/Button/Button';
-import { loginAction, type LoginState } from '@/actions/login.action';
 
-const initialState: LoginState = {
-  status: false,
-  fetchErrorText: '',
-  isError: { email: false, password: false },
-  errors: {},
-};
-
-function SubmitButton({ disabled }: { disabled: boolean }) {
-  const { pending } = useFormStatus();
-  return (
-    <MyButton className="w-full py-3 mt-4" disabled={disabled || pending}>
-      {pending ? '로그인 중...' : '로그인 하기'}
-    </MyButton>
-  );
-}
+const initialState: AuthResult = { ok: false, message: '' };
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [form, setForm] = useState({ email: '', password: '' });
   const [state, formAction] = useActionState(loginAction, initialState);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMsg, setModalMsg] = useState('');
+
+  const disabled = !form.email || !form.password;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const disabled = !form.email || !form.password;
+  // ✅ 성공 즉시 리다이렉트
+  useEffect(() => {
+    if (state.ok) router.push('/');
+  }, [state.ok, router]);
+
+  // ✅ 실패 + message 있을 때만 모달 노출
+  useEffect(() => {
+    if (!state.ok && state.message) {
+      setModalMsg(state.message);
+      setIsModalOpen(true);
+    }
+  }, [state.ok, state.message]);
+
+  const handleConfirm = () => setIsModalOpen(false);
 
   return (
     <div className="flex min-h-screen items-center justify-center">
@@ -62,6 +72,11 @@ export default function LoginPage() {
             labelClassName="text-black"
             labelUnstyled
           />
+          {!state.ok && state.fieldErrors?.email && (
+            <p className="mt-1 text-sm text-red-600">
+              {state.fieldErrors.email}
+            </p>
+          )}
 
           <FormInput
             id="password"
@@ -74,13 +89,14 @@ export default function LoginPage() {
             labelClassName="text-black"
             labelUnstyled
           />
+          {!state.ok && state.fieldErrors?.password && (
+            <p className="mt-1 text-sm text-red-600">
+              {state.fieldErrors.password}
+            </p>
+          )}
 
           <SubmitButton disabled={disabled} />
         </form>
-
-        {state.fetchErrorText && (
-          <p className="mt-3 text-sm text-red-600">{state.fetchErrorText}</p>
-        )}
 
         <p className="mt-6 text-center text-sm text-gray-600">
           아직 계정이 없으신가요?{' '}
@@ -96,6 +112,7 @@ export default function LoginPage() {
           </span>
           <div className="flex-1 h-px bg-gray-300" />
         </div>
+
         <div className="flex justify-center gap-4">
           <MyButton
             className="w-12 h-12 rounded-full flex items-center justify-center bg-transparent border-none"
@@ -109,7 +126,25 @@ export default function LoginPage() {
             />
           </MyButton>
         </div>
+
+        <ConfirmModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleConfirm}
+          message={modalMsg}
+          confirmLabel="확인"
+          className="bg-white"
+        />
       </div>
     </div>
+  );
+}
+
+function SubmitButton({ disabled }: { disabled: boolean }) {
+  const { pending } = useFormStatus();
+  return (
+    <MyButton className="w-full py-3 mt-4" disabled={disabled || pending}>
+      {pending ? '로그인 중...' : '로그인 하기'}
+    </MyButton>
   );
 }
