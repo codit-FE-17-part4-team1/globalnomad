@@ -88,13 +88,11 @@ export default function useNotification(
         setCursorId(data.cursorId ?? undefined);
         setHasNext(!!data.cursorId);
       } catch (e) {
-        console.error('❌ API 호출 실패:', e); // 추가
         setError(
           e instanceof Error ? e.message : '알림을 불러오지 못했습니다.'
         );
       } finally {
         setIsLoading(false);
-        console.log('✅ fetchNotifications 완료'); // 추가
       }
     },
     [size, hasNext, accessToken]

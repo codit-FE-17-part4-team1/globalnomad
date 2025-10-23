@@ -47,6 +47,7 @@ export default function AlertModal({
     await onDelete(id);
   };
 
+  // 전체적으로 수정 필요 - 알림 이모지 밑에 위치하도록!
   return (
     <BaseModal
       isOpen={isOpen}
@@ -63,7 +64,9 @@ export default function AlertModal({
         </div>
       )}
       {!isLoading && localAlerts.length === 0 && (
-        <div className="p-4 text-center text-[var(--color-gray-500)]">
+        <div className="flex flex-col  items-center justify-center mt-17 text-[var(--color-gray-500)]">
+          {' '}
+          {/* 이건 반응형 수정 필요할 듯? 텍스트 위치 등 */}
           알림이 없습니다.
         </div>
       )}
@@ -93,7 +96,7 @@ export default function AlertModal({
                     ? 'bg-[var(--color-red)]'
                     : 'bg-[var(--color-gray-400)]'
               }`}
-            ></div>
+            />
 
             {/* 3. 내용 넣기 */}
             <div className="pl-6 pr-8">
