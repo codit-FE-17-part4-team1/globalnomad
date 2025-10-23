@@ -1,3 +1,7 @@
+// 공통컴포넌트 딜레마에 빠졌다는 ..
+// 해당 컴포넌트는 BG가 없어야 하고, 위치도 조정되어야 하는 !!! ㅠㅠ
+// 이게 결국엔 드롭다운이었다는 !!! ㅠㅠㅠ 일단 모달로 ..
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -31,11 +35,6 @@ export default function AlertModal({
   isLoading: boolean;
   error?: string;
 }) {
-  useEffect(() => {
-    console.log('AlertModal - alerts:', alerts);
-    console.log('AlertModal - alerts.length:', alerts.length);
-  }, [alerts]);
-
   const [localAlerts, setLocalAlerts] = useState<Alert[]>(alerts);
 
   useEffect(() => {
@@ -48,6 +47,7 @@ export default function AlertModal({
   };
 
   const handleCloseClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     onClose();
   };
@@ -58,6 +58,8 @@ export default function AlertModal({
       isOpen={isOpen}
       onClose={onClose}
       title={`알림 ${localAlerts.length}개`}
+      variant="dropdown"
+      closeOnOverlay={true}
       className="bg-[var(--color-green-light)] w-[300px] h-[300px]" // 왜 width 는 조정이 안됨?
     >
       {error && (
@@ -65,7 +67,7 @@ export default function AlertModal({
       )}
       {isLoading && localAlerts.length === 0 && (
         <div className="p-4 text-center text-[var(--color-gray-500)]">
-          Loading ...{' '}
+          Loading ...
         </div>
       )}
       {!isLoading && localAlerts.length === 0 && (
@@ -83,7 +85,6 @@ export default function AlertModal({
         height={30}
         onClick={handleCloseClick}
       />
-      {/*  -------------------------------------------  */}
       {/* 1. 배경 넣기 */}
       <div className="p-6 space-y-2 rounded-lg">
         {localAlerts.map((item) => (
