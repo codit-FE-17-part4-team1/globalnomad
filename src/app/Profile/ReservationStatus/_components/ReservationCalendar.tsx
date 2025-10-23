@@ -96,6 +96,38 @@ export default function ReservationCalendar({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selected, setSelected] = useState<CalEvent | null>(null);
 
+  // 달력 텍스트 추가를 위한 커스텀 작업
+  function CalendarEvent({ event }: { event: CalEvent }) {
+    const dateString = dayjs(event.start).format('YYYY-MM-DD');
+    const dashboardItem = dashboardData.find(
+      (item) => item.date === dateString
+    );
+
+    if (!dashboardItem) return null;
+
+    let text = '';
+    let textColor = '';
+
+    if (event.status.includes('pending')) {
+      text = `예약 ${dashboardItem.reservations.pending}`;
+      textColor = '#FFFFFF';
+    } else if (event.status.includes('confirmed')) {
+      text = `승인 ${dashboardItem.reservations.confirmed + dashboardItem.reservations.completed}`;
+      textColor = '#FF9B00';
+    } else if (event.status.includes('declined')) {
+      text = `완료 ${dashboardItem.reservations.declined}`;
+      textColor = '#6B7280';
+    }
+
+    return (
+      <div className="flex items-center justify-start h-full px-1">
+        <span className="text-xs font-medium" style={{ color: textColor }}>
+          {text}
+        </span>
+      </div>
+    );
+  }
+
   // API 응답(dashboardData)을 캘린더가 이해할 수 있는 CalEvent[] 형태로 변환
   const calendarEvents = useMemo<CalEvent[]>(() => {
     return dashboardData.flatMap((item) => {
@@ -192,6 +224,7 @@ export default function ReservationCalendar({
         toolbar={true}
         components={{
           toolbar: MonthToolbar,
+          event: CalendarEvent,
         }}
         eventPropGetter={(event) => {
           const background = event.status.includes('pending')
