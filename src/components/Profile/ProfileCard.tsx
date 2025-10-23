@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import ProfileImage from './ProfileImage';
+import { logoutAction } from '@/actions/logout.action';
 
 export default function ProfileCard() {
   const pathname = usePathname();
@@ -39,6 +40,7 @@ export default function ProfileCard() {
       label: '로그아웃',
       href: '/logout',
       icon: '/icon/logout.svg',
+      isLogout: true,
     },
   ];
 
@@ -50,6 +52,30 @@ export default function ProfileCard() {
       <nav className="space-y-3">
         {MENU.map((item) => {
           const isActive = pathname.startsWith(item.href);
+
+          if (item.isLogout) {
+            return (
+              <form
+                key={item.key}
+                action={logoutAction}
+                className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-[var(--color-gray-400)] font-semibold cursor-pointer hover:bg-[var(--color-gray-100)] transition-colors"
+              >
+                <button
+                  type="submit"
+                  className="flex items-center gap-3 w-full"
+                >
+                  <Image
+                    src={item.icon}
+                    alt={`${item.label} 아이콘`}
+                    width={22}
+                    height={22}
+                  />
+                  <span>{item.label}</span>
+                </button>
+              </form>
+            );
+          }
+
           return (
             <Link
               key={item.key}

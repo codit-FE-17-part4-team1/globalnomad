@@ -52,7 +52,7 @@ export default function AlertModal({
     onClose();
   };
 
-  // 전체적으로 수정 필요 - 알림 이모지 밑에 위치하도록!
+  // 전체적으로 수정 필요 - 알림 이모지 밑에 위치하도록! (완료)
   return (
     <BaseModal
       isOpen={isOpen}
