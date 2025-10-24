@@ -1,10 +1,14 @@
+// 공통컴포넌트 딜레마에 빠졌다는 ..
+// 해당 컴포넌트는 BG가 없어야 하고, 위치도 조정되어야 하는 !!! ㅠㅠ
+// 이게 결국엔 드롭다운이었다는 !!! ㅠㅠㅠ 일단 모달로 ..
+
 'use client';
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import BaseModal from '@/components/Modal/BaseModal';
 
-type Alert = {
+export type Alert = {
   id: number;
   title: string;
   time: string;
@@ -16,10 +20,20 @@ export default function AlertModal({
   isOpen,
   onClose,
   alerts = [],
+  onDelete,
+  onLoadMore,
+  hasNext,
+  isLoading,
+  error,
 }: {
   isOpen: boolean;
   onClose: () => void;
   alerts?: Alert[];
+  onDelete: (id: number) => void;
+  onLoadMore: () => void;
+  hasNext: boolean;
+  isLoading: boolean;
+  error?: string;
 }) {
   const [localAlerts, setLocalAlerts] = useState<Alert[]>(alerts);
 
@@ -27,32 +41,57 @@ export default function AlertModal({
     setLocalAlerts(alerts);
   }, [alerts]);
 
-  const handleRemoveAlerts = (id: number) => {
+  const handleRemoveAlerts = async (id: number) => {
     setLocalAlerts((prev) => prev.filter((a) => a.id !== id));
+    await onDelete(id);
   };
 
+  const handleCloseClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClose();
+  };
+
+  // 전체적으로 수정 필요 - 알림 이모지 밑에 위치하도록! (완료)
   return (
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
       title={`알림 ${localAlerts.length}개`}
-      className="bg-[var(--color-green-light)] relative w-[368px]" // 일단 width는 피그마로 두고, 나중에 봐야 할 듯 (BaseModal의 width가 고정되어 있어서 흠)
+      variant="dropdown"
+      closeOnOverlay={true}
+      className="bg-[var(--color-green-light)] w-[300px] h-[300px]" // 왜 width 는 조정이 안됨?
     >
+      {error && (
+        <div className="p-4 test-sm test-[var(--color-red)]">{error}</div>
+      )}
+      {isLoading && localAlerts.length === 0 && (
+        <div className="p-4 text-center text-[var(--color-gray-500)]">
+          Loading ...
+        </div>
+      )}
+      {!isLoading && localAlerts.length === 0 && (
+        <div className="flex flex-col  items-center justify-center mt-17 text-[var(--color-gray-500)]">
+          {/* 이건 반응형 수정 필요할 듯? 텍스트 위치 등 */}
+          알림이 없습니다.
+        </div>
+      )}
+
       <Image
         className="absolute right-5 top-4 cursor-pointer"
         src="/icon/btn/X_lg.svg"
         alt="닫기"
         width={30}
         height={30}
-        onClick={onClose}
+        onClick={handleCloseClick}
       />
-      {/*  -------------------------------------------  */}
       {/* 1. 배경 넣기 */}
       <div className="p-6 space-y-2 rounded-lg">
         {localAlerts.map((item) => (
           <div
             key={item.id}
             className="bg-white rounded-sm shadow-sm p-4 relative"
+            onClick={(e) => e.stopPropagation()}
           >
             {/* 2. 점 표시 (승인/거절 색상 구분) */}
             <div
@@ -63,7 +102,7 @@ export default function AlertModal({
                     ? 'bg-[var(--color-red)]'
                     : 'bg-[var(--color-gray-400)]'
               }`}
-            ></div>
+            />
 
             {/* 3. 내용 넣기 */}
             <div className="pl-6 pr-8">

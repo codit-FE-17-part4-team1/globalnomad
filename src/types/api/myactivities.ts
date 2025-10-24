@@ -1,4 +1,7 @@
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 import { z } from 'zod';
+
+extendZodWithOpenApi(z);
 
 // 내 체험리스트 조회
 export const activitySchema = z.object({
@@ -27,6 +30,7 @@ export const reservationsSchema = z.object({
   completed: z.number(),
   confirmed: z.number(),
   pending: z.number(),
+  declined: z.number(),
 });
 
 export const ISODate = z
@@ -44,13 +48,9 @@ export const reservationsDashboardListSchema = z.array(
 
 // -- 내 체험 예약 시간대별 예약 조회 --
 // 상태 값
-export const reservationStatus = z.enum([
-  'confirmed',
-  'pending',
-  'declined',
-  'completed',
-  'canceled',
-]);
+export const reservationStatus = z
+  .enum(['confirmed', 'pending', 'declined', 'completed', 'canceled'])
+  .openapi('ReservationsStatus');
 
 export const reservationSchema = z.object({
   id: z.number(),
@@ -81,6 +81,7 @@ export const reservationCountSchema = z.object({
   declined: z.number(),
   confirmed: z.number(),
   pending: z.number(),
+  completed: z.number(),
 });
 
 export const reservedScheduleItemSchema = z.object({

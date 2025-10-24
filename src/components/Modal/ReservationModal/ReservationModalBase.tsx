@@ -133,6 +133,8 @@ export default function ReservationModalBase({
               options={timeOptions}
               onChange={setSelectedTime}
               placeholder="예약 시간"
+              closeOnOverlay={true}
+              closeOnEsc={true}
             />
           )}
         </div>
@@ -176,9 +178,19 @@ export default function ReservationModalBase({
                 </div>
               )}
               {activeTab === 'confirmed' && (
-                <Chips color="orange" variant="round">
-                  예약 승인
-                </Chips>
+                <>
+                  {item.status === 'confirmed' && (
+                    <Chips color="orange" variant="round">
+                      예약 승인
+                    </Chips>
+                  )}
+                  {item.status === 'completed' && (
+                    <Chips color="orange" variant="round">
+                      체험 완료{' '}
+                      {/* 예약 지난 것들이 갑자기 베이지 색으로 변경되어 확인해서 추가했는데.. 결론은 백엔드에서 주지 않아서.. 안되는 듯? */}
+                    </Chips>
+                  )}
+                </>
               )}
               {activeTab === 'canceled' && (
                 <Chips color="red" variant="round">
