@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import dayjs from 'dayjs';
@@ -16,7 +16,11 @@ import ReservationStickyFooter from '../_components/ActivityReservation/Reservat
 import ParticipantsModal from '../_components/ActivityReservation/ReservationContainer/ParticipantsModal';
 import DateModal from '../_components/ActivityReservation/ReservationContainer/DateModal';
 
-import type { ActivityDetailInfo } from '@/types/activity';
+import type {
+  ActivityDetailInfo,
+  AvailableSchedule,
+  AvailableTime,
+} from '@/types/activity';
 import type { Reviews, Review } from '@/types/review';
 
 export default function Page() {
@@ -40,10 +44,9 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
 
   // 날짜/시간, 참가자 상태
+  const [scheduleData, setScheduleData] = useState<AvailableSchedule[]>([]);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
-  const [availableTimes, setAvailableTimes] = useState<
-    { id: number; startTime: string; endTime: string }[]
-  >([]);
+  const [availableTimes, setAvailableTimes] = useState<AvailableTime[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTimeId, setSelectedTimeId] = useState<number | null>(null);
   const [selectedDateTimeText, setSelectedDateTimeText] =
@@ -131,6 +134,38 @@ export default function Page() {
     }
   };
 
+  // 월별 예약 가능한 날짜 조회 함수
+  const fetchAvailableDatesForMonth = useCallback(
+    async (year: number, month: number) => {
+      console.log('🔍 fetchAvailableDatesForMonth 호출:', year, month);
+      try {
+        const res = await fetch(
+          `https://sp-globalnomad-api.vercel.app/17-1/activities/${numericActivityId}/available-schedule?year=${year}&month=${String(
+            month
+          ).padStart(2, '0')}`
+        );
+        if (!res.ok) throw new Error('예약 가능 일정 조회 실패');
+
+        const data: AvailableSchedule[] = await res.json();
+        console.log('✅ 받은 데이터:', data);
+
+        // 전체 데이터 저장 (날짜 + 시간 정보 모두)
+        setScheduleData(data);
+
+        // 날짜만 추출하여 저장
+        const dates = data.map((d) => d.date);
+        setAvailableDates(dates);
+        console.log('✅ 설정된 날짜들:', dates);
+      } catch (err) {
+        console.error('❌ 에러 발생:', err);
+        setScheduleData([]);
+        setAvailableDates([]);
+        setAvailableTimes([]);
+      }
+    },
+    [numericActivityId]
+  );
+
   // 체험 상세 API
   useEffect(() => {
     const fetchActivity = async () => {
@@ -178,46 +213,16 @@ export default function Page() {
     fetchReviews();
   }, [numericActivityId]);
 
-  // 선택된 달/월 기준 예약 가능일 조회
+  // 1. 초기 로드 시 현재 월 데이터 fetch
   useEffect(() => {
-    const fetchAvailableDates = async () => {
-      try {
-        const today = selectedDate ? dayjs(selectedDate) : dayjs();
-        const year = today.year();
-        const month = today.month() + 1;
+    const today = dayjs();
+    const year = today.year();
+    const month = today.month() + 1;
 
-        const res = await fetch(
-          `https://sp-globalnomad-api.vercel.app/17-1/activities/${numericActivityId}/available-schedule?year=${year}&month=${String(month).padStart(2, '0')}`
-        );
-        if (!res.ok) throw new Error('예약 가능 일정 조회 실패');
+    fetchAvailableDatesForMonth(year, month);
+  }, [fetchAvailableDatesForMonth]);
 
-        const data: {
-          date: string;
-          times: { id: number; startTime: string; endTime: string }[];
-        }[] = await res.json();
-
-        // 예약 가능한 날짜만 추출
-        const dates = data.map((d) => d.date);
-        setAvailableDates(dates);
-
-        // 선택된 날짜가 없거나 현재 달에 포함되지 않으면 초기화
-        //if (!selectedDate || !dates.includes(selectedDate)) {
-        //setSelectedDate(null);
-        //setSelectedTimeId(null);
-        //setSelectedDateTimeText('날짜 선택하기');
-        //setAvailableTimes([]);
-        //}
-      } catch (err) {
-        console.error(err);
-        setAvailableDates([]);
-        setAvailableTimes([]);
-      }
-    };
-
-    fetchAvailableDates();
-  }, [numericActivityId, selectedDate]);
-
-  // 선택된 날짜 변경 시 예약 가능 시간 조회
+  // 2. 선택된 날짜가 바뀔 때 저장된 데이터에서 시간 추출 (API 재호출 최소화)
   useEffect(() => {
     if (!selectedDate) {
       setAvailableTimes([]);
@@ -226,40 +231,48 @@ export default function Page() {
       return;
     }
 
-    const fetchAvailableTimes = async () => {
-      try {
-        const dateObj = dayjs(selectedDate);
-        const year = dateObj.year();
-        const month = dateObj.month() + 1;
+    // 이미 fetch한 scheduleData에서 찾아보자
+    const daySchedule = scheduleData.find((d) => d.date === selectedDate);
 
-        const res = await fetch(
-          `https://sp-globalnomad-api.vercel.app/17-1/activities/${numericActivityId}/available-schedule?year=${year}&month=${String(month).padStart(2, '0')}`
-        );
-        if (!res.ok) throw new Error('예약 가능 일정 조회 실패');
+    if (daySchedule) {
+      setAvailableTimes(daySchedule.times);
+    } else {
+      // 만약 해당 날짜 데이터가 없다면 (다른 월로 이동한 경우)
+      // 해당 월의 데이터를 fetch
+      const dateObj = dayjs(selectedDate);
+      const year = dateObj.year();
+      const month = dateObj.month() + 1;
 
-        const data: {
-          date: string;
-          times: { id: number; startTime: string; endTime: string }[];
-        }[] = await res.json();
+      const fetchAndSetTimes = async () => {
+        try {
+          const res = await fetch(
+            `https://sp-globalnomad-api.vercel.app/17-1/activities/${numericActivityId}/available-schedule?year=${year}&month=${String(
+              month
+            ).padStart(2, '0')}`
+          );
+          if (!res.ok) throw new Error('예약 가능 일정 조회 실패');
 
-        const daySchedule = data.find((d) => d.date === selectedDate);
+          const data: AvailableSchedule[] = await res.json();
 
-        setAvailableTimes(daySchedule?.times || []);
+          // 전체 데이터 저장
+          setScheduleData(data);
 
-        if (!daySchedule?.times?.length) {
-          setSelectedTimeId(null);
-          setSelectedDateTimeText('날짜 선택하기');
+          // 날짜만 추출
+          const dates = data.map((d) => d.date);
+          setAvailableDates(dates);
+
+          // 선택된 날짜의 시간 설정
+          const schedule = data.find((d) => d.date === selectedDate);
+          setAvailableTimes(schedule?.times || []);
+        } catch (err) {
+          console.error(err);
+          setAvailableTimes([]);
         }
-      } catch (err) {
-        console.error(err);
-        setAvailableTimes([]);
-        setSelectedTimeId(null);
-        setSelectedDateTimeText('날짜 선택하기');
-      }
-    };
+      };
 
-    fetchAvailableTimes();
-  }, [selectedDate, numericActivityId]);
+      fetchAndSetTimes();
+    }
+  }, [selectedDate, scheduleData, numericActivityId]);
 
   if (loading) return <div>로딩중...</div>;
   if (error) return <div>에러 발생: {error}</div>;
@@ -322,6 +335,7 @@ export default function Page() {
               setParticipants((prev) => Math.max(prev - 1, 1))
             }
             onReserve={handleReserve}
+            onMonthChange={fetchAvailableDatesForMonth}
           />
         </div>
       </div>
@@ -354,6 +368,7 @@ export default function Page() {
             availableTimes={availableTimes}
             initialSelectedDate={selectedDate}
             initialSelectedTimeId={selectedTimeId}
+            onMonthChange={fetchAvailableDatesForMonth}
           />
         )}
       </section>

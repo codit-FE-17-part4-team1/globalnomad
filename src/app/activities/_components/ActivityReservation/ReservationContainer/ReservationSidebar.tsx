@@ -22,6 +22,8 @@ interface ReservationSidebarProps {
   // 예약 가능 날짜/시간
   availableDates: string[];
   availableTimes: AvailableTime[];
+
+  onMonthChange?: (year: number, month: number) => void;
 }
 
 const ReservationSidebar: React.FC<ReservationSidebarProps> = ({
@@ -38,6 +40,7 @@ const ReservationSidebar: React.FC<ReservationSidebarProps> = ({
   onReserve,
   availableDates,
   availableTimes,
+  onMonthChange,
 }) => {
   return (
     <div
@@ -65,6 +68,7 @@ const ReservationSidebar: React.FC<ReservationSidebarProps> = ({
         onReserve={onReserve}
         availableDates={availableDates}
         availableTimes={availableTimes}
+        onMonthChange={onMonthChange}
       />
     </div>
   );

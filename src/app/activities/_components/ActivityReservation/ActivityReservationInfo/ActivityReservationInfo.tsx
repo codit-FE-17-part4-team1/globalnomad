@@ -27,6 +27,8 @@ interface ActivityReservationInfoProps {
   // 예약 가능 날짜/시간
   availableDates: string[];
   availableTimes: AvailableTime[];
+
+  onMonthChange?: (year: number, month: number) => void;
 }
 
 const ActivityReservationInfo: React.FC<ActivityReservationInfoProps> = ({
@@ -43,6 +45,7 @@ const ActivityReservationInfo: React.FC<ActivityReservationInfoProps> = ({
   onReserve,
   availableDates,
   availableTimes,
+  onMonthChange,
 }) => {
   return (
     <div className="w-full flex flex-col mx-auto gap-5 px-6 py-10">
@@ -64,6 +67,7 @@ const ActivityReservationInfo: React.FC<ActivityReservationInfoProps> = ({
               onSelectDate={onSelectDate}
               availableDates={availableDates}
               activityId={activity.id}
+              onMonthChange={onMonthChange}
             />
           </div>
         </div>

@@ -9,11 +9,13 @@ import { ko } from 'date-fns/locale';
 import CustomHeader from './CustomHeader';
 
 interface DatePickerBoxProps {
-  selectedDate?: string | null; // 이제 YYYY-MM-DD 문자열 사용
-  onSelectDate?: (dateStr: string) => void; // 서버 전송용
+  selectedDate?: string | null; // YYYY-MM-DD 문자열 사용
+  onSelectDate?: (dateStr: string) => void; // 서버 전송
   availableDates: string[];
   className?: string;
   activityId: number;
+
+  onMonthChange?: (year: number, month: number) => void;
 }
 
 const DatePickerBox: React.FC<DatePickerBoxProps> = ({
@@ -22,6 +24,7 @@ const DatePickerBox: React.FC<DatePickerBoxProps> = ({
   availableDates,
   className,
   activityId,
+  onMonthChange,
 }) => {
   const today = dayjs().startOf('day');
 
@@ -55,7 +58,7 @@ const DatePickerBox: React.FC<DatePickerBoxProps> = ({
           const dayOfWeek = date.getDay(); // 0 = Sunday
           const todayStr = today.format('YYYY-MM-DD');
 
-          let classes = ['base-date'];
+          const classes = ['base-date'];
 
           if (dayjs(dateStr).isBefore(todayStr, 'day'))
             classes.push('disabled-date');
@@ -71,8 +74,16 @@ const DatePickerBox: React.FC<DatePickerBoxProps> = ({
         renderCustomHeader={(headerProps) => (
           <CustomHeader
             date={headerProps.date}
-            decreaseMonth={headerProps.decreaseMonth}
-            increaseMonth={headerProps.increaseMonth}
+            decreaseMonth={() => {
+              headerProps.decreaseMonth();
+              const newDate = dayjs(headerProps.date).subtract(1, 'month'); // 클릭 후 실제 달
+              onMonthChange?.(newDate.year(), newDate.month() + 1);
+            }}
+            increaseMonth={() => {
+              headerProps.increaseMonth();
+              const newDate = dayjs(headerProps.date).add(1, 'month'); // 클릭 후 실제 달
+              onMonthChange?.(newDate.year(), newDate.month() + 1);
+            }}
             prevMonthButtonDisabled={headerProps.prevMonthButtonDisabled}
             nextMonthButtonDisabled={headerProps.nextMonthButtonDisabled}
           />

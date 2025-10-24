@@ -15,6 +15,8 @@ interface DateModalProps {
   availableTimes: AvailableTime[];
   initialSelectedDate?: string | null;
   initialSelectedTimeId?: number | null;
+
+  onMonthChange?: (year: number, month: number) => void;
 }
 
 const DateModal: React.FC<DateModalProps> = ({
@@ -25,6 +27,7 @@ const DateModal: React.FC<DateModalProps> = ({
   availableTimes: parentAvailableTimes,
   initialSelectedDate = null,
   initialSelectedTimeId = null,
+  onMonthChange,
 }) => {
   const [selectedDate, setSelectedDate] = useState<string | null>(
     initialSelectedDate
@@ -143,6 +146,7 @@ const DateModal: React.FC<DateModalProps> = ({
                 onSelectDate={(dateStr: string) => setSelectedDate(dateStr)}
                 availableDates={availableDates}
                 activityId={activityId}
+                onMonthChange={onMonthChange}
               />
             </div>
 
