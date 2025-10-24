@@ -1,20 +1,16 @@
-// 전체적으로 api 연동 시 코드 수정 필요!
-
 'use client';
 
 import Image from 'next/image';
 import ReservationCalendar from './_components/ReservationCalendar';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
 import ExperienceSelect from '@/app/Profile/ReservationStatus/_components/ExperienceSelect';
-// 훅 추가
 import useReservationsDashboard from '@/hooks/useReservationsDashboard';
 import useReservationsStatus from '@/hooks/useReservationsStatus';
 
 export default function ReservationStatusPage() {
   // 인증 기능 구현 후 실제 accessToken 연결 필요
   const accessToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTAwOTY5MywiZXhwIjoxNzYxMDExNDkzLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.oBooVcTPLMc_yM7Y0tV-splW72mYZo22-EBplwjNJaQ';
-  // props로 받기?
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTIzMzU5MSwiZXhwIjoxNzYxMjM1MzkxLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.eHncKh8-9-EUTgZoWM7mcVqXqfuOykAEPP5SqzMNces';
   const {
     myActivities,
     isLoadingActivities,
@@ -27,36 +23,28 @@ export default function ReservationStatusPage() {
     isLoadingReservations,
     handleDateSelect,
     selectedDate,
+    currentDate,
   } = useReservationsDashboard(accessToken);
 
-  const { handleUpdateStatus, isUpdating } = useReservationsStatus(
+  const { handleUpdateStatus, isUpdating, updateError } = useReservationsStatus(
     accessToken,
     selectedActivityId
   );
 
   const handleApprove = (reservationId: number) => {
     handleUpdateStatus(reservationId, 'confirmed', () => {
-      // 성공 시 데이터 재조회
       if (selectedDate) handleDateSelect(selectedDate);
     });
   };
 
   const handleReject = (reservationId: number) => {
     handleUpdateStatus(reservationId, 'declined', () => {
-      // 성공 시 데이터 재조회
       if (selectedDate) handleDateSelect(selectedDate);
     });
   };
 
   return (
     <div className="mx-auto max-w-screen-xl ">
-      {/* 임시 확인, 나중에 알림 이모티콘? 에 연결할 예정 - 알림이 없을 경우도 조건부로? --> 근데 이 페이지에서 작업하는게 아닌 것 같음(공통이라서) */}
-      {/* <AlertModal
-        isOpen={isAlertOpen}
-        onClose={() => setIsAlertOpen(false)}
-        alerts={mockAlerts}
-      /> */}
-
       {/* 공통 컴포넌트 적용 - title 유선님 작업하신 거 조립 완료 */}
       <Header title="예약 현황" />
       {/* 카테고리 필터 공통 컴포넌트 적용 필요 - 따로 생성해서 조립 완료! */}
@@ -75,12 +63,14 @@ export default function ReservationStatusPage() {
           <ReservationCalendar
             dashboardData={dashboardData}
             activityId={selectedActivityId}
+            currentDate={currentDate}
             onNavigate={(newDate) => setCurrentDate(newDate)}
             onSelectDate={handleDateSelect}
             reservationsForDate={reservationsForDate}
             isLoadingReservations={isLoadingReservations || isUpdating}
             onApprove={handleApprove}
             onReject={handleReject}
+            updateError={updateError}
           />
         ) : (
           <div className="flex flex-col items-center mt-50 h-full text-gray-500">

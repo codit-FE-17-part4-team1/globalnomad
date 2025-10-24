@@ -34,7 +34,7 @@ export default function useReservationsDashboard(accessToken?: string) {
   const [dashboardError, setDashboardError] = useState<string | null>(null);
 
   // 3. 캘린더 날짜 상태 관리
-  const [currentDate, setCurrentDate] = useState(today);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   // 4. 날짜별 예약 목록 상태 관리
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -56,7 +56,6 @@ export default function useReservationsDashboard(accessToken?: string) {
       try {
         setIsLoadingActivities(true);
         const response = await getMyActivities({ accessToken });
-        console.log('response:', response);
         setMyActivities(response.activities);
         // 체험 목록을 불러온 후 첫번째 체험을 자동으로 선택
         if (response.activities.length > 0) {
@@ -76,8 +75,6 @@ export default function useReservationsDashboard(accessToken?: string) {
 
     fetchMyActivities();
   }, [accessToken]);
-
-  // console.log('myActivities:', myActivities);
 
   // 월별 예약 현황
   // 로그인 불가 또는 선택된 체험이 없을 경우
@@ -136,7 +133,7 @@ export default function useReservationsDashboard(accessToken?: string) {
     fetchReservationsByDate();
   }, [accessToken, selectedActivityId, selectedDate]);
 
-  // 캘린더에서 날짜 선택 시 호출될 핸들러
+  // 캘린더에서 날짜 선택 시 호출될 핸들러 -> 날짜를 클릭하면 모달이 나와야 할 것 같아 겹치는 것 같은데 .. 흠
   const handleDateSelect = (date: string | null) => {
     setSelectedDate(date);
   };
@@ -166,5 +163,8 @@ export default function useReservationsDashboard(accessToken?: string) {
     reservationsError,
     handleDateSelect,
     selectedDate,
+    activitiesError,
+    dashboardError,
+    currentDate,
   };
 }
