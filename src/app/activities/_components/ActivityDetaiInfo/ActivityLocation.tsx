@@ -5,12 +5,6 @@ import Image from 'next/image';
 import Script from 'next/script';
 import type { ActivityDetailInfo } from '@/types/activity';
 
-declare global {
-  interface Window {
-    kakao: any;
-  }
-}
-
 export interface ActivityLocationProps {
   address: ActivityDetailInfo['address'];
 }
@@ -21,32 +15,31 @@ const ActivityLocation: React.FC<ActivityLocationProps> = ({ address }) => {
 
   // 지도 초기화 함수
   const initializeMap = () => {
-    if (!address || !mapRef.current || !window.kakao?.maps) {
+    const kakao = window.kakao;
+    if (!address || !mapRef.current || !kakao?.maps) {
       console.warn('지도 초기화 조건 미충족:', {
         address,
         mapRef: !!mapRef.current,
-        kakao: !!window.kakao?.maps,
+        kakao: !!kakao?.maps,
       });
       return;
     }
 
+    const maps = kakao.maps; // TypeScript 안전
     const container = mapRef.current;
     const mapOption = {
-      center: new window.kakao.maps.LatLng(37.5665, 126.978),
+      center: new maps.LatLng(37.5665, 126.978),
       level: 3,
     };
-    const map = new window.kakao.maps.Map(container, mapOption);
-    const geocoder = new window.kakao.maps.services.Geocoder();
+    const map = new maps.Map(container, mapOption);
+    const geocoder = new maps.services.Geocoder();
 
-    geocoder.addressSearch(address, (result: any, status: any) => {
-      if (
-        status === window.kakao.maps.services.Status.OK &&
-        result.length > 0
-      ) {
-        const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+    geocoder.addressSearch(address, (result: any, status: string) => {
+      if (status === maps.services.Status.OK && result.length > 0) {
+        const coords = new maps.LatLng(result[0].y, result[0].x);
         map.setCenter(coords);
 
-        const marker = new window.kakao.maps.Marker({
+        const marker = new maps.Marker({
           map,
           position: coords,
         });
@@ -65,7 +58,7 @@ const ActivityLocation: React.FC<ActivityLocationProps> = ({ address }) => {
           </div>
         `;
 
-        const infowindow = new window.kakao.maps.InfoWindow({
+        const infowindow = new maps.InfoWindow({
           content: iwContent,
           position: coords,
           removable: true,
@@ -74,7 +67,7 @@ const ActivityLocation: React.FC<ActivityLocationProps> = ({ address }) => {
         infowindow.open(map, marker);
 
         let isOpen = true;
-        window.kakao.maps.event.addListener(marker, 'click', () => {
+        maps.event.addListener(marker, 'click', () => {
           if (isOpen) infowindow.close();
           else infowindow.open(map, marker);
           isOpen = !isOpen;
@@ -87,13 +80,15 @@ const ActivityLocation: React.FC<ActivityLocationProps> = ({ address }) => {
 
   // SDK 로드 후 지도 초기화
   useEffect(() => {
+    const kakao = window.kakao;
+
     // 이미 kakao 객체가 존재하는 경우 (새로고침 시 캐시된 경우)
-    if (window.kakao && window.kakao.maps && !isKakaoLoaded) {
+    if (kakao && kakao.maps && !isKakaoLoaded) {
       setIsKakaoLoaded(true);
     }
 
-    if (isKakaoLoaded && window.kakao?.maps) {
-      window.kakao.maps.load(() => {
+    if (isKakaoLoaded && kakao?.maps) {
+      kakao.maps.load(() => {
         initializeMap();
       });
     }
