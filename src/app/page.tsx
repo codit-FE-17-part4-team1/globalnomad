@@ -17,8 +17,6 @@ const SectionContainer: React.FC<{
 );
 
 const MainPage: React.FC = () => {
-  const teamId = 17;
-
   // 공통 상태
   const categories = [
     '전체',
@@ -30,7 +28,6 @@ const MainPage: React.FC = () => {
     '웰빙',
   ];
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [allActivities, setAllActivities] = useState<Activity[]>([]);
   const [popularActivities, setPopularActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +38,7 @@ const MainPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const [totalCount, setTotalCount] = useState(0);
+  const [visibleActivities, setVisibleActivities] = useState<Activity[]>([]);
 
   // PopularActivities 상태
   const [popularPage, setPopularPage] = useState(0);
@@ -60,6 +58,19 @@ const MainPage: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // localStorage에서 초기 상태 로드
+  useEffect(() => {
+    const savedCategory = localStorage.getItem('selectedCategory');
+    const savedPage = localStorage.getItem('allActivitiesPage');
+    const savedItemsPerPage = localStorage.getItem('itemsPerPage');
+    const savedPriceSort = localStorage.getItem('priceSort');
+
+    if (savedCategory) setSelectedCategory(savedCategory);
+    if (savedPage) setCurrentPage(Number(savedPage));
+    if (savedItemsPerPage) setItemsPerPage(Number(savedItemsPerPage));
+    if (savedPriceSort) setPriceSort(savedPriceSort);
+  }, []);
+
   // API 호출
   useEffect(() => {
     const fetchActivities = async () => {
@@ -73,19 +84,17 @@ const MainPage: React.FC = () => {
         });
 
         const res = await fetch(
-          `https://sp-globalnomad-api.vercel.app/${teamId}/activities?${params}`,
+          `https://sp-globalnomad-api.vercel.app/17-1/activities?${params}`,
           { headers: { accept: 'application/json' } }
         );
 
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        setActivities(data.activities);
 
-        // 모든 체험(All)
-        setAllActivities(data.activities);
+        setActivities(data.activities);
         setTotalCount(data.totalCount ?? data.activities.length);
 
-        // 인기 체험(Popular) - 평점 높은 순, 리뷰 많은 순
+        // 인기 체험
         const sortedPopular = [...data.activities].sort((a, b) =>
           b.rating === a.rating
             ? b.reviewCount - a.reviewCount
@@ -102,6 +111,38 @@ const MainPage: React.FC = () => {
 
     fetchActivities();
   }, []);
+
+  // 필터링 + 정렬 + 페이지네이션
+  useEffect(() => {
+    if (!activities) return;
+
+    let filtered =
+      selectedCategory === '전체'
+        ? [...activities]
+        : activities.filter((act) => act.category === selectedCategory);
+
+    if (priceSort === '가격 낮은 순')
+      filtered.sort((a, b) => a.price - b.price);
+    else if (priceSort === '가격 높은 순')
+      filtered.sort((a, b) => b.price - a.price);
+    else
+      filtered.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+    setTotalCount(filtered.length);
+
+    const startIdx = (currentPage - 1) * itemsPerPage;
+    const endIdx = startIdx + itemsPerPage;
+    setVisibleActivities(filtered.slice(startIdx, endIdx));
+
+    // localStorage 동기화
+    localStorage.setItem('selectedCategory', selectedCategory);
+    localStorage.setItem('priceSort', priceSort);
+    localStorage.setItem('allActivitiesPage', currentPage.toString());
+    localStorage.setItem('itemsPerPage', itemsPerPage.toString());
+  }, [activities, selectedCategory, priceSort, currentPage, itemsPerPage]);
 
   return (
     <main className="w-full flex flex-col items-center">
@@ -129,7 +170,7 @@ const MainPage: React.FC = () => {
       {/* 모든 체험 영역 */}
       <SectionContainer className="my-20">
         <AllActivities
-          activities={allActivities}
+          activities={visibleActivities} // 이미 필터링/정렬/페이지네이션 적용
           categories={categories}
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}

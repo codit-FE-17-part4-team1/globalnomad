@@ -29,10 +29,10 @@ const MoreDropdown: React.FC<MoreDropdownProps> = ({ activityId }) => {
 
   const handleEdit = () => {
     try {
-      // 수정 페이지로 이동
-      router.push(`/my-activities/${activityId}`);
+      router.push(`/my-activities/${activityId}`); // 수정 페이지로 이동
     } catch (error: any) {
       alert(error?.message || '수정할 수 없습니다.');
+      console.error(error);
     }
   };
 
@@ -42,45 +42,34 @@ const MoreDropdown: React.FC<MoreDropdownProps> = ({ activityId }) => {
     if (!confirmDelete) return;
 
     try {
-      const teamId = '17';
+      const res = await fetch(`/api/proxy/17-1/my-activities/${activityId}`, {
+        method: 'DELETE',
+        credentials: 'include', // 쿠키 포함
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-      const res = await fetch(
-        `https://sp-globalnomad-api.vercel.app/${teamId}/my-activities/${activityId}`,
-        {
-          method: 'DELETE',
-          credentials: 'include', // 쿠키 포함
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
+      // JSON 응답이 없을 수도 있으므로 안전하게 처리
       const data = await res.json().catch(() => ({}));
 
-      if (res.status === 204) {
-        alert('체험이 삭제되었습니다.');
-        router.refresh(); // 삭제 후 목록 갱신
-        return;
-      }
-
+      // 상태 코드별 처리
       switch (res.status) {
-        case 400:
-          alert(data.message || '신청 예약이 있는 체험은 삭제할 수 없습니다.');
+        case 204:
+          alert('체험이 삭제되었습니다.');
+          router.push('/');
+          router.refresh();
           break;
-        case 401:
-          alert(data.message || '로그인이 필요합니다.');
+
+        case 401: // 로그인하지 않은 경우 , 400, 403, 404 ... 서버에서 보내주는 메세지 사용, 401은 Unauthorized 문구만 나와서 프론트에서 보내주는 메세지로 대체
+          alert('로그인이 필요합니다.');
           break;
-        case 403:
-          alert(data.message || '본인의 체험만 삭제할 수 있습니다.');
-          break;
-        case 404:
-          alert(data.message || '존재하지 않는 체험입니다.');
-          break;
+
         default:
-          alert(data.message || '삭제 처리 중 오류가 발생했습니다.');
+          alert(data.message ?? '삭제 처리 중 오류가 발생했습니다.');
       }
-    } catch (error: any) {
-      alert('삭제 처리 중 오류가 발생했습니다. 로그인 여부를 확인해주세요.');
+    } catch (error) {
+      alert('삭제 처리 중 오류가 발생했습니다. 네트워크 연결을 확인해주세요.');
       console.error(error);
     }
   };

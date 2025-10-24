@@ -22,7 +22,7 @@ const ActivityLocation: React.FC<ActivityLocationProps> = ({ address }) => {
   // 지도 초기화 함수
   const initializeMap = () => {
     if (!address || !mapRef.current || !window.kakao?.maps) {
-      console.log('초기화 조건 미충족:', {
+      console.warn('지도 초기화 조건 미충족:', {
         address,
         mapRef: !!mapRef.current,
         kakao: !!window.kakao?.maps,
@@ -31,15 +31,11 @@ const ActivityLocation: React.FC<ActivityLocationProps> = ({ address }) => {
     }
 
     const container = mapRef.current;
-
-    // 지도 생성
     const mapOption = {
       center: new window.kakao.maps.LatLng(37.5665, 126.978),
       level: 3,
     };
     const map = new window.kakao.maps.Map(container, mapOption);
-
-    // 주소 검색
     const geocoder = new window.kakao.maps.services.Geocoder();
 
     geocoder.addressSearch(address, (result: any, status: any) => {
@@ -48,82 +44,54 @@ const ActivityLocation: React.FC<ActivityLocationProps> = ({ address }) => {
         result.length > 0
       ) {
         const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
-
-        // 지도 중심 이동
         map.setCenter(coords);
 
-        // 마커 생성
         const marker = new window.kakao.maps.Marker({
           map,
           position: coords,
         });
 
-        // 인포윈도우 스타일
         const iwContent = `
-          <div style="
-            padding:15px 10px;
-            text-align:left;
-            font-size:13px;
-            line-height:1.4;
-            width:250px;
-            height: auto; 
-          ">
+          <div style="padding:15px 10px;text-align:left;font-size:13px;line-height:1.4;width:250px;">
             <div style="font-weight:600; margin-bottom:6px;">${address}</div>
-            <div style="display:flex; justify-content:flex-start; gap:8px;">
+            <div style="display:flex; gap:8px;">
               <a href="https://map.kakao.com/link/map/${encodeURIComponent(
                 address
-              )},${result[0].y},${result[0].x}"
-                target="_blank"
-                style="
-                  color:#1f8cff;
-                  text-align:left
-                  font-size:13px;
-                  font-weight:500;
-                ">큰지도보기</a>
+              )},${result[0].y},${result[0].x}" target="_blank" style="color:#1f8cff;font-size:13px;font-weight:500;">큰지도보기</a>
               <a href="https://map.kakao.com/link/to/${encodeURIComponent(
                 address
-              )},${result[0].y},${result[0].x}"
-                target="_blank"
-                style="
-                  color:#1f8cff;
-                  text-align:left
-                  font-size:13px;
-                  font-weight:500;
-                ">길찾기</a>
+              )},${result[0].y},${result[0].x}" target="_blank" style="color:#1f8cff;font-size:13px;font-weight:500;">길찾기</a>
             </div>
           </div>
         `;
-        // 인포윈도우 생성 (닫기 버튼 포함)
+
         const infowindow = new window.kakao.maps.InfoWindow({
           content: iwContent,
           position: coords,
-          removable: true, // 닫기 버튼
+          removable: true,
         });
 
-        // 기본 열림 상태
         infowindow.open(map, marker);
-        let isOpen = true; // 인포윈도우 기본 상태는 열림
 
-        // 마커 클릭 시 열림/닫힘 토글
+        let isOpen = true;
         window.kakao.maps.event.addListener(marker, 'click', () => {
-          if (isOpen) {
-            infowindow.close();
-          } else {
-            infowindow.open(map, marker);
-          }
+          if (isOpen) infowindow.close();
+          else infowindow.open(map, marker);
           isOpen = !isOpen;
         });
-
-        // 인포윈도우 표시
-        infowindow.open(map, marker);
       } else {
         console.error('주소 변환 실패:', status, address);
       }
     });
   };
 
-  // Kakao SDK 로드 완료 후 지도 초기화
+  // SDK 로드 후 지도 초기화
   useEffect(() => {
+    // 이미 kakao 객체가 존재하는 경우 (새로고침 시 캐시된 경우)
+    if (window.kakao && window.kakao.maps && !isKakaoLoaded) {
+      setIsKakaoLoaded(true);
+    }
+
     if (isKakaoLoaded && window.kakao?.maps) {
       window.kakao.maps.load(() => {
         initializeMap();
@@ -155,7 +123,7 @@ const ActivityLocation: React.FC<ActivityLocationProps> = ({ address }) => {
 
       {/* 주소 표시 */}
       {address && (
-        <div className="flex items-center gap-1 text-md font-normal leading-[100%] text-black">
+        <div className="flex items-center gap-1 text-md font-normal text-black mt-2">
           <Image
             src="/icon/location.svg"
             alt="주소 아이콘"

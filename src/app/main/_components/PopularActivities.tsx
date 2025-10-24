@@ -79,14 +79,15 @@ const PopularActivities: React.FC<PopularActivitiesProps> = ({
         </div>
       </div>
 
-      <div className="flex overflow-x-auto gap-4 flex-nowrap lg:overflow-hidden scrollbar-hide lg:justify-start">
+      <div className="flex overflow-x-auto gap-4 scrollbar-hide lg:flex-nowrap lg:overflow-hidden lg:justify-start">
         {displayedCards.map((exp) => (
-          <ActivityCard
-            key={exp.id}
-            {...exp}
-            type="lg"
-            onClick={() => router.push(`/activities/${exp.id}`)}
-          />
+          <div key={exp.id} className="flex-shrink-0">
+            <ActivityCard
+              {...exp}
+              type="lg"
+              onClick={() => router.push(`/activities/${exp.id}`)}
+            />
+          </div>
         ))}
       </div>
     </section>

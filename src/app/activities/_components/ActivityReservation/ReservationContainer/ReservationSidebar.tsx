@@ -2,18 +2,42 @@
 
 import React from 'react';
 import ActivityReservationInfo from '../ActivityReservationInfo/ActivityReservationInfo';
-import type { ActivityDetailInfo } from '@/types/activity';
+import type { ActivityDetailInfo, AvailableTime } from '@/types/activity';
 
 interface ReservationSidebarProps {
   activity: ActivityDetailInfo;
   onOpenDateModal: () => void;
-  selectedDateText: string; // 부모에서 내려받음
+  selectedDateText: string;
+
+  // Page에서 내려주는 상태와 콜백
+  selectedDate: string | null;
+  selectedTimeId: number | null;
+  participants: number;
+  onSelectDate: (date: string) => void;
+  onSelectTime: (timeId: number) => void;
+  onIncrementParticipants: () => void;
+  onDecrementParticipants: () => void;
+  onReserve: () => void;
+
+  // 예약 가능 날짜/시간
+  availableDates: string[];
+  availableTimes: AvailableTime[];
 }
 
 const ReservationSidebar: React.FC<ReservationSidebarProps> = ({
   activity,
   onOpenDateModal,
   selectedDateText,
+  selectedDate,
+  selectedTimeId,
+  participants,
+  onSelectDate,
+  onSelectTime,
+  onIncrementParticipants,
+  onDecrementParticipants,
+  onReserve,
+  availableDates,
+  availableTimes,
 }) => {
   return (
     <div
@@ -31,6 +55,16 @@ const ReservationSidebar: React.FC<ReservationSidebarProps> = ({
         activity={activity}
         onOpenDateModal={onOpenDateModal}
         selectedDateText={selectedDateText}
+        selectedDate={selectedDate}
+        selectedTimeId={selectedTimeId}
+        participants={participants}
+        onSelectDate={onSelectDate}
+        onSelectTime={onSelectTime}
+        onIncrementParticipants={onIncrementParticipants}
+        onDecrementParticipants={onDecrementParticipants}
+        onReserve={onReserve}
+        availableDates={availableDates}
+        availableTimes={availableTimes}
       />
     </div>
   );

@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
+import dayjs from 'dayjs';
 
 import ActivityTitle from '../_components/ActivityDetaiInfo/ActivityTitle';
 import ImageGallery from '../_components/ActivityDetaiInfo/ImageGallery';
@@ -18,6 +20,7 @@ import type { ActivityDetailInfo } from '@/types/activity';
 import type { Reviews, Review } from '@/types/review';
 
 export default function Page() {
+  const router = useRouter();
   const params = useParams();
   const activityId = Number(params.activityId);
 
@@ -25,7 +28,6 @@ export default function Page() {
     return <div>잘못된 체험 아이디입니다.</div>;
   }
 
-  // numericActivityId 추가
   const numericActivityId = activityId;
 
   const [activity, setActivity] = useState<ActivityDetailInfo | null>(null);
@@ -37,20 +39,22 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 날짜 모달 상태
-  const [isDateModalOpen, setIsDateModalOpen] = useState(false);
-
-  // 선택된 날짜/시간 정보
+  // 날짜/시간, 참가자 상태
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  const [availableTimes, setAvailableTimes] = useState<
+    { id: number; startTime: string; endTime: string }[]
+  >([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTimeId, setSelectedTimeId] = useState<number | null>(null);
   const [selectedDateTimeText, setSelectedDateTimeText] =
-    useState<string>('날짜 선택하기');
-
-  // 참가자 모달 상태
-  const [isParticipantsModalOpen, setIsParticipantsModalOpen] = useState(false);
+    useState('날짜 선택하기');
   const [participants, setParticipants] = useState<number>(1);
 
-  // 예약 버튼 활성화 상태 계산
+  // 모달 상태
+  const [isDateModalOpen, setIsDateModalOpen] = useState(false);
+  const [isParticipantsModalOpen, setIsParticipantsModalOpen] = useState(false);
+
+  // 예약 버튼 활성화
   const isReservationEnabled = useMemo(() => {
     return selectedDate !== null && selectedTimeId !== null && participants > 0;
   }, [selectedDate, selectedTimeId, participants]);
@@ -59,7 +63,7 @@ export default function Page() {
   const handleOpenDateModal = () => setIsDateModalOpen(true);
   const handleCloseDateModal = () => setIsDateModalOpen(false);
 
-  // 날짜/시간 선택 시 호출 - timeId도 함께 받음
+  // 날짜/시간 선택 시 호출
   const handleUpdateDateTime = (formattedText: string, timeId: number) => {
     setSelectedDateTimeText(formattedText);
     setSelectedTimeId(timeId);
@@ -67,66 +71,75 @@ export default function Page() {
     setIsDateModalOpen(false);
   };
 
-  // 참가자 모달 열기
+  // 참가자 모달 열기/선택
   const handleOpenParticipantsModal = () => setIsParticipantsModalOpen(true);
-
-  // 참가자 선택
   const handleSelectParticipants = (num: number) => {
     setParticipants(num);
     setIsParticipantsModalOpen(false);
   };
 
-  // 예약하기 핸들러
-  const handleReserve = async () => {
-    // 예약 가능 상태 체크
-    if (!isReservationEnabled || !selectedTimeId) return;
-
+  // 예약 API
+  async function reserveActivity({
+    activityId,
+    scheduleId,
+    headCount,
+  }: {
+    activityId: number;
+    scheduleId: number;
+    headCount: number;
+  }) {
     try {
       const res = await fetch(
-        `https://sp-globalnomad-api.vercel.app/17/activities/${numericActivityId}/reservations`,
+        `/api/proxy/17-1/activities/${activityId}/reservations`,
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            // 쿠키 기반이므로 Authorization 헤더는 필요 없는듯
-          },
-          credentials: 'include', // 쿠키 전송 필수!
-          body: JSON.stringify({
-            scheduleId: selectedTimeId,
-            headCount: participants,
-          }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ scheduleId, headCount }),
+          credentials: 'include',
         }
       );
-
-      if (res.status === 201) {
-        const data = await res.json();
-        console.log('예약 완료:', data);
-        alert('예약이 완료되었습니다!');
-      } else if (res.status === 401) {
-        // 로그인 안 된 상태
-        alert('로그인이 필요합니다. 로그인 후 예약해주세요.');
-      } else {
+      if (!res.ok) {
         const errorData = await res.json();
-        console.error('예약 실패:', errorData);
-        alert(`예약 실패: ${errorData.message || '알 수 없는 오류'}`);
+        return { success: false, error: errorData.message || '예약 실패' };
       }
-    } catch (err) {
-      console.error(err);
-      alert('예약 중 오류가 발생했습니다.');
+      const data = await res.json();
+      return { success: true, data };
+    } catch (err: any) {
+      return { success: false, error: err.message || '알 수 없는 오류' };
+    }
+  }
+
+  const handleReserve = async () => {
+    if (!isReservationEnabled || !selectedTimeId) return;
+
+    const result = await reserveActivity({
+      activityId: numericActivityId,
+      scheduleId: selectedTimeId,
+      headCount: participants,
+    });
+
+    console.log('예약 API 결과:', result);
+
+    if (result.success) {
+      const goToMain = window.confirm(
+        '예약이 완료되었습니다. 메인 화면으로 이동하시겠습니까?'
+      );
+      if (goToMain) router.push('/');
+      else window.location.reload();
+    } else {
+      alert(result.error);
     }
   };
 
-  // 체험 상세 API 호출
+  // 체험 상세 API
   useEffect(() => {
     const fetchActivity = async () => {
       try {
         setLoading(true);
         const res = await fetch(
-          `https://sp-globalnomad-api.vercel.app/17/activities/${numericActivityId}`
+          `https://sp-globalnomad-api.vercel.app/17-1/activities/${numericActivityId}`
         );
-        if (!res.ok) {
-          throw new Error('체험 상세 조회 실패');
-        }
+        if (!res.ok) throw new Error('체험 상세 조회 실패');
         const data = await res.json();
         setActivity(data);
       } catch (err: any) {
@@ -136,16 +149,15 @@ export default function Page() {
         setLoading(false);
       }
     };
-
     fetchActivity();
   }, [numericActivityId]);
 
-  // 체험 리뷰 API 호출
+  // 체험 리뷰 API
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         const res = await fetch(
-          `https://sp-globalnomad-api.vercel.app/17/activities/${numericActivityId}/reviews?page=1&size=3`
+          `https://sp-globalnomad-api.vercel.app/17-1/activities/${numericActivityId}/reviews?page=1&size=3`
         );
         if (!res.ok) throw new Error('리뷰 조회 실패');
         const data: {
@@ -153,7 +165,6 @@ export default function Page() {
           totalCount: number;
           averageRating: number;
         } = await res.json();
-
         setReviews({
           reviews: data.reviews,
           totalCount: data.totalCount,
@@ -164,9 +175,91 @@ export default function Page() {
         setReviews({ reviews: [], totalCount: 0, averageRating: 0 });
       }
     };
-
     fetchReviews();
   }, [numericActivityId]);
+
+  // 선택된 달/월 기준 예약 가능일 조회
+  useEffect(() => {
+    const fetchAvailableDates = async () => {
+      try {
+        const today = selectedDate ? dayjs(selectedDate) : dayjs();
+        const year = today.year();
+        const month = today.month() + 1;
+
+        const res = await fetch(
+          `https://sp-globalnomad-api.vercel.app/17-1/activities/${numericActivityId}/available-schedule?year=${year}&month=${String(month).padStart(2, '0')}`
+        );
+        if (!res.ok) throw new Error('예약 가능 일정 조회 실패');
+
+        const data: {
+          date: string;
+          times: { id: number; startTime: string; endTime: string }[];
+        }[] = await res.json();
+
+        // 예약 가능한 날짜만 추출
+        const dates = data.map((d) => d.date);
+        setAvailableDates(dates);
+
+        // 선택된 날짜가 없거나 현재 달에 포함되지 않으면 초기화
+        //if (!selectedDate || !dates.includes(selectedDate)) {
+        //setSelectedDate(null);
+        //setSelectedTimeId(null);
+        //setSelectedDateTimeText('날짜 선택하기');
+        //setAvailableTimes([]);
+        //}
+      } catch (err) {
+        console.error(err);
+        setAvailableDates([]);
+        setAvailableTimes([]);
+      }
+    };
+
+    fetchAvailableDates();
+  }, [numericActivityId, selectedDate]);
+
+  // 선택된 날짜 변경 시 예약 가능 시간 조회
+  useEffect(() => {
+    if (!selectedDate) {
+      setAvailableTimes([]);
+      setSelectedTimeId(null);
+      setSelectedDateTimeText('날짜 선택하기');
+      return;
+    }
+
+    const fetchAvailableTimes = async () => {
+      try {
+        const dateObj = dayjs(selectedDate);
+        const year = dateObj.year();
+        const month = dateObj.month() + 1;
+
+        const res = await fetch(
+          `https://sp-globalnomad-api.vercel.app/17-1/activities/${numericActivityId}/available-schedule?year=${year}&month=${String(month).padStart(2, '0')}`
+        );
+        if (!res.ok) throw new Error('예약 가능 일정 조회 실패');
+
+        const data: {
+          date: string;
+          times: { id: number; startTime: string; endTime: string }[];
+        }[] = await res.json();
+
+        const daySchedule = data.find((d) => d.date === selectedDate);
+
+        setAvailableTimes(daySchedule?.times || []);
+
+        if (!daySchedule?.times?.length) {
+          setSelectedTimeId(null);
+          setSelectedDateTimeText('날짜 선택하기');
+        }
+      } catch (err) {
+        console.error(err);
+        setAvailableTimes([]);
+        setSelectedTimeId(null);
+        setSelectedDateTimeText('날짜 선택하기');
+      }
+    };
+
+    fetchAvailableTimes();
+  }, [selectedDate, numericActivityId]);
 
   if (loading) return <div>로딩중...</div>;
   if (error) return <div>에러 발생: {error}</div>;
@@ -195,22 +288,17 @@ export default function Page() {
       </section>
 
       <div className="flex flex-col md:flex-row gap-x-6 w-full">
-        {/* 왼쪽 컬럼: 체험 설명, 지도, 리뷰 */}
+        {/* 왼쪽 컬럼 */}
         <div className="flex flex-col gap-5 flex-1 md:max-w-[800px]">
           <div className="hidden md:block border-b border-black-nomad/25"></div>
-
           <section className="w-full py-6">
             <ActivityDescription description={activity.description} />
           </section>
-
           <div className="border-b border-black-nomad/25 -mx-5 md:mx-0"></div>
-
           <section className="w-full py-6">
             <ActivityLocation address={activity.address} />
           </section>
-
           <div className="border-b border-black-nomad/25 -mx-5 md:mx-0"></div>
-
           <section className="w-full pt-6 pb-80">
             <ReviewList data={reviews} />
           </section>
@@ -222,6 +310,18 @@ export default function Page() {
             activity={activity}
             onOpenDateModal={handleOpenDateModal}
             selectedDateText={selectedDateTimeText}
+            selectedDate={selectedDate}
+            selectedTimeId={selectedTimeId}
+            participants={participants}
+            availableDates={availableDates}
+            availableTimes={availableTimes}
+            onSelectDate={setSelectedDate}
+            onSelectTime={setSelectedTimeId}
+            onIncrementParticipants={() => setParticipants((prev) => prev + 1)}
+            onDecrementParticipants={() =>
+              setParticipants((prev) => Math.max(prev - 1, 1))
+            }
+            onReserve={handleReserve}
           />
         </div>
       </div>
@@ -229,6 +329,7 @@ export default function Page() {
       {/* 스티키 푸터 */}
       <section>
         <ReservationStickyFooter
+          activity={activity}
           onOpenParticipantsModal={handleOpenParticipantsModal}
           onOpenDateModal={handleOpenDateModal}
           selectedDateText={selectedDateTimeText}
@@ -237,19 +338,22 @@ export default function Page() {
           isReservationEnabled={isReservationEnabled}
           onReserve={handleReserve}
         />
-
         {isParticipantsModalOpen && (
           <ParticipantsModal
             onClose={() => setIsParticipantsModalOpen(false)}
             onSelectParticipants={handleSelectParticipants}
+            initialParticipants={participants}
           />
         )}
-
         {isDateModalOpen && (
           <DateModal
             onClose={handleCloseDateModal}
             onSelectDateTime={handleUpdateDateTime}
             activityId={numericActivityId}
+            availableDates={availableDates}
+            availableTimes={availableTimes}
+            initialSelectedDate={selectedDate}
+            initialSelectedTimeId={selectedTimeId}
           />
         )}
       </section>

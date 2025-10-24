@@ -5,20 +5,37 @@ import Image from 'next/image';
 import DatePickerBox from '../ActivityReservationInfo/Fragment/DatePicker/DatePickerBox';
 import TimePicker from '../ActivityReservationInfo/Fragment/TimePicker';
 import MyButton from '@/components/Button/Button';
+import type { AvailableTime } from '@/types/activity';
 
 interface DateModalProps {
   onClose: () => void;
   onSelectDateTime: (formattedText: string, timeId: number) => void;
   activityId: number;
+  availableDates: string[]; // page.tsx에서 전달
+  availableTimes: AvailableTime[];
+  initialSelectedDate?: string | null;
+  initialSelectedTimeId?: number | null;
 }
 
 const DateModal: React.FC<DateModalProps> = ({
   onClose,
   onSelectDateTime,
   activityId,
+  availableDates,
+  availableTimes: parentAvailableTimes,
+  initialSelectedDate = null,
+  initialSelectedTimeId = null,
 }) => {
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedTimeId, setSelectedTimeId] = useState<number | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(
+    initialSelectedDate
+  );
+  const [selectedTimeId, setSelectedTimeId] = useState<number | null>(
+    initialSelectedTimeId
+  );
+  const [availableTimes, setAvailableTimes] = useState<AvailableTime[]>(
+    parentAvailableTimes || []
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
   // 배경 스크롤 막기
   useEffect(() => {
@@ -28,57 +45,82 @@ const DateModal: React.FC<DateModalProps> = ({
     };
   }, []);
 
+  // 날짜 변경 시 시간 초기화 및 새 데이터 fetch
+  useEffect(() => {
+    if (!selectedDate) return;
+
+    const fetchAvailableTimes = async () => {
+      setIsLoading(true);
+      try {
+        // 날짜에서 year, month 추출
+        const [year, month] = selectedDate.split('-');
+
+        const res = await fetch(
+          `/api/proxy/17-1/activities/${activityId}/available-schedule?year=${year}&month=${month}`
+        );
+
+        if (res.status === 404) {
+          setAvailableTimes([]);
+          return;
+        }
+
+        if (!res.ok) {
+          console.error('Failed to fetch available times');
+          setAvailableTimes([]);
+          return;
+        }
+
+        const data: {
+          date: string;
+          times: { id: number; startTime: string; endTime: string }[];
+        }[] = await res.json();
+
+        // 현재 선택한 날짜의 time만 필터링
+        const selectedDay = data.find((d) => d.date === selectedDate);
+        const times = selectedDay?.times || [];
+        setAvailableTimes(times);
+
+        // 이전 선택 유지 로직
+        // 이전에 선택한 시간(selectedTimeId)이 새로운 availableTimes에 존재하면 유지
+        // 없으면 null로 초기화
+        setSelectedTimeId((prevTimeId) =>
+          times.some((t) => t.id === prevTimeId) ? prevTimeId : null
+        );
+      } catch (error) {
+        console.error('Error fetching available times:', error);
+        setAvailableTimes([]);
+        setSelectedTimeId(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAvailableTimes();
+  }, [selectedDate, activityId]);
+
   // 선택 완료 처리
   const handleSelect = () => {
     if (!selectedDate || !selectedTimeId) return;
 
-    // 선택된 시간 정보를 API에서 찾아서 포맷
-    const fetchTime = async () => {
-      try {
-        const dateObj = new Date(selectedDate);
-        const year = dateObj.getFullYear();
-        const month = dateObj.getMonth() + 1;
+    const schedule = availableTimes.find((t) => t.id === selectedTimeId);
+    if (!schedule) return;
 
-        const res = await fetch(
-          `https://sp-globalnomad-api.vercel.app/17/activities/${activityId}/available-schedule?year=${year}&month=${String(
-            month
-          ).padStart(2, '0')}`
-        );
-
-        if (!res.ok) throw new Error('예약 가능 일정 조회 실패');
-        const data: {
-          id: number;
-          date: string;
-          startTime: string;
-          endTime: string;
-        }[] = await res.json();
-
-        const schedule = data.find((s) => s.id === selectedTimeId);
-        if (!schedule) return;
-
-        const formatted = `${schedule.date.replaceAll('-', '/')} ${schedule.startTime} ~ ${schedule.endTime}`;
-        onSelectDateTime(formatted, selectedTimeId);
-        onClose();
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchTime();
+    const formatted = `${selectedDate.replaceAll('-', '/')} ${schedule.startTime} ~ ${schedule.endTime}`;
+    onSelectDateTime(formatted, selectedTimeId);
+    onClose();
   };
 
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center p-0 md:p-5 bg-black/40"
-      onClick={onClose} // 오버레이 클릭 시 닫기
+      onClick={onClose}
     >
       <div
-        className="
-          flex flex-col gap-6
+        className="flex flex-col gap-6
           w-full h-full p-5
           md:w-[480px] md:max-h-[90vh] md:h-auto md:p-10 md:rounded-3xl md:shadow-2xl
           overflow-y-auto bg-white"
-        onClick={(e) => e.stopPropagation()} // 모달 내용 클릭 시 이벤트 전파 중단
+        onClick={(e) => e.stopPropagation()}
       >
         {/* 헤더 */}
         <div className="flex items-center justify-between">
@@ -97,21 +139,33 @@ const DateModal: React.FC<DateModalProps> = ({
             <div className="flex items-center justify-center">
               <DatePickerBox
                 className="w-[350px] px-8 py-2 border border-gray-300 rounded-md"
-                selectedDate={selectedDate ? new Date(selectedDate) : null}
-                onSelectDate={(date: Date) =>
-                  setSelectedDate(date.toISOString().split('T')[0])
-                }
+                selectedDate={selectedDate}
+                onSelectDate={(dateStr: string) => setSelectedDate(dateStr)}
+                availableDates={availableDates}
                 activityId={activityId}
               />
             </div>
 
             {/* TimePicker */}
-            <TimePicker
-              selectedDate={selectedDate || undefined}
-              selectedTimeId={selectedTimeId || undefined}
-              onSelectTime={setSelectedTimeId}
-              activityId={activityId}
-            />
+            {isLoading ? (
+              <p className="text-center text-gray-500 py-4">
+                시간 정보를 불러오는 중...
+              </p>
+            ) : availableTimes.length > 0 ? (
+              <TimePicker
+                selectedTimeId={selectedTimeId || undefined}
+                onSelectTime={setSelectedTimeId}
+                availableTimes={availableTimes}
+              />
+            ) : selectedDate ? (
+              <p className="text-center text-gray-500 py-4">
+                선택한 날짜에 예약 가능한 시간이 없습니다.
+              </p>
+            ) : (
+              <p className="text-center text-gray-500 py-4">
+                날짜를 선택해주세요.
+              </p>
+            )}
           </div>
         </div>
 

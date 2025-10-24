@@ -9,7 +9,7 @@ import PriceFilter from './PriceFilter';
 import type { Activity } from '@/types/activity';
 
 interface AllActivitiesProps {
-  activities: Activity[];
+  activities: Activity[]; // 이미 page.tsx에서 필터링/정렬/슬라이싱된 데이터
   categories: string[];
   selectedCategory: string;
   onSelectCategory: (category: string) => void;
@@ -38,26 +38,20 @@ const AllActivities: React.FC<AllActivitiesProps> = ({
   error,
 }) => {
   const router = useRouter();
-  const filtered = activities
-    .filter(
-      (a) => selectedCategory === '전체' || a.category === selectedCategory
-    )
-    .sort((a, b) => {
-      if (priceSort === '가격 낮은 순') return a.price - b.price;
-      if (priceSort === '가격 높은 순') return b.price - a.price;
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
 
   const statusContainerClass =
     'col-span-full flex items-center justify-center h-[586px] md:h-[1154px] lg:h-[897px] text-xl md:text-2xl';
 
   return (
     <section className="w-full max-w-[1240px] mx-auto px-5">
+      {/* 카테고리 버튼 */}
       <CategoryButtons
         categories={categories}
         selectedCategory={selectedCategory}
         onSelectCategory={onSelectCategory}
       />
+
+      {/* 정렬 선택 */}
       <div className="flex justify-between items-center mb-7">
         <h2 className="text-black font-bold text-2xl lg:text-[36px] leading-[100%]">
           ⛸️ 모든 체험
@@ -65,11 +59,12 @@ const AllActivities: React.FC<AllActivitiesProps> = ({
         <PriceFilter selected={priceSort} setSelected={onPriceSortChange} />
       </div>
 
+      {/* 활동 카드 */}
       <div
         className={[
           'grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
           'justify-items-center',
-          filtered.length > 0 ? 'items-start' : 'items-center justify-center',
+          activities.length > 0 ? 'items-start' : 'items-center justify-center',
         ].join(' ')}
       >
         {loading ? (
@@ -78,8 +73,8 @@ const AllActivities: React.FC<AllActivitiesProps> = ({
           </div>
         ) : error ? (
           <div className={`${statusContainerClass} text-red-500`}>{error}</div>
-        ) : filtered.length > 0 ? (
-          filtered.map((exp) => (
+        ) : activities.length > 0 ? (
+          activities.map((exp) => (
             <ActivityCard
               key={exp.id}
               {...exp}
@@ -96,6 +91,7 @@ const AllActivities: React.FC<AllActivitiesProps> = ({
         )}
       </div>
 
+      {/* 페이지네이션 */}
       {totalCount > 0 && (
         <div className="mt-[50px] mb-[150px]">
           <Pagination
