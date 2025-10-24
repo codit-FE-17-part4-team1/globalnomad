@@ -17,7 +17,7 @@ async function proxyFetch(path: string, options: RequestInit = {}) {
 }
 
 export async function GET() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 
   if (!accessToken) {
@@ -48,7 +48,7 @@ export async function GET() {
 }
 
 export async function PATCH(req: NextRequest) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 
   if (!accessToken) {

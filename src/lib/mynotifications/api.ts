@@ -16,27 +16,18 @@ export async function getNotifications(
     ? `cursorId=${cursorId}&size=${size}`
     : `size=${size}`;
 
-  return apiFetch<NotificationList>(
-    `${BASE_URL}/my-notifications?${queryString}`
-  );
+  const response = await fetch(`/api/mynotifications?${queryString}`, {
+    method: 'GET',
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    throw new Error('알림 목록을 불러오는 데 실패했습니다.');
+  }
+
+  const data = await response.json();
+  return data;
 }
-
-//   const response = await fetch(`${BASE_URL}/my-notifications?${queryString}`, {
-//     method: 'GET',
-//     headers: {
-//       Accept: 'application/json',
-//       Authorization: `Bearer ${accessToken}`,
-//     },
-//     cache: 'no-store',
-//   });
-
-//   if (!response.ok) {
-//     throw new Error('알림 목록을 불러오는 데 실패했습니다.');
-//   }
-
-//   const data = await response.json();
-//   return data;
-// }
 
 /**
  * 알림 삭제
@@ -44,17 +35,14 @@ export async function getNotifications(
 export async function deleteNotification(
   notificationId: number
 ): Promise<DeleteNotificationRes> {
-  return apiFetch<DeleteNotificationRes>(
-    `${BASE_URL}/my-notifications/${notificationId}`,
-    {
-      method: 'DELETE',
-    }
-  );
+  const response = await fetch(`/api/mynotifications/${notificationId}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    throw new Error('알림을 삭제하는 데 실패했습니다.');
+  }
+
+  const data = await response.json();
+  return data;
 }
-
-// if (!response.ok) {
-//   throw new Error('알림 삭제에 실패했습니다.');
-// }
-
-// const data = await response.json();
-// return data;

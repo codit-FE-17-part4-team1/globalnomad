@@ -16,17 +16,13 @@ export default function ReservationStatusPage() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      console.log('🔍 인증 체크 시작'); // ✅ 추가
       try {
         const authenticated = await ensureRefreshed();
-        console.log('✅ ensureRefreshed 결과:', authenticated); // ✅ 추가
 
         if (authenticated) {
-          console.log('✅ 인증 성공'); // ✅ 추가
           setIsAuthenticated(true);
           setIsAuthChecking(false);
         } else {
-          console.log('❌ 인증 실패 - 로그인 페이지로 이동'); // ✅ 추가
           setAuthError(
             '인증에 실패했습니다. ensureRefreshed가 false를 반환했습니다.'
           );

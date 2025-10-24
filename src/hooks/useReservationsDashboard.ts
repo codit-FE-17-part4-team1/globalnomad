@@ -45,6 +45,18 @@ export default function useReservationsDashboard() {
     null
   );
 
+  // 쿠키를 서버에서 관리를 하고 있다.
+  // 클라이언트 컴포넌트에서는 쿠키를 사용을 못하고 있는 상황
+
+  // 우리 클라이언트(nextjs) | 우리 서버(nextjs) | 코드잇 서버
+  // 1. 우리 클라이언트(nextjs) -> 우리 서버(nextjs)에 요청을 보낸다.
+  // 2. 우리 서버(nextjs)
+  //   2.1. cookieStore에 접근을한다.
+  //   2.2. 얻은 쿠키를 가지고 accessToken에 접근한다.
+  //   2.3. 코드잇 서버에 요청을 보낸다.
+  //   2.4. 코드잇 서버의 응답을 받는다. (res)
+  // 3. 우리 서버(nextjs) -> 우리 클라이언트(nextjs)에 응답을 보낸다. (res)
+
   // 내 체험 목록 가져와서 보여주기
   useEffect(() => {
     const fetchMyActivities = async () => {
@@ -130,18 +142,6 @@ export default function useReservationsDashboard() {
   const handleDateSelect = (date: string | null) => {
     setSelectedDate(date);
   };
-
-  // 날짜별 예약 정보 로딩이 완료된 후 실행할 콜백
-  useEffect(() => {
-    // selectedDate가 있고, 로딩이 끝났으며, 데이터가 준비되었을 때
-    if (selectedDate && !isLoadingReservations && reservationsForDate) {
-      // 이 로직은 ReservationCalendar에서 모달을 열기 위해 사용됩니다.
-      // 현재는 특별한 동작이 필요 없지만, 향후 확장성을 위해 구조를 유지합니다.
-      // 예를 들어, 여기서 모달을 열라는 신호를 보낼 수 있습니다.
-      // onDataLoaded?.();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoadingReservations, reservationsForDate]);
 
   return {
     myActivities,
