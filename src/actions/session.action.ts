@@ -53,6 +53,14 @@ export async function reissueTokens(): Promise<{ ok: boolean }> {
   const accessToken = c.get('accessToken')?.value ?? '';
   const refreshToken = c.get('refreshToken')?.value ?? '';
 
+  // ✅ 추가
+  console.log('🍪 쿠키 확인:', {
+    hasAccessToken: !!accessToken,
+    hasRefreshToken: !!refreshToken,
+    accessTokenLength: accessToken?.length,
+    refreshTokenLength: refreshToken?.length,
+  });
+
   if (!refreshToken) {
     await clearAuthCookies();
     return { ok: false };
@@ -64,6 +72,12 @@ export async function reissueTokens(): Promise<{ ok: boolean }> {
     body: JSON.stringify({ refreshToken, accessToken }),
     cache: 'no-store',
   });
+
+  console.log('📊 API 응답:', {
+    status: res.status,
+    ok: res.ok,
+    statusText: res.statusText,
+  }); // ✅ 추가
 
   if (!res.ok) {
     await clearAuthCookies();

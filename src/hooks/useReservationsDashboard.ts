@@ -19,7 +19,7 @@ const today = new Date();
 /**
  * 예약 현황 페이지의 상태 및 비즈니스 로직 관리
  */
-export default function useReservationsDashboard(accessToken?: string) {
+export default function useReservationsDashboard() {
   // 1. 내 체험 목록 상태 관리
   const [myActivities, setMyActivities] = useState<Activity[]>([]);
   const [isLoadingActivities, setIsLoadingActivities] = useState(true);
@@ -47,15 +47,10 @@ export default function useReservationsDashboard(accessToken?: string) {
 
   // 내 체험 목록 가져와서 보여주기
   useEffect(() => {
-    if (!accessToken) {
-      setIsLoadingActivities(false);
-      return;
-    }
-
     const fetchMyActivities = async () => {
       try {
         setIsLoadingActivities(true);
-        const response = await getMyActivities({ accessToken });
+        const response = await getMyActivities({});
         setMyActivities(response.activities);
         // 체험 목록을 불러온 후 첫번째 체험을 자동으로 선택
         if (response.activities.length > 0) {
@@ -74,12 +69,12 @@ export default function useReservationsDashboard(accessToken?: string) {
     };
 
     fetchMyActivities();
-  }, [accessToken]);
+  }, []);
 
   // 월별 예약 현황
-  // 로그인 불가 또는 선택된 체험이 없을 경우
+  // 선택된 체험이 없을 경우
   useEffect(() => {
-    if (!accessToken || !selectedActivityId) {
+    if (!selectedActivityId) {
       setDashboardData([]);
       return;
     }
@@ -91,7 +86,6 @@ export default function useReservationsDashboard(accessToken?: string) {
         const year = String(currentDate.getFullYear());
         const month = String(currentDate.getMonth() + 1);
         const response = await getReservationDashboard({
-          accessToken,
           activityId: selectedActivityId,
           year,
           month,
@@ -105,11 +99,11 @@ export default function useReservationsDashboard(accessToken?: string) {
     };
 
     fetchDashboardData();
-  }, [accessToken, selectedActivityId, currentDate]);
+  }, [selectedActivityId, currentDate]);
 
   // 날짜별 예약 정보 조회
   useEffect(() => {
-    if (!accessToken || !selectedActivityId || !selectedDate) {
+    if (!selectedActivityId || !selectedDate) {
       return;
     }
 
@@ -118,7 +112,6 @@ export default function useReservationsDashboard(accessToken?: string) {
         setIsLoadingReservations(true);
         setReservationsError(null);
         const response = await getReservationsByDate({
-          accessToken,
           activityId: selectedActivityId,
           date: selectedDate,
         });
@@ -131,7 +124,7 @@ export default function useReservationsDashboard(accessToken?: string) {
     };
 
     fetchReservationsByDate();
-  }, [accessToken, selectedActivityId, selectedDate]);
+  }, [selectedActivityId, selectedDate]);
 
   // 캘린더에서 날짜 선택 시 호출될 핸들러 -> 날짜를 클릭하면 모달이 나와야 할 것 같아 겹치는 것 같은데 .. 흠
   const handleDateSelect = (date: string | null) => {

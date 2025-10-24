@@ -11,6 +11,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
+  async rewrites() {
+    return [
+      {
+        source: '/api/proxy/:path*',
+        destination: 'https://sp-globalnomad-api.vercel.app/17-1/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

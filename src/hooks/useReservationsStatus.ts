@@ -8,10 +8,7 @@ import { updateReservationStatus } from '@/lib/myactivities/api';
 /**
  * 예약 상태 변경(승인/거절) 로직을 관리하는 커스텀 훅
  */
-export default function useReservationsStatus(
-  accessToken?: string,
-  activityId?: number
-) {
+export default function useReservationsStatus(activityId?: number) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
 
@@ -23,7 +20,7 @@ export default function useReservationsStatus(
     status: 'confirmed' | 'declined',
     onSuccess?: () => void
   ) => {
-    if (!accessToken || !activityId) {
+    if (!activityId) {
       setUpdateError('체험 정보가 없습니다.');
       return;
     }
@@ -32,7 +29,6 @@ export default function useReservationsStatus(
       setIsUpdating(true);
       setUpdateError(null);
       await updateReservationStatus({
-        accessToken,
         activityId,
         reservationId,
         status,

@@ -3,13 +3,16 @@
 type RefreshStatus = { promise: Promise<boolean> | null };
 const refreshState: RefreshStatus = { promise: null };
 
-async function ensureRefreshed(): Promise<boolean> {
+export async function ensureRefreshed(): Promise<boolean> {
+  console.log('🔄 ensureRefreshed 호출'); // ✅ 추가
   if (!refreshState.promise) {
     refreshState.promise = (async () => {
+      console.log('📡 /api/auth/refresh 요청 시작'); // ✅ 추가
       const r = await fetch('/api/auth/refresh', {
         method: 'POST',
         credentials: 'include',
       });
+      console.log('📊 refresh 응답:', r.status, r.ok); // ✅ 추가
       return r.ok;
     })().finally(() => {
       refreshState.promise = null;

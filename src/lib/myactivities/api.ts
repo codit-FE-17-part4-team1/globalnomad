@@ -14,11 +14,8 @@ import {
 export async function getMyActivities(opts: {
   cursorId?: number;
   size?: number;
-  accessToken?: string;
 }): Promise<MyActivitiesResponse> {
-  const { cursorId, size = 20, accessToken } = opts;
-
-  // assertToken(accessToken);
+  const { cursorId, size = 20 } = opts;
 
   const queryString =
     cursorId != null ? `cursorId=${cursorId}&size=${size}` : `size=${size}`;
@@ -28,8 +25,8 @@ export async function getMyActivities(opts: {
     method: 'GET',
     headers: {
       Accept: 'application/json',
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: 'include',
     cache: 'no-store',
   });
 
@@ -46,18 +43,16 @@ export async function getReservationDashboard(opts: {
   activityId: number;
   year: string;
   month: string;
-  accessToken?: string;
 }): Promise<ReservationDashboard> {
-  const { activityId, year, month, accessToken } = opts;
-  // assertToken(accessToken);
+  const { activityId, year, month } = opts;
 
   const url = `${BASE_URL}/my-activities/${activityId}/reservation-dashboard?year=${year}&month=${month}`;
   const res = await fetch(url, {
     method: 'GET',
     headers: {
       Accept: 'application/json',
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: 'include',
     cache: 'no-store',
   });
 
@@ -75,10 +70,8 @@ export async function getReservationDashboard(opts: {
 export async function getSchedulesForDate(opts: {
   activityId: number;
   date: string;
-  accessToken?: string;
 }): Promise<ReservedSchedule> {
-  const { activityId, date, accessToken } = opts;
-  // assertToken(accessToken);
+  const { activityId, date } = opts;
 
   const url = `${BASE_URL}/my-activities/${activityId}/reserved-schedule?date=${date}`;
 
@@ -86,8 +79,8 @@ export async function getSchedulesForDate(opts: {
     method: 'GET',
     headers: {
       Accept: 'application/json',
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: 'include',
     cache: 'no-store',
   });
 
@@ -106,11 +99,8 @@ export async function getReservationsBySchedule(opts: {
   activityId: number;
   scheduleId: number;
   status?: 'pending' | 'confirmed' | 'declined' | 'completed';
-  accessToken?: string;
 }): Promise<ReservationsTime> {
-  const { activityId, scheduleId, status, accessToken } = opts;
-
-  // assertToken(accessToken);
+  const { activityId, scheduleId, status } = opts;
 
   const params = new URLSearchParams();
   params.set('scheduleId', String(scheduleId));
@@ -125,8 +115,8 @@ export async function getReservationsBySchedule(opts: {
     method: 'GET',
     headers: {
       Accept: 'application/json',
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: 'include',
     cache: 'no-store',
   });
 
@@ -147,19 +137,15 @@ export async function getReservationsBySchedule(opts: {
 export async function getReservationsByDate(opts: {
   activityId: number;
   date: string;
-  accessToken?: string;
 }): Promise<ReservationsTime> {
-  const { activityId, date, accessToken } = opts;
+  const { activityId, date } = opts;
 
   try {
     // 1. 해당 월의 스케줄 가져오기
     const allSchedules = await getSchedulesForDate({
       activityId,
       date,
-      accessToken,
     });
-
-    console.log('📅 해당 날짜의 전체 스케줄:', allSchedules);
 
     // 2. 스케줄이 있는 경우 예약 조회
     const schedulePromises = allSchedules.flatMap((schedule) => {
@@ -171,7 +157,6 @@ export async function getReservationsByDate(opts: {
             activityId,
             scheduleId: schedule.scheduleId,
             status: 'pending',
-            accessToken,
           })
         );
       }
@@ -182,7 +167,6 @@ export async function getReservationsByDate(opts: {
             activityId,
             scheduleId: schedule.scheduleId,
             status: 'confirmed',
-            accessToken,
           })
         );
       }
@@ -193,7 +177,6 @@ export async function getReservationsByDate(opts: {
             activityId,
             scheduleId: schedule.scheduleId,
             status: 'declined',
-            accessToken,
           })
         );
       }
@@ -215,8 +198,8 @@ export async function getReservationsByDate(opts: {
           method: 'GET',
           headers: {
             Accept: 'application/json',
-            Authorization: `Bearer ${accessToken}`,
           },
+          credentials: 'include',
           cache: 'no-store',
         });
 
@@ -275,18 +258,16 @@ export async function updateReservationStatus(opts: {
   activityId: number;
   reservationId: number;
   status: 'confirmed' | 'declined';
-  accessToken?: string;
 }): Promise<void> {
-  const { activityId, reservationId, status, accessToken } = opts;
-  // assertToken(accessToken);
+  const { activityId, reservationId, status } = opts;
 
   const url = `${BASE_URL}/my-activities/${activityId}/reservations/${reservationId}`;
   const res = await fetch(url, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: 'include',
     body: JSON.stringify({ status }),
     cache: 'no-store',
   });
@@ -301,17 +282,13 @@ export async function updateReservationStatus(opts: {
  */
 export async function deleteMyActivity(opts: {
   activityId: number;
-  accessToken?: string;
 }): Promise<void> {
-  const { activityId, accessToken } = opts;
-  // assertToken(accessToken);
+  const { activityId } = opts;
 
   const url = `${BASE_URL}/my-activities/${activityId}`;
   const res = await fetch(url, {
     method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    credentials: 'include',
     cache: 'no-store',
   });
 
