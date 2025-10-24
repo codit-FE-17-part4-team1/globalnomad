@@ -2,39 +2,7 @@
 
 import { cookies } from 'next/headers';
 import { signupRequest, loginRequest } from '@/lib/auth/api';
-import {
-  validateEmail,
-  validatePassword,
-  validateNickname,
-  validatePasswordConfirm,
-} from '@/utils/validators';
-import { redirect } from 'next/navigation';
-
-export type ActionState = {
-  status: boolean;
-  fetchErrorText: string;
-  isError: {
-    email: boolean;
-    password: boolean;
-    nickname: boolean;
-    passwordConfirmation: boolean;
-  };
-  errors: Record<string, string>;
-};
-
-function isPromiseLike<T>(v: unknown): v is Promise<T> {
-  return typeof (v as { then?: unknown }).then === 'function';
-}
-type CookieStoreResolved =
-  ReturnType<typeof cookies> extends Promise<infer P>
-    ? P
-    : ReturnType<typeof cookies>;
-async function cookieStore(): Promise<CookieStoreResolved> {
-  const c = cookies() as unknown;
-  return isPromiseLike<CookieStoreResolved>(c)
-    ? await c
-    : (c as CookieStoreResolved);
-}
+import type { AuthResult } from '@/types/auth';
 
 function cookieOpts(maxAgeSeconds: number) {
   const isProd = process.env.NODE_ENV === 'production';
@@ -46,92 +14,122 @@ function cookieOpts(maxAgeSeconds: number) {
     maxAge: maxAgeSeconds,
   };
 }
-
 async function setAuthCookies(accessToken: string, refreshToken: string) {
-  const c = await cookieStore();
-  c.set('accessToken', accessToken, cookieOpts(60 * 60)); // 1h
-  c.set('refreshToken', refreshToken, cookieOpts(60 * 60 * 24 * 14)); // 14d
+  const c = await cookies();
+  c.set('accessToken', accessToken, cookieOpts(60 * 60));
+  c.set('refreshToken', refreshToken, cookieOpts(60 * 60 * 24 * 14));
 }
 
-async function clearAuthCookies() {
-  const c = await cookieStore();
-  c.delete('accessToken');
-  c.delete('refreshToken');
+function pickPrimaryErrorMessage(fieldErrors: Record<string, string>): string {
+  // 우선순위: passwordConfirmation > password > email > nickname
+  return (
+    fieldErrors.passwordConfirmation ||
+    fieldErrors.password ||
+    fieldErrors.email ||
+    fieldErrors.nickname ||
+    '입력 값을 확인해 주세요.'
+  );
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_SERVER_URL as string;
-type TokenPair = { refreshToken: string; accessToken: string };
+/** 서버 에러 메시지를 필드와 모달용 메시지로 매핑(필요 시 규칙 추가) */
+function mapApiErrorToFields(msg: string): {
+  message: string;
+  fieldErrors: Record<string, string>;
+} {
+  const fieldErrors: Record<string, string> = {};
+
+  const m = msg.toLowerCase();
+
+  // 이메일 중복
+  if (
+    m.includes('email') &&
+    (m.includes('duplicate') || m.includes('이미') || m.includes('exists'))
+  ) {
+    fieldErrors.email = '이미 사용 중인 이메일입니다.';
+    return { message: fieldErrors.email, fieldErrors };
+  }
+
+  // 닉네임 중복
+  if (
+    m.includes('nickname') &&
+    (m.includes('duplicate') || m.includes('이미') || m.includes('exists'))
+  ) {
+    fieldErrors.nickname = '이미 사용 중인 닉네임입니다.';
+    return { message: fieldErrors.nickname, fieldErrors };
+  }
+
+  // 비밀번호 불일치/약함
+  if (m.includes('password')) {
+    if (
+      m.includes('confirm') ||
+      m.includes('mismatch') ||
+      m.includes('일치하지')
+    ) {
+      fieldErrors.passwordConfirmation = '비밀번호가 일치하지 않습니다.';
+      return { message: fieldErrors.passwordConfirmation, fieldErrors };
+    }
+    fieldErrors.password = '비밀번호 형식을 확인해 주세요.';
+    return { message: fieldErrors.password, fieldErrors };
+  }
+
+  // 그 외: 서버 메시지를 그대로 노출
+  return { message: msg || '요청을 처리하지 못했습니다.', fieldErrors };
+}
 
 export async function signupAction(
-  _prev: ActionState | null,
+  _prev: AuthResult | null,
   formData: FormData
-): Promise<ActionState> {
-  const errors: Record<string, string> = {};
-  const isError = {
-    email: false,
-    password: false,
-    nickname: false,
-    passwordConfirmation: false,
-  };
+): Promise<AuthResult> {
+  const email = (formData.get('email') ?? '').toString().trim();
+  const nickname = (formData.get('nickname') ?? '').toString().trim();
+  const password = (formData.get('password') ?? '').toString();
+  const passwordConfirmation = (
+    formData.get('passwordConfirmation') ?? ''
+  ).toString();
 
-  const email = formData.get('email')?.toString() ?? '';
-  const nickname = formData.get('nickname')?.toString() ?? '';
-  const password = formData.get('password')?.toString() ?? '';
-  const passwordConfirmation =
-    formData.get('passwordConfirmation')?.toString() ?? '';
-
-  let msg = validateEmail(email);
-  if (!email) {
-    errors.email = '이메일은 필수입력입니다.';
-    isError.email = true;
-  } else if (msg) {
-    errors.email = msg;
-    isError.email = true;
-  }
-
-  msg = validateNickname(nickname);
-  if (!nickname) {
-    errors.nickname = '닉네임은 필수입력입니다.';
-    isError.nickname = true;
-  } else if (msg) {
-    errors.nickname = msg;
-    isError.nickname = true;
-  }
-
-  msg = validatePassword(password);
-  if (!password) {
-    errors.password = '비밀번호는 필수입력입니다.';
-    isError.password = true;
-  } else if (msg) {
-    errors.password = msg;
-    isError.password = true;
-  }
-
-  msg = validatePasswordConfirm(password, passwordConfirmation);
-  if (!passwordConfirmation) {
-    errors.passwordConfirmation = '비밀번호를 입력해주세요.';
-    isError.passwordConfirmation = true;
-  } else if (msg) {
-    errors.passwordConfirmation = msg;
-    isError.passwordConfirmation = true;
-  }
-
-  if (Object.keys(errors).length > 0) {
-    return { status: false, fetchErrorText: '', isError, errors };
+  const fieldErrors: Record<string, string> = {};
+  if (!email) fieldErrors.email = '이메일은 필수입력입니다.';
+  if (!nickname) fieldErrors.nickname = '닉네임은 필수입력입니다.';
+  if (!password) fieldErrors.password = '비밀번호는 필수입력입니다.';
+  if (!passwordConfirmation)
+    fieldErrors.passwordConfirmation = '비밀번호 확인을 입력하세요.';
+  if (password && passwordConfirmation && password !== passwordConfirmation)
+    fieldErrors.passwordConfirmation = '비밀번호가 일치하지 않습니다.';
+  if (Object.keys(fieldErrors).length) {
+    return {
+      ok: false,
+      message: pickPrimaryErrorMessage(fieldErrors),
+      fieldErrors,
+    };
   }
 
   try {
-    await signupRequest({ email, nickname, password, passwordConfirmation });
-    const { accessToken, refreshToken } = await loginRequest({
+    // 1) 회원가입
+    const signupRes = await signupRequest({
       email,
+      nickname,
       password,
+      passwordConfirmation,
     });
-    await setAuthCookies(accessToken, refreshToken);
-  } catch (err) {
-    await clearAuthCookies();
-    const msg2 = err instanceof Error ? err.message : '회원가입 실패';
-    return { status: false, fetchErrorText: msg2, isError, errors };
-  }
 
-  redirect('/');
+    // 2) 토큰이 응답 바디에 있으면 그걸 쓰고,
+    //    없으면 자동 로그인으로 토큰 획득
+    let accessToken = signupRes.accessToken;
+    let refreshToken = signupRes.refreshToken;
+
+    if (!accessToken || !refreshToken) {
+      const loginRes = await loginRequest({ email, password });
+      accessToken = loginRes.accessToken;
+      refreshToken = loginRes.refreshToken;
+    }
+
+    await setAuthCookies(accessToken!, refreshToken!);
+    return { ok: true, message: '가입이 완료되었습니다!!' };
+  } catch (err) {
+    const raw =
+      err instanceof Error ? err.message : '회원가입 중 오류가 발생했습니다.';
+    const { message, fieldErrors: mapped } = mapApiErrorToFields(raw);
+    // 5) 실패: 모달엔 명확한 원인(message), 인풋 아래엔 fieldErrors 표시
+    return { ok: false, message, fieldErrors: mapped };
+  }
 }

@@ -63,7 +63,7 @@ const DatePickerBox: React.FC<DatePickerBoxProps> = ({
           const dateStr = dayjs(date).format('YYYY-MM-DD');
           const today = dayjs().startOf('day');
 
-          let classes = ['base-date']; // 기본 스타일
+          const classes = ['base-date']; // 기본 스타일
 
           // 일요일 색상
           if (date.getDay() === 0) {

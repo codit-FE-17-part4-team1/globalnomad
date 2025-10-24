@@ -56,7 +56,7 @@ const AllActivities: React.FC = () => {
 
   // 카테고리 및 가격 정렬 처리
   useEffect(() => {
-    let filtered =
+    const filtered =
       selectedCategory === '전체'
         ? [...DummyActivities]
         : DummyActivities.filter((exp) => exp.category === selectedCategory);

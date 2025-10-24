@@ -1,16 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import type { Activity } from '@/types/api/myactivities';
 
 // 이건 유저가 선택을 해야 하는 컴포넌트라서 prop으로 타이틀만 받으면 안될 듯, prop으로 다 받아야 선택이 가능함 (선택된 항목, 여러 항목 등?)
+// 여기도 closeOnOverlay, closeOnEsc 활용해보려고 함
 interface ExperienceSelectProps {
   experiences: Activity[];
   selectedExperienceId?: number;
   onSelectExperience: (id: number) => void;
   label?: string;
-  //   title: string;
+  closeOnOverlay?: boolean;
+  closeOnEsc?: boolean;
 }
 
 export default function ExperienceSelect({
@@ -18,8 +20,38 @@ export default function ExperienceSelect({
   selectedExperienceId,
   onSelectExperience,
   label = '체험명',
+  closeOnOverlay = true,
+  closeOnEsc = true,
 }: ExperienceSelectProps) {
   const [open, setOpen] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    const onDocClick = (e: MouseEvent) => {
+      if (!closeOnOverlay) return;
+
+      if (
+        !btnRef.current?.contains(e.target as Node) &&
+        !listRef.current?.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    const onKey = (e: KeyboardEvent) => {
+      if (!closeOnEsc) return;
+      if (e.key === 'Escape') setOpen(false);
+    };
+
+    document.addEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onKey);
+
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [closeOnOverlay, closeOnEsc]);
 
   return (
     <div className="flex flex-col w-full mb-6 mt-2 relative">
@@ -35,7 +67,9 @@ export default function ExperienceSelect({
       </label>
 
       <button
+        ref={btnRef}
         type="button"
+        // onClick={handleOverLayClick}
         onClick={() => setOpen((v) => !v)}
         className="w-full rounded-md border px-4 py-4 text-left border-[var(--color-gray-800)] bg-white text-[var(--color-gray-800)] flex items-center justify-between"
       >
@@ -53,8 +87,10 @@ export default function ExperienceSelect({
       </button>
 
       {/* 리스트를 버튼 아래로 내리고 싶음 */}
+
       {open && (
         <ul
+          ref={listRef}
           className="absolute top-full left-0 mt-1 w-full z-50
             max-h-64 overflow-auto rounded-md border border-gray-200
             bg-white shadow-lg"

@@ -47,6 +47,21 @@ export default function TimeSlots({
     onChange?.(updatedSlots);
   };
 
+  const formatDate = (date: Date | null) => {
+    if (!date) return '-';
+    const yy = date.getFullYear().toString().slice(2);
+    const mm = (date.getMonth() + 1).toString().padStart(2, '0');
+    const dd = date.getDate().toString().padStart(2, '0');
+    return `${yy}/${mm}/${dd}`;
+  };
+
+  const formatTime = (date: Date | null) => {
+    if (!date) return '--:--';
+    const hh = date.getHours().toString().padStart(2, '0');
+    const mm = date.getMinutes().toString().padStart(2, '0');
+    return `${hh}:${mm}`;
+  };
+
   return (
     <div>
       <ul className="flex mb-2">
@@ -108,28 +123,11 @@ export default function TimeSlots({
       {selectedSlots.map((slot) => (
         <ul key={slot.id} className="flex mb-3 items-center">
           <li className="w-[130px] md:w-[30%] lg:w-[379px] mr-[4px] lg:mr-[20px] py-[15px] px-[16px] border rounded-sm">
-            <p>
-              {slot.date
-                ? `${slot.date.getFullYear().toString().slice(2)}/${(
-                    slot.date.getMonth() + 1
-                  )
-                    .toString()
-                    .padStart(2, '0')}/${slot.date
-                    .getDate()
-                    .toString()
-                    .padStart(2, '0')}`
-                : '-'}
-            </p>
+            <p>{formatDate(slot.date)}</p>
           </li>
 
           <li className="w-[79px] md:w-[18%] lg:w-[140px] py-[15px] border rounded-sm">
-            <p>
-              {slot.startTime?.toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-              })}
-            </p>
+            <p>{formatTime(slot.startTime)}</p>
           </li>
 
           <li className="hidden lg:block px-[12px]">
@@ -137,13 +135,7 @@ export default function TimeSlots({
           </li>
 
           <li className="w-[79px] md:w-[18%] lg:w-[140px] py-[15px] border rounded-sm">
-            <p>
-              {slot.endTime?.toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-              })}
-            </p>
+            <p>{formatTime(slot.endTime)}</p>
           </li>
 
           <li
