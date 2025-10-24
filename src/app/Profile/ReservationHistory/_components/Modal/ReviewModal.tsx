@@ -6,21 +6,24 @@ import StarButton from '@/app/Profile/ReservationHistory/_components/StarButton'
 import CustomInput from '@/components/Input/CustomInput';
 import { postReviews } from '@/actions/myreservations.action';
 
+type ReservationInfo = {
+  id: number;
+  status: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  headCount: number;
+  totalPrice: number;
+  activity: {
+    title: string;
+    bannerImageUrl: string;
+  };
+};
 type ModalType = {
   isRawOpen: boolean;
   setRawOpen: React.Dispatch<React.SetStateAction<boolean>>;
   reservationId?: number;
-  reservationInfo: {
-    activity: {
-      bannerImageUrl: string;
-      title: string;
-    };
-    date: string;
-    startTime: string;
-    endTime: string;
-    headCount: number;
-    totalPrice: number;
-  };
+  reservationInfo: ReservationInfo;
 };
 export default function ReviewModal({
   isRawOpen,

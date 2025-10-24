@@ -10,24 +10,24 @@ import CancelModal from '@/app/Profile/ReservationHistory/_components/Modal/Canc
 import ReviewModal from '@/app/Profile/ReservationHistory/_components/Modal/ReviewModal';
 import { getMyReservations } from '@/actions/myreservations.action';
 
+type ReservationItem = {
+  id: number;
+  status: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  headCount: number;
+  totalPrice: number;
+  activity: {
+    title: string;
+    bannerImageUrl: string;
+  };
+};
 type ReservationData = {
   totalCount: number;
-  reservations: Array<{
-    id: number;
-    status: string;
-    date: string;
-    startTime: string;
-    endTime: string;
-    headCount: number;
-    totalPrice: number;
-    activity: {
-      title: string;
-      bannerImageUrl: string;
-    };
-  }>;
+  reservations: Array<ReservationItem>;
   cursorId: null | string;
 };
-
 export default function ReservationHistory() {
   const [data, setData] = useState<ReservationData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +35,8 @@ export default function ReservationHistory() {
   const [modal, setModal] = useState('');
   const [selected, setSelected] = useState('');
   const [reservationId, setReservationId] = useState<number>();
-  const [reservationInfo, setReservationInfo] = useState();
+  const [reservationInfo, setReservationInfo] =
+    useState<ReservationItem | null>(null);
   console.log(data);
   const BUTTONSTYLE =
     'absolute bottom-6 right-6 rounded-md w-20 h-8 text-md md:h-11 md:w-36 xs:w-[112px] xs:h-10 xs:text-lg';
@@ -173,21 +174,23 @@ export default function ReservationHistory() {
         </div>
       ))}
 
-      {modal === 'review' ? (
+      {modal === 'review' && reservationInfo && (
         <ReviewModal
           isRawOpen={isRawOpen}
           setRawOpen={setRawOpen}
           reservationInfo={reservationInfo}
           reservationId={reservationId}
         />
-      ) : modal === 'cancel' ? (
+      )}
+
+      {modal === 'cancel' && (
         <CancelModal
           isRawOpen={isRawOpen}
           setRawOpen={setRawOpen}
           reservationId={reservationId}
           setData={setData}
         />
-      ) : null}
+      )}
     </div>
   );
 }
