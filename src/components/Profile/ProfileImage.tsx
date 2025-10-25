@@ -18,7 +18,7 @@ export default function ProfileImage() {
   const [loading, setLoading] = useState(false);
   const [getMyInfo, setGetMyInfo] = useState<MyInfoType | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  console.log('프로필 이미지', image);
   useEffect(() => {
     const fetchUser = async () => {
       try {

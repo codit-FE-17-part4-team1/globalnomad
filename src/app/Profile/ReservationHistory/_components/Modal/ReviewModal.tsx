@@ -32,9 +32,8 @@ export default function ReviewModal({
   reservationInfo,
 }: ModalType) {
   const [rating, setRating] = useState(0);
-  const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
-  console.log('리뷰데이터', reservationInfo);
+  const [content, setContent] = useState('');
   const handleSubmit = async () => {
     if (!reservationId) return;
     if (!content.trim()) {
