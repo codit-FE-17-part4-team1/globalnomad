@@ -11,7 +11,7 @@ export interface NotificationButtonProps {
 export default function NotificationButton({
   onClick,
   hasUnreadAlerts = false,
-  unreadCount = 0,
+  //unreadCount = 0,   ES-Lint 오류 해결을 위해 비활성화
 }: NotificationButtonProps) {
   return (
     <button
