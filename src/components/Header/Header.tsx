@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import UserMenu from './UserMenu';
 
@@ -17,14 +18,15 @@ export default function Header({
   onNotificationClick,
 }: HeaderProps) {
   return (
-    <header className="w-full h-[70px] bg-[#ffffff] border-b border-[#DDDDDD]">
+    <header className="w-full h-[70px] bg-white border-b border-[#DDDDDD]">
       <div className="flex items-center justify-between h-full w-full min-w-[375px] max-w-[1240px] mx-auto px-5">
         {/* 로고 */}
-        <Link href="/">
-          <img
+        <Link href="/" className="relative w-[10.75rem] h-[1.875rem]">
+          <Image
             src="/icon/logo/header_logo_lg.svg"
             alt="logo"
-            className="w-[10.75rem] h-[1.875rem]"
+            fill
+            style={{ objectFit: 'contain' }}
           />
         </Link>
 
