@@ -5,6 +5,7 @@ import {
   type ReservationDashboard,
   type ReservedSchedule,
   type ReservationsTime,
+  type Activity,
 } from '@/types/api/myactivities';
 
 /**
@@ -258,45 +259,45 @@ export async function updateReservationStatus(opts: {
   }
 }
 
-// /**
-//  * 내 체험 삭제
-//  */
-// export async function deleteMyActivity(opts: {
-//   activityId: number;
-// }): Promise<void> {
-//   const { activityId } = opts;
+/**
+ * 내 체험 삭제
+ */
+export async function deleteMyActivity(opts: {
+  activityId: number;
+}): Promise<void> {
+  const { activityId } = opts;
 
-//   const url = `${BASE_URL}/my-activities/${activityId}`;
-//   const res = await fetch(url, {
-//     method: 'DELETE',
-//     credentials: 'include',
-//     cache: 'no-store',
-//   });
+  const url = `${BASE_URL}/my-activities/${activityId}`;
+  const res = await fetch(url, {
+    method: 'DELETE',
+    credentials: 'include',
+    cache: 'no-store',
+  });
 
-//   if (!res.ok) {
-//     throw new Error('체험 삭제에 실패했습니다.');
-//   }
-// }
+  if (!res.ok) {
+    throw new Error('체험 삭제에 실패했습니다.');
+  }
+}
 
-// /**
-//  * 내 체험 수정
-//  */
-// export async function modifyMyActivity(
-//   activityId: number,
-//   formData: FormData,
-//   accessToken: string
-// ): Promise<Activity> {
-//   // assertToken(accessToken);
-//   const url = `${BASE_URL}/my-activities/${activityId}`;
-//   const res = await fetch(url, {
-//     method: 'PATCH',
-//     headers: { Authorization: `Bearer ${accessToken}` },
-//     body: formData,
-//   });
+/**
+ * 내 체험 수정
+ */
+export async function modifyMyActivity(
+  activityId: number,
+  formData: FormData,
+  accessToken: string
+): Promise<Activity> {
+  // assertToken(accessToken);
+  const url = `${BASE_URL}/my-activities/${activityId}`;
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${accessToken}` },
+    body: formData,
+  });
 
-//   if (!res.ok) throw new Error('체험 수정에 실패했습니다.');
+  if (!res.ok) throw new Error('체험 수정에 실패했습니다.');
 
-//   const data = await res.json();
-//   // 수정 후 업데이트된 activity 정보를 반환한다고 가정
-//   return data;
-// }
+  const data = await res.json();
+  // 수정 후 업데이트된 activity 정보를 반환한다고 가정
+  return data;
+}

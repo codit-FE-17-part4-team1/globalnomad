@@ -48,7 +48,7 @@ export default function useReservationsDashboard() {
   // 쿠키를 서버에서 관리를 하고 있다.
   // 클라이언트 컴포넌트에서는 쿠키를 사용을 못하고 있는 상황
 
-  // 우리 클라이언트(nextjs) | 우리 서버(nextjs) | 코드잇 서버
+  // 우리 클라이언트(nextjs) | 우리 서버(nextjs)-route.ts| 코드잇 서버
   // 1. 우리 클라이언트(nextjs) -> 우리 서버(nextjs)에 요청을 보낸다.
   // 2. 우리 서버(nextjs)
   //   2.1. cookieStore에 접근을한다.
