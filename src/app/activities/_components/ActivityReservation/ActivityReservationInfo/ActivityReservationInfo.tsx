@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Price from './Fragment/Price';
 import DatePickerBox from './Fragment/DatePicker/DatePickerBox';
 import OptionSelectButton from './Fragment/OptionSelectButton';
@@ -9,41 +9,44 @@ import ParticipantsCounter from './Fragment/ParticipantsCounter';
 import MyButton from '@/components/Button/Button';
 import TotalPrice from './Fragment/TotalPrice';
 
-import type { ActivityDetailInfo, AvailableSchedule } from '@/types/activity';
-import { DummyAvailableScheduleData } from '../../../data/DummyData';
+import type { ActivityDetailInfo, AvailableTime } from '@/types/activity';
 
 interface ActivityReservationInfoProps {
   activity: ActivityDetailInfo;
-  teamId: string;
   onOpenDateModal: () => void;
   selectedDateText: string;
+  selectedDate: string | null;
+  selectedTimeId: number | null;
+  participants: number;
+  onSelectDate: (date: string) => void;
+  onSelectTime: (timeId: number) => void;
+  onIncrementParticipants: () => void;
+  onDecrementParticipants: () => void;
+  onReserve: () => void;
+
+  // 예약 가능 날짜/시간
+  availableDates: string[];
+  availableTimes: AvailableTime[];
+
+  onMonthChange?: (year: number, month: number) => void;
 }
 
 const ActivityReservationInfo: React.FC<ActivityReservationInfoProps> = ({
   activity,
-  teamId,
   onOpenDateModal,
   selectedDateText,
+  selectedDate,
+  selectedTimeId,
+  participants,
+  onSelectDate,
+  onSelectTime,
+  onIncrementParticipants,
+  onDecrementParticipants,
+  onReserve,
+  availableDates,
+  availableTimes,
+  onMonthChange,
 }) => {
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedTimeId, setSelectedTimeId] = useState<number | null>(null);
-  const [participants, setParticipants] = useState<number>(1);
-
-  const availableDates = DummyAvailableScheduleData.map((s) => s.date);
-
-  const handleIncrement = () => setParticipants((prev) => prev + 1);
-  const handleDecrement = () =>
-    setParticipants((prev) => Math.max(1, prev - 1));
-
-  const handleReserve = () => {
-    if (!selectedDate || !selectedTimeId || participants <= 0) return;
-    console.log('예약하기 클릭!', {
-      selectedDate,
-      selectedTimeId,
-      participants,
-    });
-  };
-
   return (
     <div className="w-full flex flex-col mx-auto gap-5 px-6 py-10">
       {/* 가격 */}
@@ -60,11 +63,11 @@ const ActivityReservationInfo: React.FC<ActivityReservationInfoProps> = ({
           <div className="flex items-center justify-center">
             <DatePickerBox
               className="flex items-center justify-center w-[320px] py-2 border border-gray-300 rounded-md"
-              selectedDate={selectedDate ? new Date(selectedDate) : null}
-              onSelectDate={(date: Date) =>
-                setSelectedDate(date.toISOString().split('T')[0])
-              }
+              selectedDate={selectedDate}
+              onSelectDate={onSelectDate}
               availableDates={availableDates}
+              activityId={activity.id}
+              onMonthChange={onMonthChange}
             />
           </div>
         </div>
@@ -81,10 +84,9 @@ const ActivityReservationInfo: React.FC<ActivityReservationInfoProps> = ({
       {/* 시간 선택 영역 */}
       <div className="block md:hidden lg:flex flex-col gap-2">
         <TimePicker
-          schedules={DummyAvailableScheduleData}
-          selectedDate={selectedDate || undefined}
           selectedTimeId={selectedTimeId || undefined}
-          onSelectTime={setSelectedTimeId}
+          availableTimes={availableTimes}
+          onSelectTime={onSelectTime}
         />
       </div>
 
@@ -93,8 +95,8 @@ const ActivityReservationInfo: React.FC<ActivityReservationInfoProps> = ({
       {/* 참여 인원 */}
       <ParticipantsCounter
         participants={participants}
-        onIncrement={handleIncrement}
-        onDecrement={handleDecrement}
+        onIncrement={onIncrementParticipants}
+        onDecrement={onDecrementParticipants}
         label="참여 인원 수"
       />
 
@@ -102,7 +104,7 @@ const ActivityReservationInfo: React.FC<ActivityReservationInfoProps> = ({
       <MyButton
         color="buttonPrimary"
         disabled={!selectedDate || !selectedTimeId || participants <= 0}
-        onClick={handleReserve}
+        onClick={onReserve}
         className="flex items-center justify-center p-4"
       >
         예약하기

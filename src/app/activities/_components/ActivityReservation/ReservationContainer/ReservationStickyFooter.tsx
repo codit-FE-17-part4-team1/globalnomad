@@ -4,9 +4,11 @@ import React from 'react';
 import Price from '../ActivityReservationInfo/Fragment/Price';
 import OptionSelectButton from '../ActivityReservationInfo/Fragment/OptionSelectButton';
 import MyButton from '@/components/Button/Button';
-import { DummyActivityData } from '../../../data/DummyData';
+
+import type { ActivityDetailInfo } from '@/types/activity';
 
 interface ReservationStickyFooterProps {
+  activity: ActivityDetailInfo;
   className?: string;
   onOpenParticipantsModal: () => void;
   onOpenDateModal: () => void;
@@ -18,6 +20,7 @@ interface ReservationStickyFooterProps {
 }
 
 export default function ReservationStickyFooter({
+  activity,
   className = '',
   onOpenParticipantsModal,
   onOpenDateModal,
@@ -27,14 +30,10 @@ export default function ReservationStickyFooter({
   isReservationEnabled,
   onReserve,
 }: ReservationStickyFooterProps) {
-  const activity = DummyActivityData;
-
   return (
     <div
       className={`fixed bottom-0 left-0 right-0 z-50 md:hidden ${className}`}
     >
-      {/* 모바일에서만 푸터 위에 여백 추가 */}
-      <div className="h-[83px] md:hidden" aria-hidden="true"></div>
       <div className="mx-auto h-[83px] px-5 py-2 bg-white border-t border-gray-200 flex w-full items-center justify-between">
         {/* 가격 + 인원 선택 */}
         <div className="flex flex-col items-start justify-start gap-1 min-w-[250px]">

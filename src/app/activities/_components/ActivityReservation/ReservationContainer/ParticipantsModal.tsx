@@ -8,13 +8,15 @@ import MyButton from '@/components/Button/Button';
 interface ParticipantsModalProps {
   onClose: () => void;
   onSelectParticipants: (participants: number) => void; // 선택한 인원 수 전달
+  initialParticipants: number;
 }
 
 const ParticipantsModal: React.FC<ParticipantsModalProps> = ({
   onClose,
   onSelectParticipants,
+  initialParticipants,
 }) => {
-  const [participants, setParticipants] = useState<number>(1); // 카운터의 초기값은 1이다
+  const [participants, setParticipants] = useState<number>(initialParticipants);
 
   // 배경 스크롤 막기
   useEffect(() => {

@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Review from '@/components/Review/Review';
 import Pagination from '@/components/Pagination/Pagination';
-import type { ReviewList } from '@/types/review';
+import type { Reviews } from '@/types/review';
 
 export interface ReviewListProps {
-  data: ReviewList;
+  data: Reviews;
 }
 
 const ReviewList: React.FC<ReviewListProps> = ({ data }) => {
@@ -73,7 +73,9 @@ const ReviewList: React.FC<ReviewListProps> = ({ data }) => {
             </li>
           ))
         ) : (
-          <p className="text-gray-500 text-lg">아직 후기가 없습니다.</p>
+          <div className="flex items-center justify-center h-60">
+            <p className="text-gray-500 text-lg">아직 후기가 없습니다.</p>
+          </div>
         )}
 
         {/* 페이지네이션 */}

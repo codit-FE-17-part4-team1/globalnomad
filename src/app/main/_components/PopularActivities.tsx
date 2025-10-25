@@ -1,61 +1,51 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
-import ActivitiesCard from './ActivityCard';
+import { useRouter } from 'next/navigation';
+
+import ActivityCard from './ActivityCard';
 import type { Activity } from '@/types/activity';
 
-import { DummyActivities } from '../data/DummyData';
+interface PopularActivitiesProps {
+  activities: Activity[];
+  page: number;
+  cardsPerPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  isDesktop: boolean;
+  loading: boolean;
+  error: string | null;
+}
 
-const PopularActivities: React.FC = () => {
-  const topActivities: Activity[] = [...DummyActivities]
-    .sort((a, b) =>
-      b.rating === a.rating
-        ? b.reviewCount - a.reviewCount
-        : b.rating - a.rating
-    )
-    .slice(0, 9);
-
-  // PC 페이징 상태
-  const [page, setPage] = useState(0);
-  const cardsPerPage = 3;
-  const totalPages = Math.ceil(topActivities.length / cardsPerPage);
-
-  const handlePrev = () => {
-    if (page > 0) setPage((prev) => prev - 1);
-  };
-  const handleNext = () => {
-    if (page < totalPages - 1) setPage((prev) => prev + 1);
-  };
-
+const PopularActivities: React.FC<PopularActivitiesProps> = ({
+  activities,
+  page,
+  cardsPerPage,
+  totalPages,
+  onPageChange,
+  isDesktop,
+  loading,
+  error,
+}) => {
+  const router = useRouter();
   const startIndex = page * cardsPerPage;
   const endIndex = startIndex + cardsPerPage;
-  const currentCards = topActivities.slice(startIndex, endIndex);
+  const currentCards = activities.slice(startIndex, endIndex);
+  const displayedCards = isDesktop ? currentCards : activities;
 
-  // 브라우저 크기 상태
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const displayedCards = isDesktop ? currentCards : topActivities;
+  if (loading) return <p className="text-center py-10">로딩 중...⏳</p>;
+  if (error) return <p className="text-center py-10 text-red-500">{error}</p>;
 
   return (
     <section className="w-full max-w-[1240px] mx-auto px-5">
-      {/* 타이틀 + 좌우 페이징 버튼 */}
       <div className="flex justify-between mb-7">
         <h2 className="text-black font-bold text-2xl lg:text-[36px] leading-[100%]">
           🔥 인기 체험
         </h2>
-
-        {/* PC: 좌우 페이징 버튼 */}
         <div className="hidden lg:flex items-center gap-3">
           <button
-            onClick={handlePrev}
+            onClick={() => page > 0 && onPageChange(page - 1)}
             disabled={page === 0}
             className={`${page === 0 ? 'cursor-not-allowed' : ''}`}
           >
@@ -71,7 +61,7 @@ const PopularActivities: React.FC = () => {
             />
           </button>
           <button
-            onClick={handleNext}
+            onClick={() => page < totalPages - 1 && onPageChange(page + 1)}
             disabled={page >= totalPages - 1}
             className={`${page >= totalPages - 1 ? 'cursor-not-allowed' : ''}`}
           >
@@ -89,11 +79,14 @@ const PopularActivities: React.FC = () => {
         </div>
       </div>
 
-      {/* 카드 영역 */}
-      <div className="flex overflow-x-auto gap-4 lg:overflow-hidden lg:flex-nowrap scrollbar-hide lg:justify-between">
+      <div className="flex overflow-x-auto gap-4 scrollbar-hide lg:flex-nowrap lg:overflow-hidden lg:justify-start">
         {displayedCards.map((exp) => (
-          <div key={exp.id}>
-            <ActivitiesCard {...exp} type="lg" />
+          <div key={exp.id} className="flex-shrink-0">
+            <ActivityCard
+              {...exp}
+              type="lg"
+              onClick={() => router.push(`/activities/${exp.id}`)}
+            />
           </div>
         ))}
       </div>

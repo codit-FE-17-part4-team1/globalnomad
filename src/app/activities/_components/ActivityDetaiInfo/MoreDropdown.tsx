@@ -29,33 +29,48 @@ const MoreDropdown: React.FC<MoreDropdownProps> = ({ activityId }) => {
 
   const handleEdit = () => {
     try {
-      // 수정 페이지로 이동
-      router.push(`/Profile/ExperienceAdd`);
+      router.push(`/my-activities/${activityId}`); // 수정 페이지로 이동
     } catch (error: any) {
       alert(error?.message || '수정할 수 없습니다.');
+      console.error(error);
     }
   };
 
+  // 삭제 버튼 클릭
   const handleDelete = async () => {
     const confirmDelete = confirm('체험을 삭제하시겠습니까?');
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`/Profile/ExperienceAdd`, {
+      const res = await fetch(`/api/proxy/17-1/my-activities/${activityId}`, {
         method: 'DELETE',
+        credentials: 'include', // 쿠키 포함
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
-      const data = await res.json();
+      // JSON 응답이 없을 수도 있으므로 안전하게 처리
+      const data = await res.json().catch(() => ({}));
 
-      if (!res.ok) {
-        alert(data.message || '삭제할 수 없습니다.');
-        return;
+      // 상태 코드별 처리
+      switch (res.status) {
+        case 204:
+          alert('체험이 삭제되었습니다.');
+          router.push('/');
+          router.refresh();
+          break;
+
+        case 401: // 로그인하지 않은 경우 , 400, 403, 404 ... 서버에서 보내주는 메세지 사용, 401은 Unauthorized 문구만 나와서 프론트에서 보내주는 메세지로 대체
+          alert('로그인이 필요합니다.');
+          break;
+
+        default:
+          alert(data.message ?? '삭제 처리 중 오류가 발생했습니다.');
       }
-
-      alert('체험이 삭제되었습니다.');
-      router.refresh(); // 삭제 후 목록 갱신
-    } catch (error: any) {
-      alert(error?.message || '삭제 처리 중 오류가 발생했습니다.');
+    } catch (error) {
+      alert('삭제 처리 중 오류가 발생했습니다. 네트워크 연결을 확인해주세요.');
+      console.error(error);
     }
   };
 
