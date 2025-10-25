@@ -25,7 +25,6 @@ export default function ReservationStickyFooter({
   onOpenParticipantsModal,
   onOpenDateModal,
   selectedDateText,
-  selectedTimeId,
   participants,
   isReservationEnabled,
   onReserve,

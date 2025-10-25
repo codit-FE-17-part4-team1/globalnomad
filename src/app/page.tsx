@@ -17,7 +17,6 @@ const SectionContainer: React.FC<{
 );
 
 const MainPage: React.FC = () => {
-  // 공통 상태
   const categories = [
     '전체',
     '문화·예술',
@@ -27,12 +26,12 @@ const MainPage: React.FC = () => {
     '관광',
     '웰빙',
   ];
+
   const [activities, setActivities] = useState<Activity[]>([]);
   const [popularActivities, setPopularActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // AllActivities 상태
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [priceSort, setPriceSort] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,12 +39,11 @@ const MainPage: React.FC = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [visibleActivities, setVisibleActivities] = useState<Activity[]>([]);
 
-  // PopularActivities 상태
   const [popularPage, setPopularPage] = useState(0);
   const cardsPerPage = 3;
   const [isDesktop, setIsDesktop] = useState(false);
 
-  // 화면 크기 체크 + itemsPerPage
+  // 화면 크기 체크
   useEffect(() => {
     const handleResize = () => {
       setIsDesktop(window.innerWidth >= 1024);
@@ -80,17 +78,14 @@ const MainPage: React.FC = () => {
 
         const params = new URLSearchParams({
           method: 'cursor',
-          size: '50',
+          page: '1',
+          size: '20',
+          category: selectedCategory !== '전체' ? selectedCategory : '',
+          sort: priceSort,
         });
 
-        const res = await fetch(
-          `https://sp-globalnomad-api.vercel.app/17-1/activities?${params}`,
-          { headers: { accept: 'application/json' } }
-        );
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const res = await fetch(`/api/activities-list?${params.toString()}`);
         const data = await res.json();
-
         setActivities(data.activities);
         setTotalCount(data.totalCount ?? data.activities.length);
 
@@ -101,22 +96,23 @@ const MainPage: React.FC = () => {
             : b.rating - a.rating
         );
         setPopularActivities(sortedPopular.slice(0, 9));
-      } catch (err: any) {
+      } catch (err: unknown) {
+        if (err instanceof Error) setError(err.message);
+        else setError(String(err));
         console.error(err);
-        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchActivities();
-  }, []);
+  }, [selectedCategory, priceSort]);
 
   // 필터링 + 정렬 + 페이지네이션
   useEffect(() => {
-    if (!activities) return;
+    if (!activities.length) return;
 
-    const filtered =
+    const filtered: Activity[] =
       selectedCategory === '전체'
         ? [...activities]
         : activities.filter((act) => act.category === selectedCategory);
@@ -144,6 +140,11 @@ const MainPage: React.FC = () => {
     localStorage.setItem('itemsPerPage', itemsPerPage.toString());
   }, [activities, selectedCategory, priceSort, currentPage, itemsPerPage]);
 
+  // 필터나 정렬이 바뀌면 페이지를 1로 초기화
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, priceSort]);
+
   return (
     <main className="w-full flex flex-col items-center">
       <div className="relative w-full">
@@ -153,7 +154,6 @@ const MainPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 인기 체험 영역 */}
       <SectionContainer className="mt-30 md:mt-40">
         <PopularActivities
           activities={popularActivities}
@@ -167,10 +167,9 @@ const MainPage: React.FC = () => {
         />
       </SectionContainer>
 
-      {/* 모든 체험 영역 */}
       <SectionContainer className="my-20">
         <AllActivities
-          activities={visibleActivities} // 이미 필터링/정렬/페이지네이션 적용
+          activities={visibleActivities}
           categories={categories}
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}

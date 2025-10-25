@@ -13,7 +13,6 @@ interface DatePickerBoxProps {
   onSelectDate?: (dateStr: string) => void; // 서버 전송
   availableDates: string[];
   className?: string;
-  activityId: number;
 
   onMonthChange?: (year: number, month: number) => void;
 }
@@ -23,7 +22,6 @@ const DatePickerBox: React.FC<DatePickerBoxProps> = ({
   onSelectDate,
   availableDates,
   className,
-  activityId,
   onMonthChange,
 }) => {
   const today = dayjs().startOf('day');
@@ -76,12 +74,12 @@ const DatePickerBox: React.FC<DatePickerBoxProps> = ({
             date={headerProps.date}
             decreaseMonth={() => {
               headerProps.decreaseMonth();
-              const newDate = dayjs(headerProps.date).subtract(1, 'month'); // 클릭 후 실제 달
+              const newDate = dayjs(headerProps.date).subtract(1, 'month');
               onMonthChange?.(newDate.year(), newDate.month() + 1);
             }}
             increaseMonth={() => {
               headerProps.increaseMonth();
-              const newDate = dayjs(headerProps.date).add(1, 'month'); // 클릭 후 실제 달
+              const newDate = dayjs(headerProps.date).add(1, 'month');
               onMonthChange?.(newDate.year(), newDate.month() + 1);
             }}
             prevMonthButtonDisabled={headerProps.prevMonthButtonDisabled}

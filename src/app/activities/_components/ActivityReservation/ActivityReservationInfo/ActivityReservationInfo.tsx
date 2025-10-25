@@ -66,7 +66,6 @@ const ActivityReservationInfo: React.FC<ActivityReservationInfoProps> = ({
               selectedDate={selectedDate}
               onSelectDate={onSelectDate}
               availableDates={availableDates}
-              activityId={activity.id}
               onMonthChange={onMonthChange}
             />
           </div>

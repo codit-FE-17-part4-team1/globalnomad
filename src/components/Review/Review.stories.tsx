@@ -1,6 +1,6 @@
 // src/components/Review/Review.stories.tsx
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import Review, { ReviewProps } from './Review';
+import Review from './Review';
 
 const meta: Meta<typeof Review> = {
   title: 'Components/Review',

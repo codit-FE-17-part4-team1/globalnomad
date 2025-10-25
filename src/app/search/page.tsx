@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import MainBanner from '@/app/main/_components/MainBanner';
 import SearchBar from '@/app/main/_components/SearchBar';
@@ -53,26 +53,30 @@ const SearchPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const res = await fetch(
-          `https://sp-globalnomad-api.vercel.app/17-1/activities?method=offset&page=1&size=50`,
-          { headers: { accept: 'application/json' } }
-        );
+        // Next.js API 라우트로 요청
+        const params = new URLSearchParams({
+          method: 'offset',
+          page: '1',
+          size: '50',
+          keyword: keyword,
+        });
+
+        const res = await fetch(`/api/activities-list?${params.toString()}`, {
+          headers: { accept: 'application/json' },
+        });
 
         if (!res.ok) throw new Error('체험 리스트를 가져오는 데 실패했습니다.');
 
-        const data = await res.json();
-        let results: Activity[] = data.activities;
+        const data: { activities: Activity[] } = await res.json();
 
-        if (keyword) {
-          results = results.filter((item) =>
-            item.title.toLowerCase().includes(keyword.toLowerCase())
-          );
-        }
+        const results: Activity[] = data.activities;
 
         setActivities(results);
         setCurrentPage(1); // 키워드 변경 시 페이지 초기화
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) setError(err.message);
+        else setError(String(err));
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -89,7 +93,7 @@ const SearchPage: React.FC = () => {
   }, [currentPage, itemsPerPage, sortOption]);
 
   // 정렬 적용 (관련도순 | 최신순)
-  const sortedResults = React.useMemo(() => {
+  const sortedResults = useMemo(() => {
     const sorted = [...activities];
     if (sortOption === 'relevance') {
       const relevanceScore = (item: Activity) => {

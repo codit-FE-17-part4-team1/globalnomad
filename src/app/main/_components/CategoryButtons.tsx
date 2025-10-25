@@ -16,7 +16,7 @@ const CategoryButtons: React.FC<CategoryButtonsProps> = ({
 }) => {
   return (
     <ul className="flex md:flex-nowrap overflow-x-auto scrollbar-hide mb-7">
-      {categories.map((category, idx) => (
+      {categories.map((category) => (
         <MyButton
           key={category}
           color={

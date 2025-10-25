@@ -29,54 +29,57 @@ const MoreDropdown: React.FC<MoreDropdownProps> = ({ activityId }) => {
 
   const handleEdit = () => {
     try {
-      router.push(`/my-activities/${activityId}`); // 수정 페이지로 이동
-    } catch (error: any) {
-      alert(error?.message || '수정할 수 없습니다.');
+      router.push(`/my-activities/${activityId}`);
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : '수정할 수 없습니다.';
+      alert(message);
       console.error(error);
     }
   };
 
-  // 삭제 버튼 클릭
   const handleDelete = async () => {
     const confirmDelete = confirm('체험을 삭제하시겠습니까?');
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`/api/proxy/17-1/my-activities/${activityId}`, {
+      const res = await fetch(`/api/activities/${activityId}`, {
         method: 'DELETE',
-        credentials: 'include', // 쿠키 포함
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
       });
 
-      // JSON 응답이 없을 수도 있으므로 안전하게 처리
-      const data = await res.json().catch(() => ({}));
-
-      // 상태 코드별 처리
-      switch (res.status) {
-        case 204:
-          alert('체험이 삭제되었습니다.');
-          router.push('/');
-          router.refresh();
-          break;
-
-        case 401: // 로그인하지 않은 경우 , 400, 403, 404 ... 서버에서 보내주는 메세지 사용, 401은 Unauthorized 문구만 나와서 프론트에서 보내주는 메세지로 대체
-          alert('로그인이 필요합니다.');
-          break;
-
-        default:
-          alert(data.message ?? '삭제 처리 중 오류가 발생했습니다.');
+      if (!res.ok) {
+        // 오류일 경우 text로 확인
+        const errorText = await res.text();
+        alert(`삭제 처리 중 오류가 발생했습니다: ${errorText}`);
+        console.error('삭제 오류:', res.status, errorText);
+        return;
       }
-    } catch (error) {
-      alert('삭제 처리 중 오류가 발생했습니다. 네트워크 연결을 확인해주세요.');
+
+      // 성공 처리
+      if (res.status === 204) {
+        alert('체험이 삭제되었습니다.');
+        router.push('/');
+        router.refresh();
+        return;
+      }
+
+      // 만약 200 OK라면 JSON 파싱
+      const data: { message?: string } = await res.json().catch(() => ({}));
+      alert(data.message ?? '삭제 처리 완료');
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : '삭제 처리 중 오류가 발생했습니다. 네트워크 연결을 확인해주세요.';
+      alert(message);
       console.error(error);
     }
   };
 
   return (
     <div className="relative inline-block" ref={dropdownRef}>
-      {/* 더보기 버튼 */}
       <button
         className="flex items-center justify-center w-10 h-10 hover:bg-gray-100 rounded-full transition"
         aria-label="더보기 메뉴"
@@ -90,7 +93,6 @@ const MoreDropdown: React.FC<MoreDropdownProps> = ({ activityId }) => {
         />
       </button>
 
-      {/* 드롭다운 모달 */}
       {isOpen && (
         <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
           <ul className="flex flex-col">
