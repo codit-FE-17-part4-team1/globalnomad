@@ -28,6 +28,10 @@ export default function UserMenu({
     handleDeleteNotification,
   } = useNotification();
 
+  // 알림 / 읽지 않은 알림 확인
+  const hasUnreadAlerts = notifications.length > 0;
+  const unreadCount = notifications.length;
+
   const handleNotificationClick = () => {
     onNotificationClick?.();
     setIsAlertOpen(true);
@@ -41,7 +45,11 @@ export default function UserMenu({
     <>
       <div className="flex items-center gap-4">
         <div className="relative">
-          <NotificationButton onClick={handleNotificationClick} />
+          <NotificationButton
+            onClick={handleNotificationClick}
+            hasUnreadAlerts={hasUnreadAlerts}
+            unreadCount={unreadCount}
+          />
 
           {isAlertOpen && (
             <AlertModal

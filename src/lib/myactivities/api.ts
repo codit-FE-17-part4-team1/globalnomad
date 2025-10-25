@@ -13,10 +13,8 @@ import {
  */
 export async function getMyActivities(
   cursorId?: number,
-  size?: number
+  size = 20
 ): Promise<MyActivitiesResponse> {
-  // const { cursorId, size = 20 } = opts;
-
   const queryString = cursorId
     ? `cursorId=${cursorId}&size=${size}`
     : `size=${size}`;
