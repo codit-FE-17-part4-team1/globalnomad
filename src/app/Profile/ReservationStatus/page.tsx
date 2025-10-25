@@ -17,7 +17,7 @@ export default function ReservationStatusPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const authenticated = await ensureRefreshed();
+        const authenticated = await ensureRefreshed(); // 에러 발생
 
         if (authenticated) {
           setIsAuthenticated(true);
