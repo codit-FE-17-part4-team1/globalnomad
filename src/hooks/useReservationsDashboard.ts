@@ -15,7 +15,6 @@ import type {
 // 2. 체험명 (activityId를 가져와서) ExperienceSelect로 전달해줘야 함
 // 3. 날짜 클릭 시 해당 날짜의 예약 정보를 가져와야 함 (getReservationsByDate)
 
-const today = new Date();
 /**
  * 예약 현황 페이지의 상태 및 비즈니스 로직 관리
  */

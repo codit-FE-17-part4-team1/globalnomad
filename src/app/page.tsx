@@ -116,7 +116,7 @@ const MainPage: React.FC = () => {
   useEffect(() => {
     if (!activities) return;
 
-    let filtered =
+    const filtered =
       selectedCategory === '전체'
         ? [...activities]
         : activities.filter((act) => act.category === selectedCategory);
