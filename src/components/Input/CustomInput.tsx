@@ -50,7 +50,8 @@ export default function CustomInput({
           name={name}
           placeholder={placeholder}
           value={value as string}
-          onChange={onChange as (e: ChangeEvent<HTMLTextAreaElement>) => void}
+          onChange={onChange} // 수정
+          // onChange={onChange as (e: ChangeEvent<HTMLTextAreaElement>) => void}
           className={`w-full px-5 py-4 rounded-md border
             border-gray-700 focus:outline-none
             min-h-[240px]
@@ -64,7 +65,8 @@ export default function CustomInput({
           type={type}
           placeholder={placeholder}
           value={value}
-          onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void}
+          onChange={onChange} // 수정
+          // onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void}
           className={`w-full px-5 py-4 rounded-md border
             border-gray-700 focus:outline-none
             text-lg text-black placeholder-gray-600

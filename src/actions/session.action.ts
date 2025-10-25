@@ -52,7 +52,6 @@ export async function reissueTokens(): Promise<{ ok: boolean }> {
   const c = await cookieStore();
   const accessToken = c.get('accessToken')?.value ?? '';
   const refreshToken = c.get('refreshToken')?.value ?? '';
-
   if (!refreshToken) {
     await clearAuthCookies();
     return { ok: false };
@@ -60,7 +59,11 @@ export async function reissueTokens(): Promise<{ ok: boolean }> {
 
   const res = await fetch(`${BASE_URL}/auth/tokens`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: `Bearer ${accessToken}`, // 추가 !!!
+    },
+
     body: JSON.stringify({ refreshToken, accessToken }),
     cache: 'no-store',
   });
