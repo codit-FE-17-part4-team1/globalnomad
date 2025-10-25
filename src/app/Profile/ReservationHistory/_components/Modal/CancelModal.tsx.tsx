@@ -14,6 +14,7 @@ type ReservationData = {
     endTime: string;
     headCount: number;
     totalPrice: number;
+    reviewSubmitted: boolean;
     activity: {
       title: string;
       bannerImageUrl: string;
@@ -57,7 +58,7 @@ export default function CancelModal({
     <BaseModal
       isOpen={isRawOpen}
       onClose={() => setRawOpen(false)}
-      className="bg-white w-[184px]"
+      className="bg-white w-[298px]"
     >
       <div className="p-6">
         <div className="flex flex-col justify-center items-center gap-4">
