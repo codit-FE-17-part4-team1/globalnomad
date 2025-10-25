@@ -37,8 +37,6 @@ export async function deleteNotification(
     method: 'DELETE',
   });
 
-  console.log(response);
-
   if (!response.ok) {
     throw new Error('알림을 삭제하는 데 실패했습니다.');
   }

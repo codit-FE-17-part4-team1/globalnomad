@@ -1,5 +1,3 @@
-// 원복시킴
-
 'use client';
 
 import { useRef, useEffect } from 'react';
