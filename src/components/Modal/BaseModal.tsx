@@ -63,6 +63,7 @@ export default function BaseModal({
   if (variant === 'dropdown') {
     return (
       <div
+        ref={overlayRef}
         role="dialog"
         aria-modal="true"
         className={[
@@ -70,7 +71,8 @@ export default function BaseModal({
           'rounded-lg shadow-xl',
           'max-h-[400px] overflow-auto z-[9999] w-[330px]',
         ].join(' ')}
-        onClick={(e) => e.stopPropagation()}
+        onClick={handleOverLayClick}
+        // onClick={(e) => e.stopPropagation()}
       >
         {title && (
           <div className="flex items-center justify-between px-6 py-4">

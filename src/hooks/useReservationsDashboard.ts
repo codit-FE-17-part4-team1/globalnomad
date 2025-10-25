@@ -61,7 +61,7 @@ export default function useReservationsDashboard() {
     const fetchMyActivities = async () => {
       try {
         setIsLoadingActivities(true);
-        const response = await getMyActivities({});
+        const response = await getMyActivities();
         setMyActivities(response.activities);
         // 체험 목록을 불러온 후 첫번째 체험을 자동으로 선택
         if (response.activities.length > 0) {
