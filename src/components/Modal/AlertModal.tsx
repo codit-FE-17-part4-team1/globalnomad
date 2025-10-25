@@ -1,4 +1,4 @@
-// overlay 적용안됨 이슈
+// overlay 적용 안됨 이슈
 // BaseModal 과 분리해봄 아예 따로 구현
 
 'use client';
