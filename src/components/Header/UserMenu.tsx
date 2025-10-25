@@ -11,11 +11,9 @@ export interface UserMenuProps {
   userImage?: string;
 }
 
-const accessToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTIzMzU5MSwiZXhwIjoxNzYxMjM1MzkxLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.eHncKh8-9-EUTgZoWM7mcVqXqfuOykAEPP5SqzMNces';
-
 export default function UserMenu({ userName, userImage }: UserMenuProps) {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+
   const {
     notifications,
     isLoading,
@@ -23,7 +21,7 @@ export default function UserMenu({ userName, userImage }: UserMenuProps) {
     hasNext,
     loadMore,
     handleDeleteNotification,
-  } = useNotification(accessToken);
+  } = useNotification();
 
   const handleNotificationClick = () => {
     setIsAlertOpen(true);

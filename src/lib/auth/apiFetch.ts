@@ -3,7 +3,7 @@
 type RefreshStatus = { promise: Promise<boolean> | null };
 const refreshState: RefreshStatus = { promise: null };
 
-async function ensureRefreshed(): Promise<boolean> {
+export async function ensureRefreshed(): Promise<boolean> {
   if (!refreshState.promise) {
     refreshState.promise = (async () => {
       const r = await fetch('/api/auth/refresh', {
