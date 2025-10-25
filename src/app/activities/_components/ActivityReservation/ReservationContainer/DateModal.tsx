@@ -59,7 +59,7 @@ const DateModal: React.FC<DateModalProps> = ({
         const [year, month] = selectedDate.split('-');
 
         const res = await fetch(
-          `/api/proxy/17-1/activities/${activityId}/available-schedule?year=${year}&month=${month}`
+          `/api/activities/${activityId}/available-schedule?year=${year}&month=${month}`
         );
 
         if (res.status === 404) {
@@ -145,7 +145,6 @@ const DateModal: React.FC<DateModalProps> = ({
                 selectedDate={selectedDate}
                 onSelectDate={(dateStr: string) => setSelectedDate(dateStr)}
                 availableDates={availableDates}
-                activityId={activityId}
                 onMonthChange={onMonthChange}
               />
             </div>

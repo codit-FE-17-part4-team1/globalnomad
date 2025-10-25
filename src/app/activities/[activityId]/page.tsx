@@ -27,11 +27,6 @@ export default function Page() {
   const router = useRouter();
   const params = useParams();
   const activityId = Number(params.activityId);
-
-  if (isNaN(activityId) || activityId <= 0) {
-    return <div>잘못된 체험 아이디입니다.</div>;
-  }
-
   const numericActivityId = activityId;
 
   const [activity, setActivity] = useState<ActivityDetailInfo | null>(null);
@@ -43,7 +38,6 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 날짜/시간, 참가자 상태
   const [scheduleData, setScheduleData] = useState<AvailableSchedule[]>([]);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [availableTimes, setAvailableTimes] = useState<AvailableTime[]>([]);
@@ -53,66 +47,48 @@ export default function Page() {
     useState('날짜 선택하기');
   const [participants, setParticipants] = useState<number>(1);
 
-  // 모달 상태
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
   const [isParticipantsModalOpen, setIsParticipantsModalOpen] = useState(false);
 
-  // 예약 버튼 활성화
   const isReservationEnabled = useMemo(() => {
     return selectedDate !== null && selectedTimeId !== null && participants > 0;
   }, [selectedDate, selectedTimeId, participants]);
 
-  // 날짜 모달 열기/닫기
-  const handleOpenDateModal = () => setIsDateModalOpen(true);
-  const handleCloseDateModal = () => setIsDateModalOpen(false);
-
-  // 날짜/시간 선택 시 호출
-  const handleUpdateDateTime = (formattedText: string, timeId: number) => {
-    setSelectedDateTimeText(formattedText);
-    setSelectedTimeId(timeId);
-    setSelectedDate(formattedText.split(' ')[0].replace(/\//g, '-'));
-    setIsDateModalOpen(false);
-  };
-
-  // 참가자 모달 열기/선택
-  const handleOpenParticipantsModal = () => setIsParticipantsModalOpen(true);
-  const handleSelectParticipants = (num: number) => {
-    setParticipants(num);
-    setIsParticipantsModalOpen(false);
-  };
-
   // 예약 API
-  async function reserveActivity({
-    activityId,
-    scheduleId,
-    headCount,
-  }: {
-    activityId: number;
-    scheduleId: number;
-    headCount: number;
-  }) {
-    try {
-      const res = await fetch(
-        `/api/proxy/17-1/activities/${activityId}/reservations`,
-        {
+  const reserveActivity = useCallback(
+    async ({
+      activityId,
+      scheduleId,
+      headCount,
+    }: {
+      activityId: number;
+      scheduleId: number;
+      headCount: number;
+    }) => {
+      try {
+        const res = await fetch(`/api/createReservation`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ scheduleId, headCount }),
+          body: JSON.stringify({ activityId, scheduleId, headCount }),
           credentials: 'include',
-        }
-      );
-      if (!res.ok) {
-        const errorData = await res.json();
-        return { success: false, error: errorData.message || '예약 실패' };
-      }
-      const data = await res.json();
-      return { success: true, data };
-    } catch (err: any) {
-      return { success: false, error: err.message || '알 수 없는 오류' };
-    }
-  }
+        });
 
-  const handleReserve = async () => {
+        if (!res.ok) {
+          const errorData = await res.json();
+          return { success: false, error: errorData.message || '예약 실패' };
+        }
+
+        const data = await res.json();
+        return { success: true, data };
+      } catch (err: unknown) {
+        if (err instanceof Error) return { success: false, error: err.message };
+        return { success: false, error: '알 수 없는 오류' };
+      }
+    },
+    []
+  );
+
+  const handleReserve = useCallback(async () => {
     if (!isReservationEnabled || !selectedTimeId) return;
 
     const result = await reserveActivity({
@@ -120,8 +96,6 @@ export default function Page() {
       scheduleId: selectedTimeId,
       headCount: participants,
     });
-
-    console.log('예약 API 결과:', result);
 
     if (result.success) {
       const goToMain = window.confirm(
@@ -132,32 +106,46 @@ export default function Page() {
     } else {
       alert(result.error);
     }
+  }, [
+    isReservationEnabled,
+    selectedTimeId,
+    participants,
+    numericActivityId,
+    reserveActivity,
+    router,
+  ]);
+
+  // 모달 상태
+  const handleOpenDateModal = () => setIsDateModalOpen(true);
+  const handleCloseDateModal = () => setIsDateModalOpen(false);
+  const handleOpenParticipantsModal = () => setIsParticipantsModalOpen(true);
+  const handleSelectParticipants = (num: number) => {
+    setParticipants(num);
+    setIsParticipantsModalOpen(false);
+  };
+  const handleUpdateDateTime = (formattedText: string, timeId: number) => {
+    setSelectedDateTimeText(formattedText);
+    setSelectedTimeId(timeId);
+    setSelectedDate(formattedText.split(' ')[0].replace(/\//g, '-'));
+    setIsDateModalOpen(false);
   };
 
-  // 월별 예약 가능한 날짜 조회 함수
+  // 예약 가능한 날짜 조회
   const fetchAvailableDatesForMonth = useCallback(
     async (year: number, month: number) => {
-      console.log('🔍 fetchAvailableDatesForMonth 호출:', year, month);
       try {
         const res = await fetch(
-          `https://sp-globalnomad-api.vercel.app/17-1/activities/${numericActivityId}/available-schedule?year=${year}&month=${String(
+          `/api/activities/${numericActivityId}/available-schedule?year=${year}&month=${String(
             month
           ).padStart(2, '0')}`
         );
         if (!res.ok) throw new Error('예약 가능 일정 조회 실패');
 
         const data: AvailableSchedule[] = await res.json();
-        console.log('✅ 받은 데이터:', data);
-
-        // 전체 데이터 저장 (날짜 + 시간 정보 모두)
         setScheduleData(data);
-
-        // 날짜만 추출하여 저장
-        const dates = data.map((d) => d.date);
-        setAvailableDates(dates);
-        console.log('✅ 설정된 날짜들:', dates);
-      } catch (err) {
-        console.error('❌ 에러 발생:', err);
+        setAvailableDates(data.map((d) => d.date));
+      } catch (err: unknown) {
+        console.error(err);
         setScheduleData([]);
         setAvailableDates([]);
         setAvailableTimes([]);
@@ -166,33 +154,35 @@ export default function Page() {
     [numericActivityId]
   );
 
-  // 체험 상세 API
+  // 초기 데이터 fetch
   useEffect(() => {
+    if (isNaN(activityId) || activityId <= 0) {
+      setLoading(false);
+      setError('잘못된 체험 아이디입니다.');
+      return;
+    }
+
+    // 체험 상세 API 조회
     const fetchActivity = async () => {
       try {
         setLoading(true);
-        const res = await fetch(
-          `https://sp-globalnomad-api.vercel.app/17-1/activities/${numericActivityId}`
-        );
+        const res = await fetch(`/api/activities/${numericActivityId}`);
         if (!res.ok) throw new Error('체험 상세 조회 실패');
-        const data = await res.json();
+        const data: ActivityDetailInfo = await res.json();
         setActivity(data);
-      } catch (err: any) {
-        console.error(err);
-        setError(err.message || '알 수 없는 오류');
+      } catch (err: unknown) {
+        if (err instanceof Error) setError(err.message);
+        else setError('알 수 없는 오류');
       } finally {
         setLoading(false);
       }
     };
-    fetchActivity();
-  }, [numericActivityId]);
 
-  // 체험 리뷰 API
-  useEffect(() => {
+    // 체험 리뷰 API 조회
     const fetchReviews = async () => {
       try {
         const res = await fetch(
-          `https://sp-globalnomad-api.vercel.app/17-1/activities/${numericActivityId}/reviews?page=1&size=3`
+          `/api/activities/${numericActivityId}/reviews?page=1&size=3` // 경로 수정
         );
         if (!res.ok) throw new Error('리뷰 조회 실패');
         const data: {
@@ -205,24 +195,20 @@ export default function Page() {
           totalCount: data.totalCount,
           averageRating: data.averageRating,
         });
-      } catch (err) {
+      } catch (err: unknown) {
         console.error(err);
         setReviews({ reviews: [], totalCount: 0, averageRating: 0 });
       }
     };
+
+    fetchActivity();
     fetchReviews();
-  }, [numericActivityId]);
 
-  // 1. 초기 로드 시 현재 월 데이터 fetch
-  useEffect(() => {
     const today = dayjs();
-    const year = today.year();
-    const month = today.month() + 1;
+    fetchAvailableDatesForMonth(today.year(), today.month() + 1);
+  }, [activityId, numericActivityId, fetchAvailableDatesForMonth]);
 
-    fetchAvailableDatesForMonth(year, month);
-  }, [fetchAvailableDatesForMonth]);
-
-  // 2. 선택된 날짜가 바뀔 때 저장된 데이터에서 시간 추출 (API 재호출 최소화)
+  // 선택된 날짜에 따라 시간 설정
   useEffect(() => {
     if (!selectedDate) {
       setAvailableTimes([]);
@@ -231,49 +217,16 @@ export default function Page() {
       return;
     }
 
-    // 이미 fetch한 scheduleData에서 찾아보자
     const daySchedule = scheduleData.find((d) => d.date === selectedDate);
-
     if (daySchedule) {
       setAvailableTimes(daySchedule.times);
     } else {
-      // 만약 해당 날짜 데이터가 없다면 (다른 월로 이동한 경우)
-      // 해당 월의 데이터를 fetch
       const dateObj = dayjs(selectedDate);
-      const year = dateObj.year();
-      const month = dateObj.month() + 1;
-
-      const fetchAndSetTimes = async () => {
-        try {
-          const res = await fetch(
-            `https://sp-globalnomad-api.vercel.app/17-1/activities/${numericActivityId}/available-schedule?year=${year}&month=${String(
-              month
-            ).padStart(2, '0')}`
-          );
-          if (!res.ok) throw new Error('예약 가능 일정 조회 실패');
-
-          const data: AvailableSchedule[] = await res.json();
-
-          // 전체 데이터 저장
-          setScheduleData(data);
-
-          // 날짜만 추출
-          const dates = data.map((d) => d.date);
-          setAvailableDates(dates);
-
-          // 선택된 날짜의 시간 설정
-          const schedule = data.find((d) => d.date === selectedDate);
-          setAvailableTimes(schedule?.times || []);
-        } catch (err) {
-          console.error(err);
-          setAvailableTimes([]);
-        }
-      };
-
-      fetchAndSetTimes();
+      fetchAvailableDatesForMonth(dateObj.year(), dateObj.month() + 1);
     }
-  }, [selectedDate, scheduleData, numericActivityId]);
+  }, [selectedDate, scheduleData, fetchAvailableDatesForMonth]);
 
+  // 렌더링
   if (loading) return <div>로딩중...</div>;
   if (error) return <div>에러 발생: {error}</div>;
   if (!activity) return <div>체험 정보를 찾을 수 없습니다.</div>;

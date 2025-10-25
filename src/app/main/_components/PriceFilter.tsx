@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 interface PriceFilterProps {
   selected: string;
@@ -14,7 +15,7 @@ const PriceFilter: React.FC<PriceFilterProps> = ({ selected, setSelected }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [buttonWidth, setButtonWidth] = useState<number>(0);
 
-  // 버튼 폭 계산하기
+  // 버튼 폭 계산
   useEffect(() => {
     if (buttonRef.current) {
       setButtonWidth(buttonRef.current.offsetWidth);
@@ -46,10 +47,12 @@ const PriceFilter: React.FC<PriceFilterProps> = ({ selected, setSelected }) => {
         onClick={() => setIsOpen(!isOpen)}
       >
         {selected || '가격'}
-        <img
+        <Image
           src="/icon/btn/alt_arrow_down.svg"
           alt="dropdown arrow"
-          className="w-[22px] h-[22px] ml-1"
+          width={22}
+          height={22}
+          className="ml-1"
         />
       </button>
 

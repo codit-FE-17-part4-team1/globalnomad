@@ -2,11 +2,12 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import MyButton from '@/components/Button/Button';
 
 const SearchBar: React.FC = () => {
   const router = useRouter();
-  const [keyword, setkeyword] = useState('');
+  const [keyword, setKeyword] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
   const handleSearch = () => {
@@ -17,28 +18,25 @@ const SearchBar: React.FC = () => {
     router.push(`/search?keyword=${encodeURIComponent(keyword)}`);
   };
 
-  // 엔터 키 처리
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
+    if (e.key === 'Enter') handleSearch();
   };
 
   return (
     <section className="w-full px-5">
       <div className="bg-white min-w-[335px] w-full max-w-[1200px] h-[129px] md:h-[184px] py-4 md:py-8 px-6 rounded-2xl shadow-[0_4px_16px_0_rgba(17,34,17,0.05)] flex flex-col justify-between mx-auto">
-        {/* 제목 */}
         <label className="text-black font-bold text-lg md:text-xl leading-8 mb-1 md:mb-4">
           무엇을 체험하고 싶으신가요?
         </label>
 
-        {/* 검색 영역 */}
         <div className="flex gap-2 w-full max-w-[1152px] mx-auto">
           <div className="relative flex items-center flex-1 h-[56px] border border-gray-700 rounded-sm pl-[48px] pr-4 py-3 bg-white">
-            <img
+            <Image
               src="/icon/search.svg"
               alt="Search Icon"
-              className="absolute left-0 w-[48px] h-[48px]"
+              width={48}
+              height={48}
+              className="absolute left-0"
             />
             {/* 플로팅 라벨 */}
             <label
@@ -51,7 +49,7 @@ const SearchBar: React.FC = () => {
             <input
               type="text"
               value={keyword}
-              onChange={(e) => setkeyword(e.target.value)}
+              onChange={(e) => setKeyword(e.target.value)}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               onKeyDown={handleKeyDown}

@@ -9,9 +9,14 @@ import useNotification from '@/hooks/useNotification';
 export interface UserMenuProps {
   userName?: string;
   userImage?: string;
+  onNotificationClick?: () => void;
 }
 
-export default function UserMenu({ userName, userImage }: UserMenuProps) {
+export default function UserMenu({
+  userName,
+  userImage,
+  onNotificationClick,
+}: UserMenuProps) {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const {
@@ -24,6 +29,7 @@ export default function UserMenu({ userName, userImage }: UserMenuProps) {
   } = useNotification();
 
   const handleNotificationClick = () => {
+    onNotificationClick?.();
     setIsAlertOpen(true);
   };
 
@@ -50,8 +56,10 @@ export default function UserMenu({ userName, userImage }: UserMenuProps) {
             />
           )}
         </div>
+
         {/* 세로 구분선 */}
         <span className="text-[#DDDDDD] select-none">|</span>
+
         <Profile userName={userName} userImage={userImage} />
       </div>
     </>
