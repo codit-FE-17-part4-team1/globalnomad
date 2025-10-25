@@ -54,7 +54,7 @@ export default function useNotification(size: number = 10) {
       setError(undefined);
 
       try {
-        const data = await getNotifications(currentCursorId, size);
+        const data = await getNotifications(currentCursorId, size); // 해당 함수를 보면 될 듯!
         const newAlerts = data.notifications.map(transformNotificationToAlert);
 
         setAlerts((prev) => {
