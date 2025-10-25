@@ -58,7 +58,7 @@ export default function ProfileCard() {
               <form
                 key={item.key}
                 action={logoutAction}
-                className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-[var(--color-gray-400)] font-semibold cursor-pointer hover:bg-[var(--color-gray-100)] transition-colors"
+                className="flex items-center gap-3 rounded-xl px-4 py-3 text-[var(--color-gray-400)] font-semibold cursor-pointer hover:bg-[var(--color-gray-100)] transition-colors"
               >
                 <button
                   type="submit"
