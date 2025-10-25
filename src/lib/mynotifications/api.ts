@@ -1,5 +1,3 @@
-import { BASE_URL } from '@/lib/constants';
-import { apiFetch } from '@/lib/auth/apiFetch';
 import {
   type NotificationList,
   type DeleteNotificationRes,

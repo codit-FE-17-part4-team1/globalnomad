@@ -11,24 +11,24 @@ import {
 /**
  * 내 체험 목록
  */
-export async function getMyActivities(opts: {
-  cursorId?: number;
-  size?: number;
-}): Promise<MyActivitiesResponse> {
-  const { cursorId, size = 20 } = opts;
+export async function getMyActivities(
+  cursorId?: number,
+  size?: number
+): Promise<MyActivitiesResponse> {
+  // const { cursorId, size = 20 } = opts;
 
-  const queryString =
-    cursorId != null ? `cursorId=${cursorId}&size=${size}` : `size=${size}`;
+  const queryString = cursorId
+    ? `cursorId=${cursorId}&size=${size}`
+    : `size=${size}`;
 
-  const url = `/api/myactivities?${queryString}`;
-  const res = await fetch(url, {
+  const response = await fetch(`/api/myactivities?${queryString}`, {
     method: 'GET',
     cache: 'no-store',
   });
 
-  if (!res.ok) throw new Error('내 체험 목록을 불러오는 데 실패했습니다.');
+  if (!response.ok) throw new Error('내 체험 목록을 불러오는 데 실패했습니다.');
 
-  const data = await res.json();
+  const data = await response.json();
   return data;
 }
 
