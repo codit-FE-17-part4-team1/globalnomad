@@ -157,3 +157,41 @@ input[type='datetime-local']::-webkit-calendar-picker-indicator {
     box-shadow: 0 0 0 rgba(140, 140, 140, 0);
   }
 }
+
+/* react-big-calendar 커스텀 스타일 */
+
+/* 월별 뷰에서 같은 날짜에 여러 이벤트를 쌓아서 표시 */
+.rbc-month-view .rbc-row-content {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.rbc-month-view .rbc-event {
+  position: relative !important;
+  left: auto !important;
+  width: 100% !important;
+  margin-bottom: 2px;
+}
+
+/* 날짜 셀의 높이를 늘려서 여러 이벤트를 표시할 공간 확보 */
+.rbc-month-view .rbc-day-bg + .rbc-day-bg {
+  border-left: 1px solid #ddd;
+}
+
+.rbc-month-view .rbc-month-row {
+  min-height: 80px; /* 최소 높이 조정 */
+}
+
+/* 이벤트가 잘리지 않도록 */
+.rbc-month-view .rbc-row-segment {
+  padding: 2px 4px;
+}
+
+/* 이벤트 컨테이너 스타일 */
+.rbc-event-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}

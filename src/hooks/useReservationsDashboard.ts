@@ -44,6 +44,9 @@ export default function useReservationsDashboard() {
     null
   );
 
+  // 5. 대시보드 새로고침 트리거 상태 추가 - 거절이 보이지 않아서 추가함
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
   // 쿠키를 서버에서 관리를 하고 있다.
   // 클라이언트 컴포넌트에서는 쿠키를 사용을 못하고 있는 상황
 
@@ -110,7 +113,7 @@ export default function useReservationsDashboard() {
     };
 
     fetchDashboardData();
-  }, [selectedActivityId, currentDate]);
+  }, [selectedActivityId, currentDate, refreshTrigger]); // 여기에 추가해줘야 함
 
   // 날짜별 예약 정보 조회
   useEffect(() => {
@@ -168,6 +171,10 @@ export default function useReservationsDashboard() {
     }
   };
 
+  const refreshDashboard = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return {
     myActivities,
     isLoadingActivities,
@@ -184,5 +191,6 @@ export default function useReservationsDashboard() {
     activitiesError,
     dashboardError,
     currentDate,
+    refreshDashboard,
   };
 }
