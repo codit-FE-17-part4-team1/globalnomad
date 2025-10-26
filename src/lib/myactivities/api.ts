@@ -41,7 +41,7 @@ export async function getReservationDashboard(opts: {
   const { activityId, year, month } = opts;
 
   // const url = `/api/reservation-dashboard?year=${year}&month=${month}`;
-  const url = `/api/reservation-dashboard?activityId=${activityId}&year=${year}&month=${month}`;
+  const url = `/api/myactivities/${activityId}/reservation-dashboard?year=${year}&month=${month}`;
 
   const res = await fetch(url, {
     method: 'GET',
@@ -88,7 +88,7 @@ export async function getReservationsBySchedule(opts: {
   scheduleId: number;
   status?: 'pending' | 'confirmed' | 'declined' | 'completed';
 }): Promise<ReservationsTime> {
-  const { scheduleId, status } = opts;
+  const { activityId, scheduleId, status } = opts;
 
   const params = new URLSearchParams();
   params.set('scheduleId', String(scheduleId));
@@ -97,7 +97,7 @@ export async function getReservationsBySchedule(opts: {
     params.set('status', status);
   }
 
-  const url = `api/reservations?${params.toString()}`;
+  const url = `api/myactivities/${activityId}/reservations?${params.toString()}`;
 
   const res = await fetch(url, {
     method: 'GET',
