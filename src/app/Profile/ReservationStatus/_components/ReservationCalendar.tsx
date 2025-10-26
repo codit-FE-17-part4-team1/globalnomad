@@ -167,23 +167,28 @@ export default function ReservationCalendar({
 
   // 여기서 문제가 생김 -> 수정 완료
   const formattedReservationsForModal = useMemo(() => {
-    if (!reservationsForDate) return [];
+    if (!reservationsForDate) {
+      return [];
+    }
 
-    return reservationsForDate.reservations.map((r) => ({
-      id: r.id,
-      nickname: r.nickname,
-      people: r.headCount,
-      status: (r.status === 'declined'
-        ? 'canceled'
-        : r.status) as ReservationStatus,
-      time: `${r.startTime}~${r.endTime}`,
-    }));
+    const formatted = reservationsForDate.reservations.map((r) => {
+      return {
+        id: r.id,
+        nickname: r.nickname,
+        people: r.headCount,
+        status: (r.status === 'declined'
+          ? 'canceled'
+          : r.status) as ReservationStatus,
+        time: `${r.startTime}~${r.endTime}`,
+      };
+    });
+
+    return formatted;
   }, [reservationsForDate]);
 
   const handleEventClick = (ev: CalEvent) => {
     setSelected(ev);
     const dateString = dayjs(ev.start).format('YYYY-MM-DD');
-
     onSelectDate(dateString);
     setIsModalOpen(true);
   };

@@ -138,8 +138,34 @@ export default function useReservationsDashboard() {
   }, [selectedActivityId, selectedDate]);
 
   // 캘린더에서 날짜 선택 시 호출될 핸들러 -> 날짜를 클릭하면 모달이 나와야 할 것 같아 겹치는 것 같은데 .. 흠
-  const handleDateSelect = (date: string | null) => {
+  const handleDateSelect = async (date: string | null) => {
     setSelectedDate(date);
+
+    if (!date) {
+      setReservationsForDate(null);
+      return;
+    }
+
+    // ✅ selectedActivityId 체크 추가
+    if (!selectedActivityId) {
+      setReservationsForDate(null);
+      return;
+    }
+
+    try {
+      setIsLoadingReservations(true);
+
+      const data = await getReservationsByDate({
+        activityId: selectedActivityId, // ✅ selectedActivityId 사용
+        date,
+      });
+      setReservationsForDate(data);
+    } catch (error) {
+      console.error('❌ 예약 데이터 로딩 실패:', error);
+      setReservationsForDate(null);
+    } finally {
+      setIsLoadingReservations(false);
+    }
   };
 
   return {

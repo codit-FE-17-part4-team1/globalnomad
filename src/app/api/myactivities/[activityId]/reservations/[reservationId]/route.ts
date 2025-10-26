@@ -1,24 +1,12 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(
+export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ activityId: string }> }
+  { params }: { params: Promise<{ activityId: string; reservationId: string }> }
 ) {
-  const { activityId } = await params;
+  const { activityId, reservationId } = await params;
 
-  const searchParams = request.nextUrl.searchParams;
-  const year = searchParams.get('year');
-  const month = searchParams.get('month');
-
-  if (!year || !month) {
-    return NextResponse.json(
-      { error: 'year, month are required' },
-      { status: 400 }
-    );
-  }
-
-  // 서버 측에서 쿠키 읽기
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 
@@ -27,14 +15,29 @@ export async function GET(
   }
 
   try {
-    const url = `https://sp-globalnomad-api.vercel.app/17-1/my-activities/${activityId}/reservation-dashboard?year=${year}&month=${month}`;
+    const body = await request.json();
+    const { status } = body;
+
+    // 필수 파라미터 검증
+    if (!status || !['confirmed', 'declined'].includes(status)) {
+      return NextResponse.json(
+        {
+          error:
+            'Missing required parameters: activityId, reservationId, status',
+        },
+        { status: 400 }
+      );
+    }
+
+    const url = `https://sp-globalnomad-api.vercel.app/17-1/my-activities/${activityId}/reservations/${reservationId}`;
 
     const res = await fetch(url, {
-      method: 'GET',
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
       },
+      body: JSON.stringify({ status }),
     });
 
     if (!res.ok) {
