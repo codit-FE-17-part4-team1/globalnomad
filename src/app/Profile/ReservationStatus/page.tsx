@@ -1,4 +1,4 @@
-// 해당 코드 리페고링 및 삭제 필요 (에러 화면 등)
+// 해당 코드 리펙토링 및 삭제 필요 (에러 화면 등)
 
 'use client';
 
@@ -161,12 +161,13 @@ function AuthenticatedContent() {
             updateError={updateError}
           />
         ) : (
-          <div className="flex flex-col items-center mt-50 h-full text-gray-500">
+          <div className="flex flex-col items-center pt-50 h-full text-2xl font-medium text-gray-700">
             <Image
               src="/images/empty.svg"
               alt="체험없음"
-              width={150}
-              height={150}
+              width={200}
+              height={200}
+              className="md:w-[240px] md:h-[240px]"
             />
             아직 등록한 체험이 없어요.
           </div>
