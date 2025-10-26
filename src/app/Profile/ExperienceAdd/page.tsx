@@ -1,7 +1,7 @@
 'use client';
 
 import 'react-datepicker/dist/react-datepicker.css';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 
 import FormInput from '@/components/Input/CustomInput';
@@ -31,11 +31,6 @@ export default function ExperienceAdd() {
   const [selectedSlots, setSelectedSlots] = useState<TimeSlot[]>([]);
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    setAccessToken(localStorage.getItem('accessToken'));
-  }, []);
 
   const handleAddressComplete = (data: { address: string }) => {
     setForm((prev) => ({ ...prev, address: data.address }));
@@ -61,10 +56,21 @@ export default function ExperienceAdd() {
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!isFormValid) return alert('모든 항목을 입력해주세요');
-    if (!accessToken) return alert('로그인이 필요합니다');
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const now = new Date();
 
     const schedules = selectedSlots
       .filter((slot) => slot.date && slot.startTime && slot.endTime)
+      .filter((slot) => {
+        const slotDate = new Date(slot.date!);
+        slotDate.setHours(0, 0, 0, 0);
+        if (slotDate < today) return false;
+        if (slotDate.getTime() === today.getTime() && slot.endTime! < now)
+          return false;
+        return true;
+      })
       .map((slot) => {
         const date = slot.date!.toISOString().split('T')[0];
         const formatTime = (d: Date) =>
@@ -75,6 +81,11 @@ export default function ExperienceAdd() {
           endTime: formatTime(slot.endTime!),
         };
       });
+
+    if (schedules.length === 0) {
+      alert('오늘 이전 또는 이미 지난 시간대는 예약할 수 없슷비낟.');
+      return;
+    }
 
     const getValidUrl = (url: string) =>
       url.startsWith('blob:')
@@ -88,22 +99,19 @@ export default function ExperienceAdd() {
       price: Number(form.price),
       address: form.address,
       bannerImageUrl: getValidUrl(bannerImages[0] || ''),
-      subImageUrls: introImages.map((url) => getValidUrl(url)),
+      subImages: introImages.map((url) => ({ imageUrl: getValidUrl(url) })),
       schedules,
     };
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_SERVER_URL}/activities`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify(body),
-        }
-      );
+      const res = await fetch('/api/myactivities-create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(body),
+      });
 
       if (!res.ok) {
         const text = await res.text();
@@ -112,7 +120,7 @@ export default function ExperienceAdd() {
 
       setIsConfirmOpen(true);
     } catch (err) {
-      console.error(err);
+      console.error('체험등록실패:', err);
       alert('체험 등록에 실패했습니다');
     }
   };
