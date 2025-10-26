@@ -66,7 +66,7 @@ export default function Page() {
       headCount: number;
     }) => {
       try {
-        const res = await fetch(`/api/createReservation`, {
+        const res = await fetch(`/api/createreservation`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ activityId, scheduleId, headCount }),

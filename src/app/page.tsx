@@ -29,6 +29,7 @@ const MainPage: React.FC = () => {
 
   const [activities, setActivities] = useState<Activity[]>([]);
   const [popularActivities, setPopularActivities] = useState<Activity[]>([]);
+  const [visibleActivities, setVisibleActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,7 +38,6 @@ const MainPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const [totalCount, setTotalCount] = useState(0);
-  const [visibleActivities, setVisibleActivities] = useState<Activity[]>([]);
 
   const [popularPage, setPopularPage] = useState(0);
   const cardsPerPage = 3;
@@ -69,48 +69,49 @@ const MainPage: React.FC = () => {
     if (savedPriceSort) setPriceSort(savedPriceSort);
   }, []);
 
-  // API 호출
+  // 체험 리스트 API 호출
   useEffect(() => {
     const fetchActivities = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const params = new URLSearchParams({
-          method: 'cursor',
-          page: '1',
-          size: '20',
-          category: selectedCategory !== '전체' ? selectedCategory : '',
-          sort: priceSort,
-        });
-
-        const res = await fetch(`/api/activities-list?${params.toString()}`);
-        const data = await res.json();
-        setActivities(data.activities);
-        setTotalCount(data.totalCount ?? data.activities.length);
-
-        // 인기 체험
-        const sortedPopular = [...data.activities].sort((a, b) =>
-          b.rating === a.rating
-            ? b.reviewCount - a.reviewCount
-            : b.rating - a.rating
+        const res = await fetch(
+          `/api/activities-list?method=cursor&page=1&size=100`
         );
-        setPopularActivities(sortedPopular.slice(0, 9));
+        if (!res.ok) throw new Error('체험 목록 조회 실패');
+
+        const data = await res.json();
+        const activitiesArray = Array.isArray(data.activities)
+          ? data.activities
+          : [];
+        setActivities(activitiesArray);
+
+        // 인기 체험 정렬 로직
+        const sortedPopular = [...activitiesArray]
+          .sort((a, b) =>
+            b.rating === a.rating
+              ? b.reviewCount - a.reviewCount
+              : b.rating - a.rating
+          )
+          .slice(0, 9);
+        setPopularActivities(sortedPopular);
       } catch (err: unknown) {
         if (err instanceof Error) setError(err.message);
         else setError(String(err));
-        console.error(err);
+        setActivities([]);
+        setPopularActivities([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchActivities();
-  }, [selectedCategory, priceSort]);
+  }, []);
 
   // 필터링 + 정렬 + 페이지네이션
   useEffect(() => {
-    if (!activities.length) return;
+    if (!activities?.length) return;
 
     const filtered: Activity[] =
       selectedCategory === '전체'
@@ -129,6 +130,7 @@ const MainPage: React.FC = () => {
 
     setTotalCount(filtered.length);
 
+    // 페이지네이션 로직
     const startIdx = (currentPage - 1) * itemsPerPage;
     const endIdx = startIdx + itemsPerPage;
     setVisibleActivities(filtered.slice(startIdx, endIdx));
