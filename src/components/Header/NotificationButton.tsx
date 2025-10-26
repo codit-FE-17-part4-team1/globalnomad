@@ -11,7 +11,7 @@ export interface NotificationButtonProps {
 export default function NotificationButton({
   onClick,
   hasUnreadAlerts = false,
-  unreadCount = 0,
+  // unreadCount = 0,
 }: NotificationButtonProps) {
   return (
     <button

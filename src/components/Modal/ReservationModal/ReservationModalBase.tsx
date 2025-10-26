@@ -31,7 +31,7 @@ export default function ReservationModalBase({
   onClose,
   status,
   date,
-  time,
+  // time,
   reservations,
   onApprove,
   onReject,
