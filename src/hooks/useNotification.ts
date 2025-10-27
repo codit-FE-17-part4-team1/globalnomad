@@ -63,9 +63,9 @@ export default function useNotification(
           ? data.notifications.filter((n) => n.userId === currentUserId)
           : data.notifications;
 
-        console.log('받은 알림 원본 데이터:', data.notifications);
-
-        const newAlerts = data.notifications.map(transformNotificationToAlert);
+        const newAlerts = filteredNotifications.map(
+          transformNotificationToAlert
+        );
 
         setAlerts((prev) => {
           const result = currentCursorId ? [...prev, ...newAlerts] : newAlerts;

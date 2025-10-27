@@ -203,7 +203,6 @@ export default function ReservationCalendar({
   }, [reservationsForDate]);
 
   const handleEventClick = (ev: CalEvent) => {
-    console.log('🖱️ Event clicked:', ev);
     setSelected(ev);
     const dateString = dayjs(ev.start).format('YYYY-MM-DD');
     onSelectDate(dateString);
