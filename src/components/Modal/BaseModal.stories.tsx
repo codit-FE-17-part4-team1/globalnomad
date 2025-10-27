@@ -28,7 +28,7 @@ function ModalController(
         onClose={() => setOpen(false)}
         title={props.title}
         className={props.className}
-        size={props.size}
+        // size={props.size}
       >
         <div className="px-6 pb-6">
           {props.children ?? (
@@ -65,12 +65,12 @@ const meta = {
   },
   argTypes: {
     title: { control: 'text' },
-    size: {
-      control: 'radio',
-      options: ['sm', 'md', 'lg', 'xl', 'full'],
-      description:
-        '현재 스타일에 직접 반영되지 않으면 BaseModal 내부에 사이즈 매핑을 추가하세요.',
-    },
+    // size: {
+    //   control: 'radio',
+    //   options: ['sm', 'md', 'lg', 'xl', 'full'],
+    //   description:
+    //     '현재 스타일에 직접 반영되지 않으면 BaseModal 내부에 사이즈 매핑을 추가하세요.',
+    // },
     className: { control: 'text' },
   },
 } satisfies Meta<typeof BaseModal>;
@@ -85,7 +85,9 @@ export const Default: Story = {
     </ModalController>
   ),
   args: {
-    size: 'md',
+    isOpen: true,
+    onClose: () => {},
+    children: null,
   },
 };
 
@@ -97,6 +99,9 @@ export const WithTitle: Story = {
   ),
   args: {
     title: '타이틀이 있는 모달',
+    isOpen: true,
+    onClose: () => {},
+    children: null,
   },
 };
 
@@ -113,5 +118,8 @@ export const LongContent: Story = {
   args: {
     title: '스크롤 테스트',
     className: 'w-[540px]',
+    isOpen: true,
+    onClose: () => {},
+    children: null,
   },
 };

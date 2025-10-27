@@ -6,7 +6,7 @@ import CustomInput from '@/components/Input/CustomInput';
 import { useInputValue } from '@/hooks/useInputValue';
 
 export default function InputTEST() {
-  const [form, handleChange] = useInputValue({
+  const [form, setForm, handleChange] = useInputValue({
     email: '',
     password: '',
     nickname: '',

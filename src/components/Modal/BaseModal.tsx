@@ -8,6 +8,7 @@ interface BaseModalProps {
   children: React.ReactNode;
   className?: string;
   title?: React.ReactNode;
+  width?: string;
   closeOnOverlay?: boolean;
   closeOnEsc?: boolean;
 }
@@ -18,6 +19,7 @@ export default function BaseModal({
   children,
   className,
   title,
+  width,
   closeOnOverlay = true,
   closeOnEsc = true,
 }: BaseModalProps) {
