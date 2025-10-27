@@ -164,13 +164,13 @@ export default function ReservationModalBase({
               {activeTab === 'pending' && onApprove && onReject && (
                 <div className="flex space-x-2">
                   <Button
-                    className="bg-[var(--color-green-dark)] p-2 text-white text-sm"
+                    className="bg-[var(--color-green-dark)] p-2 text-white text-sm hover:bg-[var(--color-green-dark)]"
                     onClick={() => onApprove(item.id)}
                   >
                     승인하기
                   </Button>
                   <Button
-                    className="p-2 text-black border-[var(--color-gray-400)] text-sm "
+                    className="p-2 !text-black border-[var(--color-gray-400)] text-sm bg-white hover:bg-[var(--color-gray-200)] "
                     onClick={() => onReject(item.id)}
                   >
                     거절하기
