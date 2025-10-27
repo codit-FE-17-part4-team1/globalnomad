@@ -21,14 +21,14 @@ interface ActivityData {
   schedules: Schedule[];
 }
 
-function getIdFromUrl(url: string) {
+function getActivityIdFromUrl(url: string) {
   const segments = new URL(url).pathname.split('/');
   return segments[segments.length - 1];
 }
 
 // GET
 export async function GET(req: NextRequest) {
-  const activityId = getIdFromUrl(req.url);
+  const activityId = getActivityIdFromUrl(req.url);
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
 
 // PATCH
 export async function PATCH(req: NextRequest) {
-  const activityId = getIdFromUrl(req.url);
+  const activityId = getActivityIdFromUrl(req.url);
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 
@@ -100,7 +100,7 @@ export async function PATCH(req: NextRequest) {
 
 // DELETE
 export async function DELETE(req: NextRequest) {
-  const activityId = getIdFromUrl(req.url);
+  const activityId = getActivityIdFromUrl(req.url);
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 

@@ -86,6 +86,17 @@ export default function Experience() {
       <div>
         {activities.length === 0 ? (
           <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center pt-50 h-full text-2xl font-medium text-gray-700">
+              <Image
+                src="/images/empty.svg"
+                alt="체험없음"
+                width={200}
+                height={200}
+                className="md:w-[240px] md:h-[240px]"
+              />
+              아직 등록한 체험이 없어요.
+            </div>
+            {/*
             <div className="relative w-full" style={{ height: '200px' }}>
               <Image
                 src="/images/empty.svg"
@@ -94,7 +105,7 @@ export default function Experience() {
                 className="object-contain"
               />
             </div>
-            <p className="mt-2 text-gray-500">아직 등록한 체험이 없어요</p>
+            <p className="mt-2 text-gray-500">아직 등록한 체험이 없어요</p>*/}
           </div>
         ) : (
           activities.map((activity) => (
