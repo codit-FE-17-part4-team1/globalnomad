@@ -25,13 +25,6 @@ import type {
 import { formatDate } from '@/utils/timechanges';
 import dayjs from 'dayjs';
 
-// 이것도 따로 빼도 될까나?
-// type ToolbarProps = {
-//   date: Date;
-//   localizer: any;
-//   onNavigate: (date: Date) => void;
-// };
-
 function MonthToolbar({
   date,
   localizer,
@@ -109,13 +102,13 @@ export default function ReservationCalendar({
     let textColor = '';
 
     if (event.status.includes('pending')) {
-      text = `예약 ${dashboardItem.reservations.pending}`;
+      text = `신청 ${dashboardItem.reservations.pending}`;
       textColor = '#FFFFFF';
     } else if (event.status.includes('confirmed')) {
       text = `승인 ${dashboardItem.reservations.confirmed + dashboardItem.reservations.completed}`;
       textColor = '#FF9B00';
     } else if (event.status.includes('declined')) {
-      text = `완료 ${dashboardItem.reservations.declined}`;
+      text = `거절 ${dashboardItem.reservations.declined}`;
       textColor = '#6B7280';
     }
 
@@ -130,65 +123,101 @@ export default function ReservationCalendar({
 
   // API 응답(dashboardData)을 캘린더가 이해할 수 있는 CalEvent[] 형태로 변환
   const calendarEvents = useMemo<CalEvent[]>(() => {
-    return dashboardData.flatMap((item) => {
-      const date = new Date(item.date);
-      const events: CalEvent[] = [];
+    const events = dashboardData.flatMap((item) => {
+      const baseDate = new Date(item.date);
+      const eventsForDate: CalEvent[] = [];
 
+      // 디버깅: 각 날짜의 예약 상태 확인
+      console.log('📅 Date:', item.date, 'Data:', item.reservations);
+
+      // pending 이벤트
       if (item.reservations.pending > 0) {
-        events.push({
+        const startDate = new Date(baseDate);
+        startDate.setHours(0, 0, 0, 0);
+        const endDate = new Date(baseDate);
+        endDate.setHours(0, 30, 0, 0);
+
+        eventsForDate.push({
           id: `${item.date}-pending`,
           title: '',
-          start: date,
-          end: date,
+          start: startDate,
+          end: endDate,
           status: ['pending'],
         });
+        console.log('✅ Added pending event');
       }
+
+      // confirmed 이벤트
       if (item.reservations.confirmed > 0 || item.reservations.completed > 0) {
-        events.push({
+        const startDate = new Date(baseDate);
+        startDate.setHours(1, 0, 0, 0);
+        const endDate = new Date(baseDate);
+        endDate.setHours(1, 30, 0, 0);
+
+        eventsForDate.push({
           id: `${item.date}-confirmed`,
           title: '',
-          start: date,
-          end: date,
+          start: startDate,
+          end: endDate,
           status: ['confirmed', 'completed'],
         });
+        console.log('✅ Added confirmed event');
       }
+
+      // declined 이벤트
       if (item.reservations.declined > 0) {
-        events.push({
+        const startDate = new Date(baseDate);
+        startDate.setHours(2, 0, 0, 0);
+        const endDate = new Date(baseDate);
+        endDate.setHours(2, 30, 0, 0);
+
+        eventsForDate.push({
           id: `${item.date}-declined`,
           title: '',
-          start: date,
-          end: date,
+          start: startDate,
+          end: endDate,
           status: ['declined'],
         });
+        console.log('✅ Added declined event');
       }
-      return events;
+
+      return eventsForDate;
     });
+
+    console.log('📊 Total events created:', events.length);
+    console.log('📋 All events:', events);
+
+    return events;
   }, [dashboardData]);
 
-  // 여기서 문제가 생김 -> 수정 완료
   const formattedReservationsForModal = useMemo(() => {
-    if (!reservationsForDate) return [];
+    if (!reservationsForDate) {
+      return [];
+    }
 
-    return reservationsForDate.reservations.map((r) => ({
-      id: r.id,
-      nickname: r.nickname,
-      people: r.headCount,
-      status: (r.status === 'declined'
-        ? 'canceled'
-        : r.status) as ReservationStatus,
-      time: `${r.startTime}~${r.endTime}`,
-    }));
+    const formatted = reservationsForDate.reservations.map((r) => {
+      return {
+        id: r.id,
+        nickname: r.nickname,
+        people: r.headCount,
+        status: (r.status === 'declined'
+          ? 'canceled'
+          : r.status) as ReservationStatus,
+        time: `${r.startTime}~${r.endTime}`,
+      };
+    });
+
+    return formatted;
   }, [reservationsForDate]);
 
   const handleEventClick = (ev: CalEvent) => {
+    console.log('🖱️ Event clicked:', ev);
     setSelected(ev);
     const dateString = dayjs(ev.start).format('YYYY-MM-DD');
-
     onSelectDate(dateString);
     setIsModalOpen(true);
   };
 
-  // 이 부분도 겹치는데 .. -> 일단 hook에서는 제거함
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelected(null);
@@ -200,14 +229,13 @@ export default function ReservationCalendar({
 
   const formats = useMemo(
     () => ({
-      weekdayFormat: 'eee', // 일주일을 Sun, Mon, Tue ... 로 나타내기 위함 (S,M,T ... 로 나타내려면 'eeeee' , Sunday, Monday ... 는 'eeee') 암튼 커스텀 가능!
+      weekdayFormat: 'eee',
     }),
     []
   );
 
   return (
     <>
-      {/* 일단 필요한 prop만 ! */}
       <Calendar<CalEvent>
         culture="en"
         localizer={localizer}
@@ -228,11 +256,11 @@ export default function ReservationCalendar({
         }}
         eventPropGetter={(event) => {
           const background = event.status.includes('pending')
-            ? '#0085FF' // 파랑
+            ? '#0085FF' // 파랑 - 예약
             : event.status.includes('confirmed')
-              ? '#F6EAD9' // 베이지
+              ? '#F6EAD9' // 베이지 - 승인
               : event.status.includes('declined')
-                ? '#D1D5DB' // 회색
+                ? '#D1D5DB' // 회색 - 거절
                 : '#D1D5DB'; // 기본값
 
           return {
@@ -241,6 +269,7 @@ export default function ReservationCalendar({
               border: 'none',
               borderRadius: '4px',
               height: '20px',
+              marginBottom: '2px',
             },
           };
         }}
@@ -249,7 +278,6 @@ export default function ReservationCalendar({
       {/* 조건부로 모달 열리게 하기 */}
       {isModalOpen && selected && (
         <>
-          {/* 여긴 왜 자꾸 오류가 남아있는겨 !! ->  배열이어서 includes 메서드 사용, 포함되어있는지 확인해서 나타내기 */}
           {selected.status.includes('pending') && (
             <PendingModal
               isOpen={isModalOpen}

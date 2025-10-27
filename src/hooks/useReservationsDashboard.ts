@@ -44,6 +44,9 @@ export default function useReservationsDashboard() {
     null
   );
 
+  // 5. 대시보드 새로고침 트리거 상태 추가 - 거절이 보이지 않아서 추가함
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
   // 쿠키를 서버에서 관리를 하고 있다.
   // 클라이언트 컴포넌트에서는 쿠키를 사용을 못하고 있는 상황
 
@@ -110,7 +113,7 @@ export default function useReservationsDashboard() {
     };
 
     fetchDashboardData();
-  }, [selectedActivityId, currentDate]);
+  }, [selectedActivityId, currentDate, refreshTrigger]); // 여기에 추가해줘야 함
 
   // 날짜별 예약 정보 조회
   useEffect(() => {
@@ -138,8 +141,38 @@ export default function useReservationsDashboard() {
   }, [selectedActivityId, selectedDate]);
 
   // 캘린더에서 날짜 선택 시 호출될 핸들러 -> 날짜를 클릭하면 모달이 나와야 할 것 같아 겹치는 것 같은데 .. 흠
-  const handleDateSelect = (date: string | null) => {
+  const handleDateSelect = async (date: string | null) => {
     setSelectedDate(date);
+
+    if (!date) {
+      setReservationsForDate(null);
+      return;
+    }
+
+    // ✅ selectedActivityId 체크 추가
+    if (!selectedActivityId) {
+      setReservationsForDate(null);
+      return;
+    }
+
+    try {
+      setIsLoadingReservations(true);
+
+      const data = await getReservationsByDate({
+        activityId: selectedActivityId, // ✅ selectedActivityId 사용
+        date,
+      });
+      setReservationsForDate(data);
+    } catch (error) {
+      console.error('❌ 예약 데이터 로딩 실패:', error);
+      setReservationsForDate(null);
+    } finally {
+      setIsLoadingReservations(false);
+    }
+  };
+
+  const refreshDashboard = () => {
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   return {
@@ -158,5 +191,6 @@ export default function useReservationsDashboard() {
     activitiesError,
     dashboardError,
     currentDate,
+    refreshDashboard,
   };
 }

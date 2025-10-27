@@ -78,9 +78,7 @@ export default function useNotification(size: number = 10) {
   // 첫 알림 목록 로드 , 이 아래 부분들이 필요한지 확인이 필요할 듯
   useEffect(() => {
     fetchNotifications();
-  }, []);
-
-  useEffect(() => {}, [alerts]);
+  }, [fetchNotifications]);
 
   const loadMore = useCallback(() => {
     if (hasNext && !isLoading) {

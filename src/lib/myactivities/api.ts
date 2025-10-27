@@ -1,7 +1,6 @@
 import { BASE_URL } from '@/lib/constants';
 import {
   type MyActivitiesResponse,
-  type Reservation,
   type ReservationDashboard,
   type ReservedSchedule,
   type ReservationsTime,
@@ -41,7 +40,7 @@ export async function getReservationDashboard(opts: {
   const { activityId, year, month } = opts;
 
   // const url = `/api/reservation-dashboard?year=${year}&month=${month}`;
-  const url = `/api/reservation-dashboard?activityId=${activityId}&year=${year}&month=${month}`;
+  const url = `/api/myactivities/${activityId}/reservation-dashboard?year=${year}&month=${month}`;
 
   const res = await fetch(url, {
     method: 'GET',
@@ -65,7 +64,7 @@ export async function getSchedulesForDate(opts: {
 }): Promise<ReservedSchedule> {
   const { activityId, date } = opts;
 
-  const url = `/api/my-activities/${activityId}/reserved-schedule?date=${date}`;
+  const url = `/api/myactivities/${activityId}/reserved-schedule?date=${date}`;
 
   const res = await fetch(url, {
     method: 'GET',
@@ -83,21 +82,23 @@ export async function getSchedulesForDate(opts: {
   return data;
 }
 
+/**
+ * 특정 스케줄 예약 목록 조회
+ */
 export async function getReservationsBySchedule(opts: {
   activityId: number;
   scheduleId: number;
   status?: 'pending' | 'confirmed' | 'declined' | 'completed';
 }): Promise<ReservationsTime> {
-  const { scheduleId, status } = opts;
+  const { activityId, scheduleId, status } = opts;
 
   const params = new URLSearchParams();
   params.set('scheduleId', String(scheduleId));
-
   if (status) {
     params.set('status', status);
   }
 
-  const url = `api/reservations?${params.toString()}`;
+  const url = `/api/myactivities/${activityId}/reservations?${params.toString()}`;
 
   const res = await fetch(url, {
     method: 'GET',
@@ -130,6 +131,14 @@ export async function getReservationsByDate(opts: {
       activityId,
       date,
     });
+
+    if (allSchedules.length === 0) {
+      return {
+        reservations: [],
+        totalCount: 0,
+        cursorId: null,
+      };
+    }
 
     // 2. 스케줄이 있는 경우 예약 조회
     const schedulePromises = allSchedules.flatMap((schedule) => {
@@ -168,49 +177,9 @@ export async function getReservationsByDate(opts: {
       return promises;
     });
 
-    // 3. 과거 날짜는 completed 예약으로 조회 (이게 필요 없을 듯)
-    const targetDate = new Date(date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    targetDate.setHours(0, 0, 0, 0);
-
-    if (targetDate < today) {
-      const allConfirmedUrl = `${BASE_URL}/my-activities/${activityId}/reservations?status=confirmed`;
-
-      try {
-        const res = await fetch(allConfirmedUrl, {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-          },
-          credentials: 'include',
-          cache: 'no-store',
-        });
-
-        if (res.ok) {
-          const allConfirmedData = await res.json();
-          // 해당 날짜의 예약만 필터링
-          const dateReservations = allConfirmedData.reservations.filter(
-            (r: Reservation) => r.date === date
-          );
-
-          if (dateReservations.length > 0) {
-            schedulePromises.push(
-              Promise.resolve({
-                reservations: dateReservations,
-                totalCount: dateReservations.length,
-                cursorId: null,
-              })
-            );
-          }
-        }
-      } catch (error) {
-        console.error('⚠️ confirmed 예약 조회 실패:', error);
-      }
-    }
-
     // 4. 모든 예약 데이터
     const reservationArrays = await Promise.all(schedulePromises);
+
     const allReservations = reservationArrays.flatMap(
       (r) => r.reservations || []
     );
@@ -243,12 +212,16 @@ export async function updateReservationStatus(opts: {
   reservationId: number;
   status: 'confirmed' | 'declined';
 }): Promise<void> {
-  const { reservationId, status } = opts;
+  const { activityId, reservationId, status } = opts;
 
-  const url = `/api/reservations/${reservationId}`;
+  const url = `/api/myactivities/${activityId}/reservations/${reservationId}`;
+
   const res = await fetch(url, {
     method: 'PATCH',
-    body: JSON.stringify({ status }), // 이게 필요할 지?
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ status }),
     cache: 'no-store',
   });
 
