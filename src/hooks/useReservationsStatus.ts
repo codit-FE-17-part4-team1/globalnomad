@@ -8,7 +8,10 @@ import { updateReservationStatus } from '@/lib/myactivities/api';
 /**
  * 예약 상태 변경(승인/거절) 로직을 관리하는 커스텀 훅
  */
-export default function useReservationsStatus(activityId?: number) {
+export default function useReservationsStatus(
+  activityId?: number,
+  onRefresh?: () => void
+) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
 
@@ -28,11 +31,14 @@ export default function useReservationsStatus(activityId?: number) {
     try {
       setIsUpdating(true);
       setUpdateError(null);
+
       await updateReservationStatus({
         activityId,
         reservationId,
         status,
       });
+
+      onRefresh?.();
       onSuccess?.();
     } catch (e) {
       setUpdateError(

@@ -144,7 +144,6 @@ export default function ReservationCalendar({
           end: endDate,
           status: ['pending'],
         });
-        console.log('✅ Added pending event');
       }
 
       // confirmed 이벤트
@@ -161,7 +160,6 @@ export default function ReservationCalendar({
           end: endDate,
           status: ['confirmed', 'completed'],
         });
-        console.log('✅ Added confirmed event');
       }
 
       // declined 이벤트
@@ -178,14 +176,10 @@ export default function ReservationCalendar({
           end: endDate,
           status: ['declined'],
         });
-        console.log('✅ Added declined event');
       }
 
       return eventsForDate;
     });
-
-    console.log('📊 Total events created:', events.length);
-    console.log('📋 All events:', events);
 
     return events;
   }, [dashboardData]);
@@ -200,9 +194,10 @@ export default function ReservationCalendar({
         id: r.id,
         nickname: r.nickname,
         people: r.headCount,
-        status: (r.status === 'declined'
-          ? 'canceled'
-          : r.status) as ReservationStatus,
+        status: r.status as ReservationStatus, // 여기 수정 -> 승인이 안 보여서
+        // status: (r.status === 'declined'
+        //   ? 'canceled'
+        //   : r.status) as ReservationStatus,
         time: `${r.startTime}~${r.endTime}`,
       };
     });
