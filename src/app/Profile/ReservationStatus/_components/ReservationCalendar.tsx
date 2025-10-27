@@ -105,10 +105,10 @@ export default function ReservationCalendar({
       text = `신청 ${dashboardItem.reservations.pending}`;
       textColor = '#FFFFFF';
     } else if (event.status.includes('confirmed')) {
-      text = `승인 ${dashboardItem.reservations.confirmed + dashboardItem.reservations.completed}`;
+      text = `승인 ${dashboardItem.reservations.confirmed}`;
       textColor = '#FF9B00';
     } else if (event.status.includes('declined')) {
-      text = `거절 ${dashboardItem.reservations.declined}`;
+      text = `거절 ${dashboardItem.reservations.completed}`;
       textColor = '#6B7280';
     }
 
@@ -127,9 +127,6 @@ export default function ReservationCalendar({
       const baseDate = new Date(item.date);
       const eventsForDate: CalEvent[] = [];
 
-      // 디버깅: 각 날짜의 예약 상태 확인
-      console.log('📅 Date:', item.date, 'Data:', item.reservations);
-
       // pending 이벤트
       if (item.reservations.pending > 0) {
         const startDate = new Date(baseDate);
@@ -146,8 +143,8 @@ export default function ReservationCalendar({
         });
       }
 
-      // confirmed 이벤트
-      if (item.reservations.confirmed > 0 || item.reservations.completed > 0) {
+      // confirmed 이벤트  --> 추측.. completed가 거절인데 승인으로 되고 있어서 안 보이는 듯?
+      if (item.reservations.confirmed > 0) {
         const startDate = new Date(baseDate);
         startDate.setHours(1, 0, 0, 0);
         const endDate = new Date(baseDate);
@@ -158,12 +155,12 @@ export default function ReservationCalendar({
           title: '',
           start: startDate,
           end: endDate,
-          status: ['confirmed', 'completed'],
+          status: ['confirmed'],
         });
       }
 
-      // declined 이벤트
-      if (item.reservations.declined > 0) {
+      // declined 이벤트 -> 이걸 completed로 수정해볼까
+      if (item.reservations.completed > 0) {
         const startDate = new Date(baseDate);
         startDate.setHours(2, 0, 0, 0);
         const endDate = new Date(baseDate);
@@ -174,7 +171,7 @@ export default function ReservationCalendar({
           title: '',
           start: startDate,
           end: endDate,
-          status: ['declined'],
+          status: ['declined', 'completed'],
         });
       }
 
