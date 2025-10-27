@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import ParticipantsCounter from '../ActivityReservationInfo/Fragment/ParticipantsCounter';
+import ParticipantsCounter from '../ActivityReservationInfo/ParticipantsCounter';
 import MyButton from '@/components/Button/Button';
 
 interface ParticipantsModalProps {

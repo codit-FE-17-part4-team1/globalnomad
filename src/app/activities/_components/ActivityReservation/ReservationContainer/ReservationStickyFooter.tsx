@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import Price from '../ActivityReservationInfo/Fragment/Price';
-import OptionSelectButton from '../ActivityReservationInfo/Fragment/OptionSelectButton';
+import Price from '../ActivityReservationInfo/Price';
+import OptionSelectButton from '../ActivityReservationInfo/OptionSelectButton';
 import MyButton from '@/components/Button/Button';
 
 import type { ActivityDetailInfo } from '@/types/activity';

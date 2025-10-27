@@ -117,17 +117,17 @@ const SearchPage: React.FC = () => {
   }, [activities, sortOption, keyword]);
 
   return (
-    <main className="w-full flex flex-col items-center">
+    <div className="w-full flex flex-col items-center">
       {/* 배너 + 검색 영역 */}
-      <div className="relative w-full">
+      <section className="relative w-full">
         <MainBanner />
         <div className="absolute left-1/2 bottom-0 transform -translate-x-1/2 translate-y-2/3 z-10 w-full max-w-[1240px]">
           <SearchBar />
         </div>
-      </div>
+      </section>
 
       {/* 검색 결과 리스트 */}
-      <div className="w-full my-30 md:my-40">
+      <section className="w-full my-30 md:my-40">
         {loading && <p className="text-center py-10">로딩 중...⏳</p>}
         {error && <p className="text-center py-10 text-red-500">{error}</p>}
         {!loading && !error && (
@@ -141,8 +141,8 @@ const SearchPage: React.FC = () => {
             onSortChange={setSortOption}
           />
         )}
-      </div>
-    </main>
+      </section>
+    </div>
   );
 };
 

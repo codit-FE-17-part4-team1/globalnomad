@@ -1,7 +1,14 @@
 'use client';
 
 import React from 'react';
-import ActivityReservationInfo from '../ActivityReservationInfo/ActivityReservationInfo';
+import Price from '../ActivityReservationInfo/Price';
+import DatePickerBox from '../ActivityReservationInfo/DatePicker/DatePickerBox';
+import OptionSelectButton from '../ActivityReservationInfo/OptionSelectButton';
+import TimePicker from '../ActivityReservationInfo/TimePicker';
+import ParticipantsCounter from '../ActivityReservationInfo/ParticipantsCounter';
+import MyButton from '@/components/Button/Button';
+import TotalPrice from '../ActivityReservationInfo/TotalPrice';
+
 import type { ActivityDetailInfo, AvailableTime } from '@/types/activity';
 
 interface ReservationSidebarProps {
@@ -54,22 +61,73 @@ const ReservationSidebar: React.FC<ReservationSidebarProps> = ({
         lg:overflow-auto
       "
     >
-      <ActivityReservationInfo
-        activity={activity}
-        onOpenDateModal={onOpenDateModal}
-        selectedDateText={selectedDateText}
-        selectedDate={selectedDate}
-        selectedTimeId={selectedTimeId}
-        participants={participants}
-        onSelectDate={onSelectDate}
-        onSelectTime={onSelectTime}
-        onIncrementParticipants={onIncrementParticipants}
-        onDecrementParticipants={onDecrementParticipants}
-        onReserve={onReserve}
-        availableDates={availableDates}
-        availableTimes={availableTimes}
-        onMonthChange={onMonthChange}
-      />
+      {/* ActivityReservationInfo */}
+      <div className="w-full flex flex-col mx-auto gap-5 px-6 py-10">
+        {/* 가격 */}
+        <Price price={activity.price} />
+
+        <div className="border-b border-black-nomad/25 min-w-[210px] max-w-[336px]" />
+
+        {/* 날짜 선택 영역 */}
+        <div className="flex flex-col gap-3">
+          <div className="text-xl font-bold text-black-nomad">날짜</div>
+
+          {/* 달력 선택 (모바일 & PC) */}
+          <div className="block md:hidden lg:block">
+            <div className="flex items-center justify-center">
+              <DatePickerBox
+                className="flex items-center justify-center w-[320px] py-2 border border-gray-300 rounded-md"
+                selectedDate={selectedDate}
+                onSelectDate={onSelectDate}
+                availableDates={availableDates}
+                onMonthChange={onMonthChange}
+              />
+            </div>
+          </div>
+
+          {/* 태블릿에서는 달력 대신 버튼 */}
+          <div className="hidden md:flex lg:hidden">
+            <OptionSelectButton
+              onClick={onOpenDateModal}
+              label={selectedDateText || '날짜 선택하기'}
+            />
+          </div>
+        </div>
+
+        {/* 시간 선택 영역 */}
+        <div className="block md:hidden lg:flex flex-col gap-2">
+          <TimePicker
+            selectedTimeId={selectedTimeId || undefined}
+            availableTimes={availableTimes}
+            onSelectTime={onSelectTime}
+          />
+        </div>
+
+        <div className="block md:hidden lg:block border-b border-black-nomad/25 min-w-[210px] max-w-[336px]" />
+
+        {/* 참여 인원 */}
+        <ParticipantsCounter
+          participants={participants}
+          onIncrement={onIncrementParticipants}
+          onDecrement={onDecrementParticipants}
+          label="참여 인원 수"
+        />
+
+        {/* 예약 버튼 */}
+        <MyButton
+          color="buttonPrimary"
+          disabled={!selectedDate || !selectedTimeId || participants <= 0}
+          onClick={onReserve}
+          className="flex items-center justify-center p-4"
+        >
+          예약하기
+        </MyButton>
+
+        <div className="border-b border-black-nomad/25 min-w-[210px] max-w-[336px]" />
+
+        {/* 총 합계 */}
+        <TotalPrice price={activity.price} participants={participants} />
+      </div>
     </div>
   );
 };
