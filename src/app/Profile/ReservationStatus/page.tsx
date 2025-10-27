@@ -29,7 +29,7 @@ export default function ReservationStatusPage() {
             '인증에 실패했습니다. ensureRefreshed가 false를 반환했습니다.'
           );
           setIsAuthChecking(false);
-          // window.location.href = '/'; // 인증 불가일 경우 메인페이지로 이동되도록 !
+          window.location.href = '/'; // 인증 불가일 경우 메인페이지로 이동되도록 !
         }
       } catch (error) {
         console.error('❌ 인증 체크 에러:', error); // ✅ 수정
@@ -37,7 +37,7 @@ export default function ReservationStatusPage() {
           `인증 체크 중 에러 발생: ${error instanceof Error ? error.message : '알 수 없는 에러'}`
         );
         setIsAuthChecking(false);
-        // window.location.href = '/'; // 인증 불가일 경우 메인페이지로 이동되도록 !
+        window.location.href = '/'; // 인증 불가일 경우 메인페이지로 이동되도록 !
       }
     };
     checkAuth();
@@ -161,7 +161,7 @@ function AuthenticatedContent() {
             updateError={updateError}
           />
         ) : (
-          <div className="flex flex-col items-center pt-50 h-full text-2xl font-medium text-gray-700">
+          <div className="flex flex-col items-center pt-50 h-full text-2xl font-medium text-[var(--color-gray-700)]">
             <Image
               src="/images/empty.svg"
               alt="체험없음"

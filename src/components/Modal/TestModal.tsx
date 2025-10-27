@@ -47,7 +47,7 @@ export default function ModalPlayground() {
       <BaseModal
         isOpen={isRawOpen}
         onClose={() => setRawOpen(false)}
-        size="md"
+        // size="md"
         title="후기 작성"
       >
         <div className="p-6">
