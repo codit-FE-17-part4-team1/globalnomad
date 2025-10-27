@@ -39,10 +39,7 @@ function transformNotificationToAlert(notification: Notification): Alert {
  * 알림 목록(조회, 삭제)
  * @param size 한번에 불러올 알림 개수
  */
-export default function useNotification(
-  accessToken?: string,
-  size: number = 10
-) {
+export default function useNotification(size: number = 10) {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -57,7 +54,7 @@ export default function useNotification(
       setError(undefined);
 
       try {
-        const data = await getNotifications(currentCursorId, size, accessToken);
+        const data = await getNotifications(currentCursorId, size); // 해당 함수를 보면 될 듯!
         const newAlerts = data.notifications.map(transformNotificationToAlert);
 
         setAlerts((prev) => {
@@ -75,15 +72,13 @@ export default function useNotification(
         setIsLoading(false);
       }
     },
-    [size, hasNext, accessToken]
+    [size, hasNext]
   );
 
   // 첫 알림 목록 로드 , 이 아래 부분들이 필요한지 확인이 필요할 듯
   useEffect(() => {
     fetchNotifications();
-  }, []);
-
-  useEffect(() => {}, [alerts]);
+  }, [fetchNotifications]);
 
   const loadMore = useCallback(() => {
     if (hasNext && !isLoading) {
@@ -94,7 +89,7 @@ export default function useNotification(
   const handleDeleteNotification = useCallback(
     async (notificationId: number) => {
       try {
-        await deleteNotification(notificationId, accessToken);
+        await deleteNotification(notificationId);
         setAlerts((prev) =>
           prev.filter((notif) => notif.id !== notificationId)
         );
@@ -102,7 +97,7 @@ export default function useNotification(
         console.error('알림 삭제 실패:', e);
       }
     },
-    [accessToken]
+    []
   );
 
   return {

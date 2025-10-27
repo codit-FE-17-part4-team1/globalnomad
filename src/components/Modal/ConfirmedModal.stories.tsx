@@ -37,6 +37,11 @@ const meta = {
   parameters: {
     layout: 'fullscreen',
   },
+  args: {
+    isOpen: true,
+    onClose: () => {},
+    message: '',
+  },
   argTypes: {
     message: { control: 'text', description: '본문 메시지' },
     confirmLabel: { control: 'text', description: '확인 버튼 라벨' },
@@ -46,6 +51,8 @@ const meta = {
       description: 'BaseModal로 전달되는 사이즈',
     },
     onConfirm: { action: 'confirm clicked' },
+    isOpen: { table: { disable: true } },
+    onClose: { table: { disable: true } },
   },
 } satisfies Meta<typeof ConfirmModal>;
 
@@ -59,5 +66,7 @@ export const Default: Story = {
     message: '가입이 완료되었습니다!',
     confirmLabel: '확인',
     size: 'lg',
+    isOpen: true,
+    onClose: () => {},
   },
 };

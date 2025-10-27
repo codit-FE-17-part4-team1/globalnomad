@@ -9,13 +9,16 @@ import useNotification from '@/hooks/useNotification';
 export interface UserMenuProps {
   userName?: string;
   userImage?: string;
+  onNotificationClick?: () => void;
 }
 
-const accessToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwNCwidGVhbUlkIjoiMTctMSIsImlhdCI6MTc2MTIzMzU5MSwiZXhwIjoxNzYxMjM1MzkxLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.eHncKh8-9-EUTgZoWM7mcVqXqfuOykAEPP5SqzMNces';
-
-export default function UserMenu({ userName, userImage }: UserMenuProps) {
+export default function UserMenu({
+  userName,
+  userImage,
+  onNotificationClick,
+}: UserMenuProps) {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+
   const {
     notifications,
     isLoading,
@@ -23,9 +26,14 @@ export default function UserMenu({ userName, userImage }: UserMenuProps) {
     hasNext,
     loadMore,
     handleDeleteNotification,
-  } = useNotification(accessToken);
+  } = useNotification();
+
+  // 알림 / 읽지 않은 알림 확인
+  const hasUnreadAlerts = notifications.length > 0;
+  const unreadCount = notifications.length;
 
   const handleNotificationClick = () => {
+    onNotificationClick?.();
     setIsAlertOpen(true);
   };
 
@@ -37,7 +45,11 @@ export default function UserMenu({ userName, userImage }: UserMenuProps) {
     <>
       <div className="flex items-center gap-4">
         <div className="relative">
-          <NotificationButton onClick={handleNotificationClick} />
+          <NotificationButton
+            onClick={handleNotificationClick}
+            hasUnreadAlerts={hasUnreadAlerts}
+            unreadCount={unreadCount}
+          />
 
           {isAlertOpen && (
             <AlertModal
@@ -52,8 +64,10 @@ export default function UserMenu({ userName, userImage }: UserMenuProps) {
             />
           )}
         </div>
+
         {/* 세로 구분선 */}
         <span className="text-[#DDDDDD] select-none">|</span>
+
         <Profile userName={userName} userImage={userImage} />
       </div>
     </>

@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 interface PriceFilterProps {
   selected: string;
@@ -14,7 +15,7 @@ const PriceFilter: React.FC<PriceFilterProps> = ({ selected, setSelected }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [buttonWidth, setButtonWidth] = useState<number>(0);
 
-  // 버튼 폭 계산하기
+  // 버튼 폭 계산
   useEffect(() => {
     if (buttonRef.current) {
       setButtonWidth(buttonRef.current.offsetWidth);
@@ -46,10 +47,12 @@ const PriceFilter: React.FC<PriceFilterProps> = ({ selected, setSelected }) => {
         onClick={() => setIsOpen(!isOpen)}
       >
         {selected || '가격'}
-        <img
+        <Image
           src="/icon/btn/alt_arrow_down.svg"
           alt="dropdown arrow"
-          className="w-[22px] h-[22px] ml-1"
+          width={22}
+          height={22}
+          className="ml-1"
         />
       </button>
 
@@ -70,15 +73,15 @@ const PriceFilter: React.FC<PriceFilterProps> = ({ selected, setSelected }) => {
       {/* 드롭다운 리스트 */}
       {isOpen && (
         <div
-          className="absolute top-full mt-1 text-md md:text-2lg font-medium text-gray-800 bg-white border border-gray-200 rounded-[6px] shadow-lg z-10 flex flex-col"
+          className="absolute top-full mt-1 text-md md:text-2lg font-medium text-gray-800 bg-white border border-gray-200 rounded-[6px] shadow-lg z-10 flex flex-col left-0"
           style={{ width: `${buttonWidth}px` }}
         >
           {options.map((opt, idx) => (
             <div
               key={opt}
               className={`
-                w-full h-[41px] md:h-[58px] md:px-[20px] md:py-[16px] border-t border-gray-200
-                flex justify-center md:justify-start items-center
+                w-full h-[41px] md:h-[58px] md:py-[16px] border-t border-gray-200
+                flex justify-center items-center
                 cursor-pointer
                 whitespace-nowrap
                 ${idx === 0 ? 'rounded-t-[6px]' : ''}
