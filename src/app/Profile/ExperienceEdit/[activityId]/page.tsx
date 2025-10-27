@@ -1,3 +1,5 @@
+//1027 업데이트 완료
+
 'use client';
 
 import 'react-datepicker/dist/react-datepicker.css';
@@ -34,8 +36,9 @@ interface ExperienceData {
 
 export default function ExperienceEdit() {
   const router = useRouter();
-  const params = useParams();
-  const experienceId = params.id;
+  //const params = useParams();
+  //const experienceId = params.id;
+  const { activityId } = useParams();
 
   const [form, setForm, handleChange] = useInputValue({
     title: '',
@@ -51,8 +54,9 @@ export default function ExperienceEdit() {
   const [selectedSlots, setSelectedSlots] = useState<TimeSlot[]>([]);
 
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
+  const [initialData, setInitialData] = useState<ExperienceData | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
+  //const [accessToken, setAccessToken] = useState<string | null>(null);
 
   const categoryOptions = [
     '문화 · 예술',
@@ -63,32 +67,13 @@ export default function ExperienceEdit() {
     '웰빙',
   ];
 
+  //GET
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    setAccessToken(token);
-  }, []);
-
-  const [initialData, setInitialData] = useState<ExperienceData | null>(null);
-
-  useEffect(() => {
-    console.log('experienceId:', experienceId);
-    console.log(
-      'API URL:',
-      `${process.env.NEXT_PUBLIC_API_SERVER_URL}/activities/${experienceId}`
-    );
-  }, [experienceId]);
-
-  useEffect(() => {
-    if (!experienceId || !accessToken) return;
+    if (!activityId) return;
 
     const fetchData = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_SERVER_URL}/activities/${experienceId}`,
-          {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          }
-        );
+        const res = await fetch(`/api/myactivities/${activityId}`);
         if (!res.ok) throw new Error(`데이터 불러오기 실패 (${res.status})`);
 
         const data: ExperienceData = await res.json();
@@ -105,19 +90,13 @@ export default function ExperienceEdit() {
         setBannerImages(data.bannerImageUrl ? [data.bannerImageUrl] : []);
         setIntroImages(data.subImageUrls || []);
 
-        const slots: TimeSlot[] = (data.schedules || [])
-          .filter(
-            (s): s is Schedule =>
-              !!s && !!s.date && !!s.startTime && !!s.endTime
-          )
-          .map((s, i) => ({
-            id: i,
-            date: new Date(s.date ?? new Date()),
-            startTime: new Date(`${s.date ?? ''}T${s.startTime ?? '00:00'}`),
-            endTime: new Date(`${s.date ?? ''}T${s.endTime ?? '00:00'}`),
-          }));
+        const slots: TimeSlot[] = (data.schedules || []).map((s, i) => ({
+          id: i,
+          date: new Date(s.date),
+          startTime: new Date(`${s.date}T${s.startTime}`),
+          endTime: new Date(`${s.date}T${s.endTime}`),
+        }));
         setSelectedSlots(slots);
-
         setInitialData(data);
       } catch (err) {
         console.error(err);
@@ -126,102 +105,64 @@ export default function ExperienceEdit() {
     };
 
     fetchData();
-  }, [experienceId, accessToken, setForm]);
-
-  const isFormChanged = useMemo(() => {
-    if (!initialData) return false;
-
-    const isSameForm =
-      form.title === initialData.title &&
-      form.category === initialData.category &&
-      form.description === initialData.description &&
-      form.address === initialData.address &&
-      Number(form.price) === Number(initialData.price);
-
-    const isSameImages =
-      JSON.stringify(bannerImages) ===
-        JSON.stringify(
-          initialData.bannerImageUrl ? [initialData.bannerImageUrl] : []
-        ) &&
-      JSON.stringify(introImages) ===
-        JSON.stringify(initialData.subImageUrls || []);
-
-    const isSameSlots =
-      JSON.stringify(
-        selectedSlots.map((s) => ({
-          date: s.date.toISOString().split('T')[0],
-          startTime: s.startTime.toISOString(),
-          endTime: s.endTime.toISOString(),
-        }))
-      ) ===
-      JSON.stringify(
-        (initialData.schedules || []).map((s) => ({
-          date: s.date,
-          startTime: new Date(`${s.date}T${s.startTime}`).toISOString(),
-          endTime: new Date(`${s.date}T${s.endTime}`).toISOString(),
-        }))
-      );
-
-    return !(isSameForm && isSameImages && isSameSlots);
-  }, [form, bannerImages, introImages, selectedSlots, initialData]);
+  }, [activityId]);
 
   const handleAddressComplete = (data: { address: string }) => {
     setForm((prev) => ({ ...prev, address: data.address }));
     setIsPostcodeOpen(false);
   };
 
-  const isFormValid = useMemo(() => {
-    const { title, category, price, address, description } = form;
-    const baseValid =
-      title.trim() &&
-      category.trim() &&
-      price.trim() &&
-      address.trim() &&
-      description.trim();
-    const imagesValid = bannerImages.length > 0 && introImages.length > 0;
-    const timeValid = selectedSlots.length > 0;
-    return !!(baseValid && imagesValid && timeValid);
-  }, [form, bannerImages, introImages, selectedSlots]);
-
-  const handleBannerImages = (imgs: string[]) =>
-    setBannerImages(imgs.slice(0, 1));
-  const handleIntroImages = (imgs: string[]) => {
-    const combined = [...introImages, ...imgs];
-    const unique = Array.from(new Set(combined));
-    setIntroImages(unique.slice(0, 3));
+  const handleBannerImages: React.Dispatch<React.SetStateAction<string[]>> = (
+    imgs
+  ) => {
+    setBannerImages((prev) =>
+      typeof imgs === 'function' ? imgs(prev).slice(0, 1) : imgs.slice(0, 1)
+    );
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleIntroImages: React.Dispatch<React.SetStateAction<string[]>> = (
+    imgs
+  ) => {
+    setIntroImages((prev) => {
+      const newImgs = typeof imgs === 'function' ? imgs(prev) : imgs;
+      const combined = [...prev, ...newImgs];
+      const unique = Array.from(new Set(combined));
+      return unique.slice(0, 3);
+    });
+  };
 
-    const { title, category, price, address, description } = form;
-    const hasEmpty = [title, category, price, address, description].some(
-      (v) => !v.trim()
-    );
-    if (hasEmpty) {
-      return alert('입력하지 않은 항목이 있습니다');
-    }
+  //PATCH
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!activityId) return alert('체험 정보가 없습니다.');
 
-    if (!accessToken) return alert('로그인이 필요합니다.');
-    if (!experienceId) return alert('체험 정보가 없습니다.');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const now = new Date();
 
     const schedules: Schedule[] = selectedSlots
       .filter((slot) => slot.date && slot.startTime && slot.endTime)
-      .map((slot) => {
-        const date = slot.date!.toISOString().split('T')[0];
-        const formatTime = (d: Date) =>
-          `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-        return {
-          date,
-          startTime: formatTime(slot.startTime!),
-          endTime: formatTime(slot.endTime!),
-        };
-      });
+      .filter((slot) => {
+        const slotDate = new Date(slot.date!);
+        slotDate.setHours(0, 0, 0, 0);
 
-    const getValidUrl = (url: string) =>
-      url.startsWith('blob:')
-        ? 'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/globalnomad/activity_registration_image/default.png'
-        : url;
+        //오늘 이전 날짜 제외
+        if (slotDate < today) return false;
+        //오늘 날짜인데 종료 시간이 현재 시간 이전이면 제외
+        if (slotDate.getTime() === today.getTime() && slot.endTime! < now)
+          return false;
+        return true;
+      })
+      .map((slot) => ({
+        date: slot.date!.toISOString().split('T')[0],
+        startTime: `${slot.startTime!.getHours().toString().padStart(2, '0')}:${slot.startTime!.getMinutes().toString().padStart(2, '0')}`,
+        endTime: `${slot.endTime!.getHours().toString().padStart(2, '0')}:${slot.endTime!.getMinutes().toString().padStart(2, '0')}`,
+      }));
+
+    if (schedules.length === 0) {
+      alert('오늘 이전 또는 이미 지난 시간대는 예약할 수 없슷비낟.');
+      return;
+    }
 
     const body = {
       title: form.title,
@@ -229,44 +170,54 @@ export default function ExperienceEdit() {
       description: form.description,
       price: Number(form.price),
       address: form.address,
-      bannerImageUrl: getValidUrl(bannerImages[0] || ''),
-      subImageUrls: introImages.map(getValidUrl),
+      bannerImageUrl: bannerImages[0] || '',
+      subImageUrls: introImages,
       schedules,
     };
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_SERVER_URL}/my-activities/${experienceId}`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({
-            title: form.title,
-            category: form.category,
-            description: form.description,
-            price: Number(form.price),
-            address: form.address,
-            bannerImageUrl: bannerImages[0] || '',
-            subImageUrlsToAdd: introImages || [],
-            subImageIdsToRemove: [],
-            schedulesToAdd: [],
-            scheduleIdsToRemove: [],
-          }),
-        }
-      );
+      const res = await fetch(`/api/myactivities/${activityId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
 
-      const text = await res.text();
-      if (!res.ok) throw new Error(`서버 오류 (${res.status})\n${text}`);
-
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`수정 실패: ${text}`);
+      }
       setIsConfirmOpen(true);
     } catch (err) {
       console.error('수정 실패:', err);
       alert('체험 수정에 실패했습니다.');
     }
   };
+
+  const isFormChanged = useMemo(() => {
+    if (!initialData) return false;
+    return (
+      form.title !== initialData.title ||
+      form.category !== initialData.category ||
+      form.description !== initialData.description ||
+      form.address !== initialData.address ||
+      Number(form.price) !== initialData.price ||
+      JSON.stringify(bannerImages) !==
+        JSON.stringify(
+          initialData.bannerImageUrl ? [initialData.bannerImageUrl] : []
+        ) ||
+      JSON.stringify(introImages) !==
+        JSON.stringify(initialData.subImageUrls || []) ||
+      JSON.stringify(
+        selectedSlots.map((s) => ({
+          date: s.date,
+          startTime: s.startTime,
+          endTime: s.endTime,
+        }))
+      ) !== JSON.stringify(initialData.schedules)
+    );
+  }, [form, bannerImages, introImages, selectedSlots, initialData]);
 
   return (
     <div className="w-[100%] lg:w-[792px]">

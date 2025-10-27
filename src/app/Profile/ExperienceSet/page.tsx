@@ -7,7 +7,6 @@ import MypageHeader from '@/app/Profile/_components/MypageHeader/MypageHeader';
 import Image from 'next/image';
 import ConfirmModal from '@/components/Modal/ConfirmModal';
 
-import { getMyActivities, deleteMyActivity } from '@/lib/myactivities/api';
 import { type MyActivitiesResponse } from '@/types/api/myactivities';
 
 export default function Experience() {
@@ -22,35 +21,55 @@ export default function Experience() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const accessToken = localStorage.getItem('accessToken');
-    if (!accessToken) return;
-
     (async () => {
       try {
         setLoading(true);
-        const data = await getMyActivities({ accessToken });
-        setActivities(data.activities);
+        const res = await fetch('/api/myactivities', {
+          method: 'GET',
+        });
+
+        if (!res.ok) {
+          if (res.status === 401) {
+            alert('로그인이 필요합니다.');
+            return;
+          }
+          throw new Error(`서버 응답 오류: ${res.status}`);
+        }
+        const data = await res.json();
+        setActivities(data.activities || []);
       } catch (err) {
         console.error(err);
-        alert('내 체험 목록을 불러오지 못했습니다');
+        alert('내 체험 목록을 불러오지 못했습니다.');
       } finally {
         setLoading(false);
       }
     })();
   }, []);
 
+  /*1026*/
   const handleDelete = async () => {
-    const accessToken = localStorage.getItem('accessToken');
-    if (!selectedActivityId || !accessToken) return;
+    if (!selectedActivityId) return;
 
     try {
-      await deleteMyActivity({ activityId: selectedActivityId, accessToken });
+      const res = await fetch(`/api/myactivities/${selectedActivityId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        if (res.status === 401) {
+          alert('로그인 필요');
+          return;
+        }
+        throw new Error(`삭제 실패: ${res.status}`);
+      }
+
       setActivities((prev) => prev.filter((a) => a.id !== selectedActivityId));
       setIsDeleteModalOpen(false);
       alert('삭제가 완료되었습니다');
     } catch (err) {
       console.error(err);
-      alert('삭제에 실패했습니다');
+      alert('예약이 되어있는 체험은 삭제가 불가능합니다.');
     }
   };
 
@@ -65,78 +84,103 @@ export default function Experience() {
         onClick={() => router.push('/Profile/ExperienceAdd')}
       />
       <div>
-        {activities.map((activity) => (
-          <ul
-            key={activity.id}
-            className="bg-white rounded-3xl flex shadow-xl mb-[24px]"
-          >
-            <li className="relative flex w-[128px] h-[128px] md:w-[156px] md:h-[156px] lg:w-[204px] lg:h-[204px] overflow-hidden rounded-l-3xl">
+        {activities.length === 0 ? (
+          <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center pt-50 h-full text-2xl font-medium text-gray-700">
               <Image
-                src="/images/street_dance.png"
-                alt="로고"
-                fill
-                className=""
+                src="/images/empty.svg"
+                alt="체험없음"
+                width={200}
+                height={200}
+                className="md:w-[240px] md:h-[240px]"
               />
-            </li>
-            <li className="flex flex-col justify-between py-[10px] px-[8px] flex-1 lg:px-[14px] lg:pl-[24px]">
-              <div className="space-y-1">
-                <p>
-                  <span className="relative w-[19px] h-[19px] inline-block">
-                    <Image
-                      src="/icon/star_on.svg"
-                      alt="로고"
-                      fill
-                      className=""
-                    />
-                  </span>
-                  <span>4.9</span>
-                  <span>(293)</span>
-                </p>
-                <h1 className="text-lg font-bold truncate max-w-[199px] md:text-2lg md:max-w-[355px] lg:max-w-[542px]">
-                  {activity.title}
-                </h1>
-              </div>
-              <div>
-                <p className="float-left leading-[40px]">
-                  ₩{activity.price.toLocaleString()} / 인
-                </p>
-                <div className="float-right">
-                  <Dropdown
-                    onSelect={(value) => {
-                      if (value === '삭제하기') {
-                        setSelectedActivityId(activity.id);
-                        setIsDeleteModalOpen(true);
-                      } else if (value === '수정하기') {
-                        router.push(`/Profile/ExperienceEdit/${activity.id}`);
-                      }
-                    }}
-                  >
-                    <Dropdown.Button color="dropdownSet">
-                      <div>
-                        <Image
-                          src="/icon/btn/meatball.svg"
-                          alt="드롭다운셋"
-                          fill
-                        />
-                      </div>
-                    </Dropdown.Button>
-                    <Dropdown.Content
-                      color="dropdownSet"
-                      className="absolute right-0 mt-2 w-[160px] bg-white border border-gray-300 rounded-lg shadow-lg z-10"
-                    >
-                      <Dropdown.Item color="dropdownSet" value="수정하기">
-                        수정하기
-                      </Dropdown.Item>
-                      <Dropdown.Item color="dropdownSet" value="삭제하기">
-                        삭제하기
-                      </Dropdown.Item>
-                    </Dropdown.Content>
-                  </Dropdown>
+              아직 등록한 체험이 없어요.
+            </div>
+            {/*
+            <div className="relative w-full" style={{ height: '200px' }}>
+              <Image
+                src="/images/empty.svg"
+                alt="등록된 체험 없음"
+                fill
+                className="object-contain"
+              />
+            </div>
+            <p className="mt-2 text-gray-500">아직 등록한 체험이 없어요</p>*/}
+          </div>
+        ) : (
+          activities.map((activity) => (
+            <ul
+              key={activity.id}
+              className="bg-white rounded-3xl flex shadow-xl mb-[24px]"
+            >
+              <li className="relative flex w-[128px] h-[128px] md:w-[156px] md:h-[156px] lg:w-[204px] lg:h-[204px] overflow-hidden rounded-l-3xl">
+                <Image
+                  src="/images/street_dance.png"
+                  alt="로고"
+                  fill
+                  className=""
+                />
+              </li>
+              <li className="flex flex-col justify-between py-[10px] px-[8px] flex-1 lg:px-[14px] lg:pl-[24px]">
+                <div className="space-y-1">
+                  <p>
+                    <span className="relative w-[19px] h-[19px] inline-block">
+                      <Image
+                        src="/icon/star_on.svg"
+                        alt="로고"
+                        fill
+                        className=""
+                      />
+                    </span>
+                    <span>4.9</span>
+                    <span>(293)</span>
+                  </p>
+                  <h1 className="text-lg font-bold truncate max-w-[199px] md:text-2lg md:max-w-[355px] lg:max-w-[542px]">
+                    {activity.title}
+                  </h1>
                 </div>
-              </div>
-            </li>
-          </ul>
-        ))}
+                <div>
+                  <p className="float-left leading-[40px]">
+                    ₩{activity.price.toLocaleString()} / 인
+                  </p>
+                  <div className="float-right">
+                    <Dropdown
+                      onSelect={(value) => {
+                        if (value === '삭제하기') {
+                          setSelectedActivityId(activity.id);
+                          setIsDeleteModalOpen(true);
+                        } else if (value === '수정하기') {
+                          router.push(`/Profile/ExperienceEdit/${activity.id}`);
+                        }
+                      }}
+                    >
+                      <Dropdown.Button color="dropdownSet">
+                        <div>
+                          <Image
+                            src="/icon/btn/meatball.svg"
+                            alt="드롭다운셋"
+                            fill
+                          />
+                        </div>
+                      </Dropdown.Button>
+                      <Dropdown.Content
+                        color="dropdownSet"
+                        className="absolute right-0 mt-2 w-[160px] bg-white border border-gray-300 rounded-lg shadow-lg z-10"
+                      >
+                        <Dropdown.Item color="dropdownSet" value="수정하기">
+                          수정하기
+                        </Dropdown.Item>
+                        <Dropdown.Item color="dropdownSet" value="삭제하기">
+                          삭제하기
+                        </Dropdown.Item>
+                      </Dropdown.Content>
+                    </Dropdown>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          ))
+        )}
       </div>
       <ConfirmModal
         isOpen={isDeleteModalOpen}

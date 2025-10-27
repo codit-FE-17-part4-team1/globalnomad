@@ -3,8 +3,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
+
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 
@@ -14,7 +16,7 @@ export async function DELETE(
 
   try {
     const res = await fetch(
-      `https://sp-globalnomad-api.vercel.app/17-1/my-notifications/${params.id}`,
+      `https://sp-globalnomad-api.vercel.app/17-1/my-notifications/${id}`,
       {
         method: 'DELETE',
         headers: {
