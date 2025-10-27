@@ -51,7 +51,7 @@ export default function AlertModal({
       }
     };
 
-    // 약간의 딜레이로 열림 클릭과 겹치지 않도록 (추가해줌)
+    // 딜레이로 열림 클릭과 겹치지 않도록 (추가해줌)
     const timer = setTimeout(() => {
       document.addEventListener('mousedown', handleClickOutside);
     }, 100);
@@ -80,7 +80,7 @@ export default function AlertModal({
       ref={modalRef}
       role="dialog"
       aria-modal="true"
-      className="absolute top-15 right-0 bg-[var(--color-green-light)] rounded-lg shadow-xl max-h-[400px] overflow-auto z-[9999] w-[330px]"
+      className="fixed inset-0 md:absolute md:top-15 md:right-0 md:inset-auto bg-[var(--color-green-light)] rounded-none md:rounded-lg shadow-xl h-screen md:h-auto md:max-h-[400px] overflow-auto z-[9999] w-screen md:w-[375px]"
     >
       {/* 헤더 */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-gray-200)]">
