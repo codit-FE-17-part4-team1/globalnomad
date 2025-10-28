@@ -1,33 +1,32 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
-import DatePickerBox from '../ActivityReservationInfo/Fragment/DatePicker/DatePickerBox';
-import TimePicker from '../ActivityReservationInfo/Fragment/TimePicker';
+import DatePickerBox from '../ActivityReservationInfo/DatePicker/DatePickerBox';
+import TimePicker from '../ActivityReservationInfo/TimePicker';
 import MyButton from '@/components/Button/Button';
 import type { AvailableTime } from '@/types/activity';
 
 interface DateModalProps {
   onClose: () => void;
   onSelectDateTime: (formattedText: string, timeId: number) => void;
-  activityId: number;
-  availableDates: string[]; // page.tsx에서 전달
+  availableDates: string[];
   availableTimes: AvailableTime[];
   initialSelectedDate?: string | null;
   initialSelectedTimeId?: number | null;
-
   onMonthChange?: (year: number, month: number) => void;
+  onDateChange?: (date: string) => void; // 날짜 변경 콜백 추가
 }
 
 const DateModal: React.FC<DateModalProps> = ({
   onClose,
   onSelectDateTime,
-  activityId,
   availableDates,
   availableTimes: parentAvailableTimes,
   initialSelectedDate = null,
   initialSelectedTimeId = null,
   onMonthChange,
+  onDateChange,
 }) => {
   const [selectedDate, setSelectedDate] = useState<string | null>(
     initialSelectedDate
@@ -35,10 +34,11 @@ const DateModal: React.FC<DateModalProps> = ({
   const [selectedTimeId, setSelectedTimeId] = useState<number | null>(
     initialSelectedTimeId
   );
-  const [availableTimes, setAvailableTimes] = useState<AvailableTime[]>(
-    parentAvailableTimes || []
-  );
-  const [isLoading, setIsLoading] = useState(false);
+
+  // 부모에서 전달받은 availableTimes를 그대로 사용
+  const availableTimes = useMemo(() => {
+    return parentAvailableTimes || [];
+  }, [parentAvailableTimes]);
 
   // 배경 스크롤 막기
   useEffect(() => {
@@ -48,58 +48,18 @@ const DateModal: React.FC<DateModalProps> = ({
     };
   }, []);
 
-  // 날짜 변경 시 시간 초기화 및 새 데이터 fetch
+  // 날짜 변경 시 시간 초기화
   useEffect(() => {
-    if (!selectedDate) return;
+    // 날짜가 변경되면 무조건 시간 선택 초기화
+    setSelectedTimeId(null);
+  }, [selectedDate]);
 
-    const fetchAvailableTimes = async () => {
-      setIsLoading(true);
-      try {
-        // 날짜에서 year, month 추출
-        const [year, month] = selectedDate.split('-');
-
-        const res = await fetch(
-          `/api/activities/${activityId}/available-schedule?year=${year}&month=${month}`
-        );
-
-        if (res.status === 404) {
-          setAvailableTimes([]);
-          return;
-        }
-
-        if (!res.ok) {
-          console.error('Failed to fetch available times');
-          setAvailableTimes([]);
-          return;
-        }
-
-        const data: {
-          date: string;
-          times: { id: number; startTime: string; endTime: string }[];
-        }[] = await res.json();
-
-        // 현재 선택한 날짜의 time만 필터링
-        const selectedDay = data.find((d) => d.date === selectedDate);
-        const times = selectedDay?.times || [];
-        setAvailableTimes(times);
-
-        // 이전 선택 유지 로직
-        // 이전에 선택한 시간(selectedTimeId)이 새로운 availableTimes에 존재하면 유지
-        // 없으면 null로 초기화
-        setSelectedTimeId((prevTimeId) =>
-          times.some((t) => t.id === prevTimeId) ? prevTimeId : null
-        );
-      } catch (error) {
-        console.error('Error fetching available times:', error);
-        setAvailableTimes([]);
-        setSelectedTimeId(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAvailableTimes();
-  }, [selectedDate, activityId]);
+  // 날짜 선택 핸들러
+  const handleDateSelect = (dateStr: string) => {
+    setSelectedDate(dateStr);
+    // 부모 컴포넌트에 날짜 변경 알림
+    onDateChange?.(dateStr);
+  };
 
   // 선택 완료 처리
   const handleSelect = () => {
@@ -143,18 +103,14 @@ const DateModal: React.FC<DateModalProps> = ({
               <DatePickerBox
                 className="w-[350px] px-8 py-2 border border-gray-300 rounded-md"
                 selectedDate={selectedDate}
-                onSelectDate={(dateStr: string) => setSelectedDate(dateStr)}
+                onSelectDate={handleDateSelect}
                 availableDates={availableDates}
                 onMonthChange={onMonthChange}
               />
             </div>
 
             {/* TimePicker */}
-            {isLoading ? (
-              <p className="text-center text-gray-500 py-4">
-                시간 정보를 불러오는 중...
-              </p>
-            ) : availableTimes.length > 0 ? (
+            {availableTimes.length > 0 ? (
               <TimePicker
                 selectedTimeId={selectedTimeId || undefined}
                 onSelectTime={setSelectedTimeId}
