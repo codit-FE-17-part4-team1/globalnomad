@@ -1,17 +1,20 @@
+// src/app/api/activities/[id]/delete/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { getUser } from '@/actions/user.action';
 
 const BASE_URL = 'https://sp-globalnomad-api.vercel.app/17-1';
 
-// DELETE /api/activities/[id] — 로그인 유저와 작성자 일치 시 삭제
-export async function DELETE(req: NextRequest) {
+// DELETE /api/activities/[id]/delete
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    // 1) URL에서 activityId 추출
-    const segments = req.nextUrl.pathname.split('/');
-    const activityId = segments[segments.length - 1];
+    // 1) params에서 activityId 추출
+    const { id: activityId } = await params;
 
-    // 2) 로그인 유저 정보 확인 (user.action.ts 활용하여)
+    // 2) 로그인 유저 확인
     const currentUser = await getUser().catch(() => null);
     if (!currentUser) {
       return NextResponse.json(
@@ -20,30 +23,27 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    // 3) 체험 상세 정보 가져오기
+    // 3) 체험 상세 정보 가져오기 (권한 확인용)
     const activityRes = await fetch(`${BASE_URL}/activities/${activityId}`, {
       headers: { 'Content-Type': 'application/json' },
       cache: 'no-store',
     });
 
-    if (!activityRes.ok) {
-      return NextResponse.json(
-        { message: '체험 정보를 불러오지 못했습니다.' },
-        { status: activityRes.status }
-      );
+    // 체험이 존재하는 경우에만 작성자 확인
+    if (activityRes.ok) {
+      const activity = await activityRes.json();
+
+      // 4) 작성자 확인
+      if (activity.userId !== currentUser.id) {
+        return NextResponse.json(
+          { message: '본인의 체험만 삭제할 수 있습니다.' },
+          { status: 403 }
+        );
+      }
     }
+    // 체험이 없어도 일단 삭제 시도 (서버에서 정확한 에러 반환)
 
-    const activity = await activityRes.json();
-
-    // 4) 작성자와 로그인 유저 ID 비교
-    if (activity.userId !== currentUser.id) {
-      return NextResponse.json(
-        { message: '삭제 권한이 없습니다.' },
-        { status: 403 }
-      );
-    }
-
-    // 5) 쿠키에서 accessToken 가져오기
+    // 5) accessToken 가져오기
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('accessToken')?.value;
 
@@ -59,19 +59,32 @@ export async function DELETE(req: NextRequest) {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
       },
     });
 
-    // 7) 삭제 성공 시 처리
+    // 7) 204 성공 처리
     if (deleteRes.status === 204) {
       return new NextResponse(null, { status: 204 });
     }
 
-    // 실패 할 경우 응답 전달
-    const deleteData = await deleteRes.json();
-    return NextResponse.json(deleteData, { status: deleteRes.status });
+    // 8) 에러 응답을 그대로 프론트엔드로 전달
+    const contentType = deleteRes.headers.get('content-type');
+
+    // JSON 응답인 경우
+    if (contentType?.includes('application/json')) {
+      const deleteData = await deleteRes.json();
+      return NextResponse.json(deleteData, { status: deleteRes.status });
+    }
+
+    // JSON이 아닌 경우
+    const text = await deleteRes.text();
+    return NextResponse.json(
+      { message: text || `삭제 처리 실패 (${deleteRes.status})` },
+      { status: deleteRes.status }
+    );
   } catch (error) {
-    console.error('❌ 체험 삭제 검증 API 에러:', error);
+    console.error('❌ 체험 삭제 API 에러:', error);
     return NextResponse.json(
       { message: '서버 내부 오류가 발생했습니다.' },
       { status: 500 }

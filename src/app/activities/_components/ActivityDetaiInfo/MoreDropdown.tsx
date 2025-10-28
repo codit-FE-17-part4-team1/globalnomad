@@ -125,29 +125,31 @@ const MoreDropdown: React.FC<MoreDropdownProps> = ({
       }
 
       // 2) 권한 확인 후 삭제 요청
-      const res = await fetch(`/api/activities/${activityId}`, {
+      const res = await fetch(`/api/activities/${activityId}/delete`, {
         method: 'DELETE',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       });
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        alert(`삭제 처리 중 오류가 발생했습니다: ${errorText}`);
-        console.error('삭제 오류:', res.status, errorText);
-        return;
-      }
-
-      // 성공 처리
+      // 성공 처리 (204 No Content)
       if (res.status === 204) {
         alert('체험이 삭제되었습니다.');
         onDeleted?.();
         return;
       }
 
-      // 기타 응답 (200 OK)
-      const data: { message?: string } = await res.json().catch(() => ({}));
-      alert(data.message ?? '삭제 처리 완료');
+      // 에러 응답 처리 (400, 404 등)
+      if (!res.ok) {
+        const errorData = await res.json();
+        alert(errorData?.message || '삭제 처리 중 오류가 발생했습니다.');
+        console.error('❌ 삭제 오류:', { status: res.status, data: errorData });
+        return;
+      }
+
+      // 기타 성공 응답 (200 OK 등)
+      const data = await res.json();
+      alert(data?.message || '삭제 처리 완료');
+      onDeleted?.();
     } catch (error: unknown) {
       const message =
         error instanceof Error
