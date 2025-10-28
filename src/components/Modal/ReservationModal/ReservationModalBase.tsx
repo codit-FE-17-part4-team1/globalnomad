@@ -6,7 +6,7 @@ import type { TimeOption } from '@/app/Profile/ReservationStatus/_components/Tim
 import BaseModal from '@/components/Modal/BaseModal';
 import type { ReservationStatus } from '@/types/calendar';
 import Button from '@/components/Button/Button';
-import Chips from '@/components/chips/Chips';
+import Chips from '@/components/Chips/Chips';
 import TimeDropdown from '@/app/Profile/ReservationStatus/_components/TimeDropdown';
 
 interface ReservationModalBaseProps {
