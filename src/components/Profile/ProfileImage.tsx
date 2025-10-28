@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-// import { getUser, patchUser, uploadProfileImage } from '@/actions/user.action';
 
 type MyInfoType = {
   createdAt: string;
