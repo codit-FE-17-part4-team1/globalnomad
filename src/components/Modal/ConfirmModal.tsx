@@ -2,7 +2,7 @@
 
 import '@/styles/global.css';
 import BaseModal from '@/components/Modal/BaseModal';
-import MyButton from '@/components/Button/Button'; // 공통 컴포넌트로 변경 필요
+import MyButton from '@/components/Button/Button'; // 공통 컴포넌트로 변경 필요 (완료)
 
 interface ConfirmModalProps {
   isOpen: boolean;

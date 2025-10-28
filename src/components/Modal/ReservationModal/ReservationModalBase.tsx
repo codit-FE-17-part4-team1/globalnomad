@@ -53,9 +53,16 @@ export default function ReservationModalBase({
   }, [isOpen, status, reservations]);
 
   // 2. 현재 활성화된 탭(신청/승인/거절)에 해당하는 예약 목록
-  const reservationsByStatus = reservations.filter(
-    (item) => item.status === activeTab
-  );
+  const reservationsByStatus = reservations.filter((item) => {
+    // <-- 수정, 승인이 안 보여서
+    if (activeTab === 'confirmed') {
+      return item.status === 'confirmed' || item.status === 'completed';
+    }
+    if (activeTab === 'canceled') {
+      return item.status === 'declined' || item.status === 'canceled';
+    }
+    return item.status === activeTab;
+  });
 
   // 시간 선택 드롭다운에 표시할 옵션 목록 생성
   const timeOptions: TimeOption[] = [
@@ -76,6 +83,20 @@ export default function ReservationModalBase({
   const filteredReservations = reservationsByStatus.filter((item) =>
     selectedTime === 'all' ? true : item.time === selectedTime
   );
+
+  const getTabCount = (tabKey: ReservationStatus) => {
+    if (tabKey === 'confirmed') {
+      return reservations.filter(
+        (r) => r.status === 'confirmed' || r.status === 'completed'
+      ).length;
+    }
+    if (tabKey === 'canceled') {
+      return reservations.filter(
+        (r) => r.status === 'declined' || r.status === 'canceled'
+      ).length;
+    }
+    return reservations.filter((r) => r.status === tabKey).length;
+  };
 
   return (
     <BaseModal
@@ -102,10 +123,20 @@ export default function ReservationModalBase({
               onClick={() => {
                 const newTab = tab.key;
                 setActiveTab(newTab);
-                // 새로 선택된 탭의 첫 번째 예약 시간을 찾아 기본 선택값으로 설정
-                const reservationsInNewTab = reservations.filter(
-                  (item) => item.status === newTab
-                );
+                // 새로 선택된 탭의 첫 번째 예약 시간을 찾아 기본 선택값으로 설정 --> 수정
+                const reservationsInNewTab = reservations.filter((item) => {
+                  if (newTab === 'confirmed') {
+                    return (
+                      item.status === 'confirmed' || item.status === 'completed'
+                    );
+                  }
+                  if (newTab === 'canceled') {
+                    return (
+                      item.status === 'declined' || item.status === 'canceled'
+                    );
+                  }
+                  return item.status === newTab;
+                });
                 setSelectedTime(reservationsInNewTab[0]?.time || 'all');
               }}
               className={`pb-2 pr-4 flex justify-evenly font-semibold ${
@@ -114,8 +145,9 @@ export default function ReservationModalBase({
                   : 'text-gray-400'
               }`}
             >
-              {tab.label}{' '}
-              {reservations.filter((r) => r.status === tab.key).length}
+              {tab.label}
+              {getTabCount(tab.key)}
+              {/* {reservations.filter((r) => r.status === tab.key).length} */}
             </button>
           ))}
         </div>
@@ -164,13 +196,13 @@ export default function ReservationModalBase({
               {activeTab === 'pending' && onApprove && onReject && (
                 <div className="flex space-x-2">
                   <Button
-                    className="bg-[var(--color-green-dark)] p-2 text-white text-sm"
+                    className="bg-[var(--color-green-dark)] p-2 text-white text-sm hover:bg-[var(--color-green-dark)]"
                     onClick={() => onApprove(item.id)}
                   >
                     승인하기
                   </Button>
                   <Button
-                    className="p-2 text-black border-[var(--color-gray-400)] text-sm "
+                    className="p-2 !text-black border-[var(--color-gray-400)] text-sm bg-white hover:bg-[var(--color-gray-200)] "
                     onClick={() => onReject(item.id)}
                   >
                     거절하기

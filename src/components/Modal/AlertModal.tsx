@@ -51,7 +51,7 @@ export default function AlertModal({
       }
     };
 
-    // 약간의 딜레이로 열림 클릭과 겹치지 않도록 (추가해줌)
+    // 딜레이로 열림 클릭과 겹치지 않도록 (추가해줌)
     const timer = setTimeout(() => {
       document.addEventListener('mousedown', handleClickOutside);
     }, 100);
@@ -75,12 +75,35 @@ export default function AlertModal({
 
   if (!isOpen) return null;
 
+  // '몇분 전' 이런식으로 떠야해서 추가
+  const getTimeAgo = (timestamp: string | Date): string => {
+    const now = new Date();
+    const past = new Date(timestamp);
+    const diffInMs = now.getTime() - past.getTime();
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInMinutes < 1) {
+      return '방금 전';
+    } else if (diffInMinutes < 60) {
+      return `${diffInMinutes}분 전`;
+    } else if (diffInHours < 24) {
+      return `${diffInHours}시간 전`;
+    } else if (diffInDays < 7) {
+      return `${diffInDays}일 전`;
+    } else {
+      // 7일 이상이면 날짜 표시
+      return past.toLocaleDateString('ko-KR');
+    }
+  };
+
   return (
     <div
       ref={modalRef}
       role="dialog"
       aria-modal="true"
-      className="absolute top-15 right-0 bg-[var(--color-green-light)] rounded-lg shadow-xl max-h-[400px] overflow-auto z-[9999] w-[330px]"
+      className="fixed inset-0 md:absolute md:top-15 md:right-0 md:inset-auto bg-[var(--color-green-light)] rounded-none md:rounded-lg shadow-xl h-screen md:h-auto md:max-h-[400px] overflow-auto z-[9999] w-screen md:w-[375px]"
     >
       {/* 헤더 */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-gray-200)]">
@@ -151,7 +174,7 @@ export default function AlertModal({
                 되었습니다.
               </p>
               <p className="text-xs text-[var(--color-gray-400)] mt-1">
-                {item.createdAt}
+                {getTimeAgo(item.createdAt)}
               </p>
             </div>
 

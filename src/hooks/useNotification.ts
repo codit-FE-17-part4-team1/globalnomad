@@ -39,7 +39,10 @@ function transformNotificationToAlert(notification: Notification): Alert {
  * 알림 목록(조회, 삭제)
  * @param size 한번에 불러올 알림 개수
  */
-export default function useNotification(size: number = 10) {
+export default function useNotification(
+  size: number = 10,
+  currentUserId?: number
+) {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -54,8 +57,15 @@ export default function useNotification(size: number = 10) {
       setError(undefined);
 
       try {
-        const data = await getNotifications(currentCursorId, size); // 해당 함수를 보면 될 듯!
-        const newAlerts = data.notifications.map(transformNotificationToAlert);
+        const data = await getNotifications(currentCursorId, size);
+
+        const filteredNotifications = currentUserId
+          ? data.notifications.filter((n) => n.userId === currentUserId)
+          : data.notifications;
+
+        const newAlerts = filteredNotifications.map(
+          transformNotificationToAlert
+        );
 
         setAlerts((prev) => {
           const result = currentCursorId ? [...prev, ...newAlerts] : newAlerts;
@@ -72,7 +82,7 @@ export default function useNotification(size: number = 10) {
         setIsLoading(false);
       }
     },
-    [size, hasNext]
+    [size, hasNext, currentUserId]
   );
 
   // 첫 알림 목록 로드 , 이 아래 부분들이 필요한지 확인이 필요할 듯
