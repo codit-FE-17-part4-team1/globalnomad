@@ -3,11 +3,12 @@ import { NextResponse } from 'next/server';
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { reservationId: string } }
+  { params }: { params: Promise<{ reservationId: string }> }
 ) {
   try {
+    const { reservationId } = await params;
     const response = await fetchWithAuth(
-      `${process.env.NEXT_PUBLIC_API_SERVER_URL}/my-reservations/${params.reservationId}`,
+      `${process.env.NEXT_PUBLIC_API_SERVER_URL}/my-reservations/${reservationId}`,
       {
         method: 'PATCH',
         body: JSON.stringify({ status: 'canceled' }),

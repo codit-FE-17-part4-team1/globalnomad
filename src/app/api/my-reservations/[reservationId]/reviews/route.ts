@@ -3,13 +3,14 @@ import { NextResponse } from 'next/server';
 
 export async function POST(
   request: Request,
-  { params }: { params: { reservationId: string } }
+  { params }: { params: Promise<{ reservationId: string }> }
 ) {
   try {
+    const { reservationId } = await params;
     const reviewData = await request.json();
 
     const response = await fetchWithAuth(
-      `${process.env.NEXT_PUBLIC_API_SERVER_URL}/my-reservations/${params.reservationId}/reviews`,
+      `${process.env.NEXT_PUBLIC_API_SERVER_URL}/my-reservations/${reservationId}/reviews`,
       {
         method: 'POST',
         body: JSON.stringify(reviewData),
