@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { getUser, updateUser } from '@/lib/users/api';
 import FormInput from '@/components/Input/FormInput';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
-import ConfirmModal from '@/app/Profile/MyInfo/_components/ConfirmModal';
+
 type UserType = {
   createdAt: string;
   email: string;
