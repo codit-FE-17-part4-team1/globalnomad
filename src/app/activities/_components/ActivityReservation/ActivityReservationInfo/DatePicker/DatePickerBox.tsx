@@ -73,13 +73,15 @@ const DatePickerBox: React.FC<DatePickerBoxProps> = ({
           <CustomHeader
             date={headerProps.date}
             decreaseMonth={() => {
+              const currentDate = headerProps.date;
+              const newDate = dayjs(currentDate).subtract(1, 'month');
               headerProps.decreaseMonth();
-              const newDate = dayjs(headerProps.date).subtract(1, 'month');
               onMonthChange?.(newDate.year(), newDate.month() + 1);
             }}
             increaseMonth={() => {
+              const currentDate = headerProps.date;
+              const newDate = dayjs(currentDate).add(1, 'month');
               headerProps.increaseMonth();
-              const newDate = dayjs(headerProps.date).add(1, 'month');
               onMonthChange?.(newDate.year(), newDate.month() + 1);
             }}
             prevMonthButtonDisabled={headerProps.prevMonthButtonDisabled}

@@ -148,7 +148,7 @@ const MainPage: React.FC = () => {
   }, [selectedCategory, priceSort]);
 
   return (
-    <main className="w-full flex flex-col items-center">
+    <div className="w-full flex flex-col items-center">
       <div className="relative w-full">
         <MainBanner />
         <div className="absolute left-1/2 bottom-0 transform -translate-x-1/2 translate-y-2/3 z-10 w-full max-w-[1240px]">
@@ -185,7 +185,7 @@ const MainPage: React.FC = () => {
           error={error}
         />
       </SectionContainer>
-    </main>
+    </div>
   );
 };
 

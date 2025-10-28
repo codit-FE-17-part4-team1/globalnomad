@@ -110,8 +110,10 @@ function AuthenticatedContent() {
     refreshDashboard,
   } = useReservationsDashboard();
 
-  const { handleUpdateStatus, isUpdating, updateError } =
-    useReservationsStatus(selectedActivityId);
+  const { handleUpdateStatus, isUpdating, updateError } = useReservationsStatus(
+    selectedActivityId,
+    refreshDashboard
+  );
 
   const handleApprove = (reservationId: number) => {
     handleUpdateStatus(reservationId, 'confirmed', async () => {

@@ -3,6 +3,8 @@
 import React from 'react';
 import Image from 'next/image';
 import MoreDropdown from './MoreDropdown';
+import { useRouter } from 'next/navigation';
+
 import type { ActivityDetailInfo } from '@/types/activity';
 
 export interface ActivityTitleProps {
@@ -22,6 +24,14 @@ const ActivityTitle: React.FC<ActivityTitleProps> = ({
   reviewCount,
   address,
 }) => {
+  const router = useRouter();
+
+  // 삭제 후 목록 페이지로 이동하고 목록 데이터를 새로고침하여 콜백한다
+  const handleDeleted = () => {
+    router.push('/'); // 목록(메인) 페이지로 이동
+    router.refresh(); // 서버 데이터 새로 fetch
+  };
+
   return (
     <div className="w-full flex flex-col gap-2">
       {/* 카테고리 */}
@@ -33,7 +43,7 @@ const ActivityTitle: React.FC<ActivityTitleProps> = ({
           {title}
         </h1>
         {/* 더보기 버튼 */}
-        <MoreDropdown activityId={id} />
+        <MoreDropdown activityId={id} onDeleted={handleDeleted} />
       </div>
 
       {/* 평점 + 주소 */}
