@@ -2,7 +2,6 @@
 import Image from 'next/image';
 import BaseModal from '@/components/Modal/BaseModal';
 import Button from '@/components/Button/Button';
-import { pacthMyReservations } from '@/actions/myreservations.action';
 
 type ReservationData = {
   totalCount: number;
@@ -22,6 +21,7 @@ type ReservationData = {
   }>;
   cursorId: null | string;
 };
+
 type ModalType = {
   isRawOpen: boolean;
   setRawOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -35,25 +35,32 @@ export default function CancelModal({
   reservationId,
   setData,
 }: ModalType) {
-  console.log(reservationId);
   const handleCancel = async () => {
     if (!reservationId) return;
     try {
-      await pacthMyReservations(reservationId);
+      const response = await fetch(`/api/my-reservations/${reservationId}`, {
+        method: 'PATCH',
+      });
+      if (!response.ok) {
+        throw new Error('예약 취소에 실패했습니다.');
+      }
       setData((prev) => {
         if (!prev) return null;
         return {
           ...prev,
-          reservations: prev.reservations.filter((r) => r.id !== reservationId),
+          reservations: prev.reservations.map((list) =>
+            list.id === reservationId ? { ...list, status: 'canceled' } : list
+          ),
         };
       });
       alert('예약이 취소되었습니다.');
       setRawOpen(false);
     } catch (error) {
-      console.error(error);
+      console.error('오류메세지', error);
       alert('취소 중 오류가 발생했습니다.');
     }
   };
+
   return (
     <BaseModal
       isOpen={isRawOpen}

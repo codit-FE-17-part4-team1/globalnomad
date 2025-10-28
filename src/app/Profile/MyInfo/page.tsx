@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getUser, patchUser } from '@/actions/user.action';
+import { getUser, updateUser } from '@/lib/users/api';
 import FormInput from '@/components/Input/FormInput';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
-
+import ConfirmModal from '@/app/Profile/MyInfo/_components/ConfirmModal';
 type UserType = {
   createdAt: string;
   email: string;
@@ -31,9 +31,9 @@ export default function MyInfo() {
   });
   const [isEdit, setIsEdit] = useState(false);
   const [loading, setLoading] = useState(false);
-  console.log('유저', user);
   const Label_Style = 'font-bold! text-2xl! mb-4! text-black!';
 
+  // 유저정보 업데이트
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -47,6 +47,7 @@ export default function MyInfo() {
         });
       } catch (error) {
         console.error(error);
+        alert('사용자 정보를 불러올 수 없습니다.');
       }
     };
     fetchUser();
@@ -56,7 +57,7 @@ export default function MyInfo() {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
-
+  //
   const handleSave = async () => {
     if (form.password && form.password.length < 8) {
       alert('비밀번호는 8자 이상이어야 합니다.');
@@ -71,12 +72,17 @@ export default function MyInfo() {
     setLoading(true);
 
     try {
-      await patchUser(form);
+      const updatedUser = await updateUser({
+        nickname: form.nickname,
+        newPassword: form.password || undefined,
+      });
+
+      setUser(updatedUser);
       alert('수정이 완료되었습니다.');
       setIsEdit(false);
       setForm((prev) => ({ ...prev, password: '', passwordConfirm: '' }));
     } catch (error) {
-      alert('수정에 실패했습니다.');
+      alert(error instanceof Error ? error.message : '수정에 실패했습니다.');
       console.error(error);
     } finally {
       setLoading(false);

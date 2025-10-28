@@ -8,7 +8,6 @@ import Button from '@/components/Button/Button';
 import Nodata from '@/app/Profile/_components/Nodata/Nodata';
 import CancelModal from '@/app/Profile/ReservationHistory/_components/Modal/CancelModal.tsx';
 import ReviewModal from '@/app/Profile/ReservationHistory/_components/Modal/ReviewModal';
-import { getMyReservations } from '@/actions/myreservations.action';
 
 type ReservationItem = {
   id: number;
@@ -68,7 +67,8 @@ export default function ReservationHistory() {
   useEffect(() => {
     const fetchReservations = async () => {
       try {
-        const reservations = await getMyReservations();
+        const response = await fetch('/api/my-reservations');
+        const reservations = await response.json();
         setData(reservations);
       } catch (error) {
         console.error(error);
@@ -83,7 +83,7 @@ export default function ReservationHistory() {
 
   // 필터링된 예약 목록
   const filteredReservations =
-    data?.reservations.filter((reservation) => {
+    data?.reservations?.filter((reservation) => {
       if (selected === '전체') return true;
       const statusKey = reverseStatusList[selected];
       return reservation.status === statusKey;
@@ -91,8 +91,20 @@ export default function ReservationHistory() {
 
   if (loading) return <p>로딩 중</p>;
 
+  // 헤더 포함 데이터 없을때
   if (!data || !data.reservations || data.reservations.length === 0) {
-    return <Nodata />;
+    return (
+      <div>
+        <Header
+          title="예약 내역"
+          type="filter"
+          selected={selected}
+          setSelected={setSelected}
+          selectList={selectList}
+        />
+        <Nodata />
+      </div>
+    );
   }
 
   return (

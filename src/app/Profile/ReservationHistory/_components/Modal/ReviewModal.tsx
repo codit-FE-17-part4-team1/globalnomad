@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Modal from '@/components/Modal/BaseModal';
 import StarButton from '@/app/Profile/ReservationHistory/_components/StarButton';
 import CustomInput from '@/components/Input/CustomInput';
-import { postReviews } from '@/actions/myreservations.action';
 
 type ReservationInfo = {
   id: number;
@@ -34,18 +33,37 @@ export default function ReviewModal({
   const [rating, setRating] = useState(0);
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState('');
+
   const handleSubmit = async () => {
     if (!reservationId) return;
+    if (rating === 0) {
+      alert('별점을 선택해주세요.');
+      return;
+    }
     if (!content.trim()) {
       alert('후기 내용을 입력해주세요.');
       return;
     }
     setLoading(true);
     try {
-      await postReviews(reservationId, {
-        rating,
-        content,
-      });
+      const response = await fetch(
+        `/api/my-reservations/${reservationId}/reviews`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            rating,
+            content,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || '후기 작성에 실패했습니다.');
+      }
       alert('후기 작성 완료');
       setRawOpen(false);
     } catch (error) {
@@ -56,6 +74,7 @@ export default function ReviewModal({
       setLoading(false);
     }
   };
+
   return (
     <Modal
       isOpen={isRawOpen}
