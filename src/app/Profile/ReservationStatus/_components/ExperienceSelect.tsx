@@ -66,12 +66,13 @@ export default function ExperienceSelect({
         {label}
       </label>
 
+      {/* 여기를 FormInput 을 써도 되려나 */}
       <button
         ref={btnRef}
         type="button"
         // onClick={handleOverLayClick}
         onClick={() => setOpen((v) => !v)}
-        className="w-full rounded-md border px-4 py-4 text-left border-[var(--color-gray-800)] bg-white text-[var(--color-gray-800)] flex items-center justify-between"
+        className="w-full rounded-md border px-4 py-4 text-left border-gray-500 bg-white text-[var(--color-gray-800)] flex items-center justify-between"
       >
         <span className="truncate">
           {experiences.find((exp) => exp.id === selectedExperienceId)?.title ||
