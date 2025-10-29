@@ -41,24 +41,22 @@ export default function ReservationHistory() {
   const BUTTONSTYLE =
     'absolute bottom-6 right-6 rounded-md w-20 h-8 text-md md:h-11 md:w-36 xs:w-[112px] xs:h-10 xs:text-lg';
   const statusList = {
-    confirmed: '예약 신청',
+    confirmed: '예약 승인',
     canceled: '예약 취소',
-    approved: '예약 승인',
     declined: '예약 거절',
     completed: '체험 완료',
     pending: '예약 대기',
   } as const;
   const reverseStatusList: Record<string, keyof typeof statusList> = {
-    '예약 신청': 'confirmed',
     '예약 취소': 'canceled',
-    '예약 승인': 'approved',
+    '예약 승인': 'confirmed',
     '예약 거절': 'declined',
     '체험 완료': 'completed',
     '예약 대기': 'pending',
   } as const;
   const selectList = [
     '전체',
-    '예약 신청',
+    '예약 대기',
     '예약 취소',
     '예약 승인',
     '예약 거절',

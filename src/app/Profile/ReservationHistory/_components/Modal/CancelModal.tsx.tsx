@@ -65,7 +65,7 @@ export default function CancelModal({
     <BaseModal
       isOpen={isRawOpen}
       onClose={() => setRawOpen(false)}
-      className="bg-white w-[298px]"
+      className="bg-white !w-[298px]"
     >
       <div className="p-6">
         <div className="flex flex-col justify-center items-center gap-4">

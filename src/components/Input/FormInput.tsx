@@ -101,6 +101,7 @@ export default function FormInput({
           className={`w-full px-5 py-4 rounded-md border
             border-gray-300 focus:outline-none focus:border-gray-500
             text-lg text-black placeholder-gray-500
+           disabled:text-gray-500
             ${error ? 'border-red focus:border-red' : 'border-gray-300 focus:ring-blue-500'}
             ${inputClassName || ''}`}
         />
