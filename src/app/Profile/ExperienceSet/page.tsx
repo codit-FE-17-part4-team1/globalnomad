@@ -111,7 +111,7 @@ export default function Experience() {
           activities.map((activity) => (
             <ul
               key={activity.id}
-              className="bg-white rounded-3xl flex shadow-xl mb-[24px]"
+              className="bg-white rounded-3xl flex shadow mb-[24px]"
             >
               <li className="relative flex w-[128px] h-[128px] md:w-[156px] md:h-[156px] lg:w-[204px] lg:h-[204px] overflow-hidden rounded-l-3xl">
                 <Image
