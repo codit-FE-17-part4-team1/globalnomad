@@ -102,14 +102,17 @@ export default function ReservationCalendar({
     let textColor = '';
 
     if (event.status.includes('pending')) {
-      text = `신청 ${dashboardItem.reservations.pending}`;
+      text = `예약 ${dashboardItem.reservations.pending}`;
       textColor = '#FFFFFF';
     } else if (event.status.includes('confirmed')) {
       text = `승인 ${dashboardItem.reservations.confirmed}`;
       textColor = '#FF9B00';
     } else if (event.status.includes('declined')) {
-      text = `거절 ${dashboardItem.reservations.completed}`;
+      text = `거절 ${dashboardItem.reservations.declined}`;
       textColor = '#6B7280';
+    } else if (event.status.includes('completed')) {
+      text = `완료 ${dashboardItem.reservations.completed}`;
+      textColor = '#063b2d';
     }
 
     return (
@@ -160,7 +163,7 @@ export default function ReservationCalendar({
       }
 
       // declined 이벤트 -> 이걸 completed로 수정해볼까
-      if (item.reservations.completed > 0) {
+      if (item.reservations.declined > 0) {
         const startDate = new Date(baseDate);
         startDate.setHours(2, 0, 0, 0);
         const endDate = new Date(baseDate);
@@ -171,7 +174,23 @@ export default function ReservationCalendar({
           title: '',
           start: startDate,
           end: endDate,
-          status: ['declined', 'completed'],
+          status: ['declined'],
+        });
+      }
+
+      // completed 따로 빼기
+      if (item.reservations.completed > 0) {
+        const startDate = new Date(baseDate);
+        startDate.setHours(3, 0, 0, 0);
+        const endDate = new Date(baseDate);
+        endDate.setHours(3, 30, 0, 0);
+
+        eventsForDate.push({
+          id: `${item.date}-completed`,
+          title: '',
+          start: startDate,
+          end: endDate,
+          status: ['completed'],
         });
       }
 
@@ -191,10 +210,10 @@ export default function ReservationCalendar({
         id: r.id,
         nickname: r.nickname,
         people: r.headCount,
-        status: r.status as ReservationStatus, // 여기 수정 -> 승인이 안 보여서
-        // status: (r.status === 'declined'
-        //   ? 'canceled'
-        //   : r.status) as ReservationStatus,
+        // status: r.status as ReservationStatus,
+        status: (r.status === 'declined'
+          ? 'canceled'
+          : r.status) as ReservationStatus,
         time: `${r.startTime}~${r.endTime}`,
       };
     });
@@ -252,7 +271,7 @@ export default function ReservationCalendar({
               ? '#F6EAD9' // 베이지 - 승인
               : event.status.includes('declined')
                 ? '#D1D5DB' // 회색 - 거절
-                : '#D1D5DB'; // 기본값
+                : '#ced8d5'; // 기본값
 
           return {
             style: {
@@ -273,7 +292,8 @@ export default function ReservationCalendar({
             <PendingModal
               isOpen={isModalOpen}
               onClose={handleCloseModal}
-              status={selected.status[0]}
+              status="pending"
+              // status={selected.status[0]}
               date={formatDate(selected.start)}
               time=""
               reservations={formattedReservationsForModal}
@@ -285,7 +305,8 @@ export default function ReservationCalendar({
             <ConfirmedModal
               isOpen={isModalOpen}
               onClose={handleCloseModal}
-              status={selected.status[0]}
+              status="confirmed"
+              // status={selected.status[0]}
               date={formatDate(selected.start)}
               time=""
               reservations={formattedReservationsForModal}
@@ -295,7 +316,19 @@ export default function ReservationCalendar({
             <CanceledModal
               isOpen={isModalOpen}
               onClose={handleCloseModal}
-              status={selected.status[0]}
+              status="canceled"
+              // status={selected.status[0]}
+              date={formatDate(selected.start)}
+              time=""
+              reservations={formattedReservationsForModal}
+            />
+          )}
+          {selected.status.includes('completed') && (
+            <CanceledModal
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+              status="canceled"
+              // status={selected.status[0]}
               date={formatDate(selected.start)}
               time=""
               reservations={formattedReservationsForModal}
