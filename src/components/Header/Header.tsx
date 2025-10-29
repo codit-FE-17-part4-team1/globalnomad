@@ -29,7 +29,6 @@ export default function Header({
             style={{ objectFit: 'contain' }}
           />
         </Link>
-
         {/* 우측 영역 */}
         {!isLoggedIn ? (
           <div className="flex items-center justify-center gap-6">
