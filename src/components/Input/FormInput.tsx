@@ -69,6 +69,8 @@ export default function FormInput({
         return 50;
       case 'password':
         return 20;
+      case 'nickname':
+        return 30;
       case 'text':
       case 'number':
         return 30;
