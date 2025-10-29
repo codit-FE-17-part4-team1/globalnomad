@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useCallback, useLayoutEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import Script from 'next/script';
 import type { ActivityDetailInfo } from '@/types/activity';
@@ -17,7 +17,6 @@ interface GeocoderResult {
 }
 
 const ActivityLocation = ({ address }: ActivityLocationProps) => {
-  const [isKakaoLoaded, setIsKakaoLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const mapRef = useRef<HTMLDivElement>(null);
 
@@ -95,16 +94,12 @@ const ActivityLocation = ({ address }: ActivityLocationProps) => {
   }, [address]);
 
   // SDK 로드 후 지도 초기화
-  useLayoutEffect(() => {
-    if (isKakaoLoaded && mapRef.current) {
-      const kakao = window.kakao;
-      if (!kakao?.maps) return;
-
-      kakao.maps.load(() => {
-        initializeMap();
-      });
+  useEffect(() => {
+    // mapRef가 존재하고 Kakao SDK가 이미 로드된 경우 초기화
+    if (mapRef.current && window.kakao?.maps) {
+      window.kakao.maps.load(initializeMap);
     }
-  }, [isKakaoLoaded, initializeMap]);
+  }, [initializeMap]);
 
   return (
     <div className="w-full flex flex-col gap-2">
@@ -112,10 +107,13 @@ const ActivityLocation = ({ address }: ActivityLocationProps) => {
       <Script
         src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=f0b27e2a9ba99a3eb688c3aba9e9d651&autoload=false&libraries=services`}
         strategy="afterInteractive"
-        onLoad={() => setIsKakaoLoaded(true)}
+        onLoad={() => {
+          if (mapRef.current && window.kakao?.maps) {
+            window.kakao.maps.load(initializeMap); // setIsKakaoLoaded 제거
+          }
+        }}
         onError={() => console.error('Kakao SDK 로드 실패')}
       />
-
       {/* 지도 영역 */}
       <div
         ref={mapRef}
