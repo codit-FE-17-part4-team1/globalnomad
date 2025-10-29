@@ -5,6 +5,29 @@ interface FooterProps {
   className?: string;
 }
 
+const socialLinks = [
+  {
+    href: 'https://www.facebook.com/codeit.kr/',
+    alt: 'Facebook',
+    icon: '/icon/mono/facebook.png',
+  },
+  {
+    href: 'https://x.com/CodeitKr/status/1628942846601605120',
+    alt: 'Twitter',
+    icon: '/icon/mono/twitter.png',
+  },
+  {
+    href: 'https://www.youtube.com/channel/UCCM79CPm2WbBYTRaiNEExbg',
+    alt: 'YouTube',
+    icon: '/icon/mono/youtube.png',
+  },
+  {
+    href: 'https://www.instagram.com/codeit_kr/',
+    alt: 'Instagram',
+    icon: '/icon/mono/instagram.png',
+  },
+];
+
 export default function Footer({ className = '' }: FooterProps) {
   return (
     <footer
@@ -18,13 +41,13 @@ export default function Footer({ className = '' }: FooterProps) {
           </span>
           <nav className="flex gap-6 text-lg">
             <Link
-              href="https://www.codeit.kr/terms/PRIVACY_POLICY"
+              href="https://www.codeit.kr/"
               className="hover:text-[#DDDDDD] transition-colors duration-300 whitespace-nowrap"
             >
               Privacy Policy
             </Link>
             <Link
-              href="https://www.codeit.kr/faq"
+              href="https://www.codeit.kr/"
               className="hover:text-[#DDDDDD] transition-colors duration-300 whitespace-nowrap"
             >
               FAQ
@@ -34,28 +57,7 @@ export default function Footer({ className = '' }: FooterProps) {
 
         {/* 모바일 (<768px): SNS */}
         <div className="flex justify-center items-center gap-4 w-full md:hidden">
-          {[
-            {
-              href: 'https://www.facebook.com/codeit.kr/',
-              alt: 'Facebook',
-              icon: '/icon/mono/facebook.png',
-            },
-            {
-              href: 'https://x.com/CodeitKr/status/1628942846601605120',
-              alt: 'Twitter',
-              icon: '/icon/mono/twitter.png',
-            },
-            {
-              href: 'https://www.youtube.com/channel/UCCM79CPm2WbBYTRaiNEExbg',
-              alt: 'YouTube',
-              icon: '/icon/mono/youtube.png',
-            },
-            {
-              href: 'https://www.instagram.com/codeit_kr/',
-              alt: 'Instagram',
-              icon: '/icon/mono/instagram.png',
-            },
-          ].map(({ href, alt, icon }) => (
+          {socialLinks.map(({ href, alt, icon }) => (
             <a
               key={alt}
               href={href}
@@ -94,28 +96,7 @@ export default function Footer({ className = '' }: FooterProps) {
             </Link>
           </nav>
           <div className="flex gap-4">
-            {[
-              {
-                href: 'https://www.facebook.com/codeit.kr/',
-                alt: 'Facebook',
-                icon: '/icon/mono/facebook.png',
-              },
-              {
-                href: 'https://x.com/CodeitKr/status/1628942846601605120',
-                alt: 'Twitter',
-                icon: '/icon/mono/twitter.png',
-              },
-              {
-                href: 'https://www.youtube.com/channel/UCCM79CPm2WbBYTRaiNEExbg',
-                alt: 'YouTube',
-                icon: '/icon/mono/youtube.png',
-              },
-              {
-                href: 'https://www.instagram.com/codeit_kr/',
-                alt: 'Instagram',
-                icon: '/icon/mono/instagram.png',
-              },
-            ].map(({ href, alt, icon }) => (
+            {socialLinks.map(({ href, alt, icon }) => (
               <a
                 key={alt}
                 href={href}

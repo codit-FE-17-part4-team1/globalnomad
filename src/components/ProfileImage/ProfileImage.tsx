@@ -4,19 +4,20 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 
 interface ProfileImageProps {
-  imageUrl?: string;
-  name?: string;
+  imageUrl: string;
+  name: string;
 }
 
 const ProfileImage: React.FC<ProfileImageProps> = ({ imageUrl, name }) => {
   const [imgError, setImgError] = useState(false);
-  const initial = name ? name.charAt(0).toUpperCase() : '?';
+  const displayName = name || 'User'; // 이름이 없으면 기본값
+  const initial = name.charAt(0).toUpperCase();
 
   if (imageUrl && !imgError) {
     return (
       <Image
         src={imageUrl}
-        alt={name ?? 'user'}
+        alt={displayName}
         width={100}
         height={100}
         className="w-full h-full rounded-full object-cover"

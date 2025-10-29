@@ -6,8 +6,8 @@ import UserMenu from './UserMenu';
 
 export interface HeaderProps {
   isLoggedIn: boolean;
-  userName?: string;
-  userImage?: string;
+  userName: string;
+  userImage: string;
   onNotificationClick?: () => void;
 }
 
@@ -29,7 +29,6 @@ export default function Header({
             style={{ objectFit: 'contain' }}
           />
         </Link>
-
         {/* 우측 영역 */}
         {!isLoggedIn ? (
           <div className="flex items-center justify-center gap-6">

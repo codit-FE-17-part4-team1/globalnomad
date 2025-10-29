@@ -7,8 +7,8 @@ import AlertModal from '@/components/Modal/AlertModal';
 import useNotification from '@/hooks/useNotification';
 
 export interface UserMenuProps {
-  userName?: string;
-  userImage?: string;
+  userName: string;
+  userImage: string;
   onNotificationClick?: () => void;
 }
 
