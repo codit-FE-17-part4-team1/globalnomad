@@ -8,6 +8,7 @@ import ReservationSidebar from './ReservationContainer/ReservationSidebar';
 import ReservationStickyFooter from './ReservationContainer/ReservationStickyFooter';
 import ParticipantsModal from './ReservationContainer/ParticipantsModal';
 import DateModal from './ReservationContainer/DateModal';
+import BaseModal from '@/components/Modal/BaseModal';
 
 import type {
   ActivityDetailInfo,
@@ -123,6 +124,19 @@ export default function ActivityReservation({
     setIsDateModalOpen(false);
   };
 
+  // 베이스 모달 상태
+  const [modalState, setModalState] = useState<{
+    open: boolean;
+    message: string;
+    type: 'confirm' | 'alert';
+    onConfirm?: () => void;
+    onCancel?: () => void;
+  }>({
+    open: false,
+    message: '',
+    type: 'alert',
+  });
+
   // 예약 API
   const reserveActivity = useCallback(
     async ({
@@ -164,19 +178,26 @@ export default function ActivityReservation({
       headCount: participants,
     });
     if (result.success) {
-      if (
-        window.confirm('예약이 완료되었습니다. 메인 화면으로 이동하시겠습니까?')
-      ) {
-        router.push('/');
-      } else {
-        window.location.reload();
-      }
+      setModalState({
+        open: true,
+        type: 'confirm',
+        message: '예약이 완료되었습니다. 메인 화면으로 이동하시겠습니까?',
+        onConfirm: () => router.push('/'),
+        onCancel: () => window.location.reload(),
+      });
     } else {
-      alert(result.error); // 로그인이 필요합니다 메세지 나옴
-      // 에러 메시지에 "로그인" 문자열이 포함되어 있으면
-      if (result.error?.includes('로그인')) {
-        router.push('/Login'); // 로그인 페이지로 이동
-      }
+      setModalState({
+        open: true,
+        type: 'alert',
+        message: result.error,
+        onConfirm: () => {
+          if (
+            result.error?.includes('로그인') ||
+            result.error?.includes('Unauthorized')
+          )
+            router.push('/Login');
+        },
+      });
     }
   }, [
     isReservationEnabled,
@@ -222,6 +243,52 @@ export default function ActivityReservation({
         isReservationEnabled={isReservationEnabled}
         onReserve={handleReserve}
       />
+
+      {/* 베이스 모달 */}
+      <BaseModal
+        isOpen={modalState.open}
+        onClose={() => setModalState((prev) => ({ ...prev, open: false }))}
+      >
+        <div className="w-[540px] h-[250px] rounded-lg bg-white p-8 relative">
+          <p className="absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-lg font-medium text-black text-center">
+            {modalState.message}
+          </p>
+          {modalState.type === 'confirm' ? (
+            <div className="absolute bottom-8 right-8 flex gap-3">
+              <button
+                className="px-11 py-3 rounded-lg w-[120px] h-[48px] bg-black-nomad text-lg font-medium text-white"
+                onClick={() => {
+                  modalState.onConfirm?.();
+                  setModalState((p) => ({ ...p, open: false }));
+                }}
+              >
+                확인
+              </button>
+              <button
+                className="px-11 py-3 rounded-lg w-[120px] h-[48px] bg-white border border-gray-300 text-lg font-medium text-black"
+                onClick={() => {
+                  modalState.onCancel?.();
+                  setModalState((p) => ({ ...p, open: false }));
+                }}
+              >
+                취소
+              </button>
+            </div>
+          ) : (
+            <div className="absolute bottom-8 right-8">
+              <button
+                className="px-11 py-3 rounded-lg w-[120px] h-[48px] bg-black-nomad text-lg font-medium text-white"
+                onClick={() => {
+                  modalState.onConfirm?.();
+                  setModalState((p) => ({ ...p, open: false }));
+                }}
+              >
+                확인
+              </button>
+            </div>
+          )}
+        </div>
+      </BaseModal>
 
       {isParticipantsModalOpen && (
         <ParticipantsModal

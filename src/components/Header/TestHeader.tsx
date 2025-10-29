@@ -15,8 +15,8 @@ export default function TestHeader() {
       {/* 헤더 */}
       <Header
         isLoggedIn={isLoggedIn}
-        userName={isLoggedIn ? '코드잇' : undefined}
-        userImage={isLoggedIn ? '/images/user.png' : undefined}
+        userName={isLoggedIn ? '코드잇' : ''}
+        userImage={isLoggedIn ? '/images/user.png' : ''}
         onNotificationClick={() => alert('알림 버튼 클릭!')}
       />
 

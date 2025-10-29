@@ -1,5 +1,6 @@
 import React from 'react';
 import dayjs from 'dayjs';
+import { getUser } from '@/actions/user.action';
 
 import ActivityTitle from '../_components/ActivityDetaiInfo/ActivityTitle';
 import ImageGallery from '../_components/ActivityDetaiInfo/ImageGallery';
@@ -56,11 +57,17 @@ export default async function Page({ params }: PageProps) {
     return <div>잘못된 체험 아이디입니다.</div>;
   }
 
+  // 로그인된 유저 정보 가져오기
+  const currentUser = await getUser().catch(() => null);
+
   const [activity, reviews, scheduleData] = await Promise.all([
     fetchActivity(activityId),
     fetchReviews(activityId),
     fetchAvailableDates(activityId),
   ]);
+
+  // 로그인된 유저가 체험 작성자일 경우 예약 영역 숨김
+  const isOwner = currentUser && activity.userId === currentUser.id;
 
   return (
     <div className="w-full min-w-[375px] max-w-[1240px] mx-auto p-5 flex flex-col gap-5">
@@ -86,7 +93,11 @@ export default async function Page({ params }: PageProps) {
 
       <div className="flex flex-col md:flex-row gap-x-6 w-full">
         {/* 왼쪽 컬럼 */}
-        <div className="flex flex-col gap-5 flex-1 md:max-w-[800px]">
+        <div
+          className={`flex flex-col gap-5 flex-1 ${
+            isOwner ? 'w-full max-w-[1240px]' : 'md:max-w-[800px]'
+          }`}
+        >
           <div className="hidden md:block border-b border-black-nomad/25"></div>
           <section className="w-full py-6">
             <ActivityDescription description={activity.description} />
@@ -102,7 +113,12 @@ export default async function Page({ params }: PageProps) {
         </div>
 
         {/* 오른쪽 컬럼: 체험 예약 (클라이언트 컴포넌트) */}
-        <ActivityReservation activity={activity} scheduleData={scheduleData} />
+        {!isOwner && (
+          <ActivityReservation
+            activity={activity}
+            scheduleData={scheduleData}
+          />
+        )}
       </div>
     </div>
   );

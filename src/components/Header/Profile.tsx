@@ -3,12 +3,14 @@ import { useRouter } from 'next/navigation';
 import ProfileImage from '../ProfileImage/ProfileImage';
 
 export interface ProfileProps {
-  userName?: string;
-  userImage?: string;
+  userName: string;
+  userImage: string;
 }
 
 export default function Profile({ userName, userImage }: ProfileProps) {
   const router = useRouter();
+
+  const displayName = userName || 'User'; // 유저 이미지 값이 없으면 기본값으로 나옴
 
   const handleClick = () => {
     router.push('/Profile/MyInfo'); // 프로필 메뉴로 클릭 시, 내정보 페이지로 이동
@@ -25,7 +27,7 @@ export default function Profile({ userName, userImage }: ProfileProps) {
       </div>
       {/* 이름 */}
       <span className="text-[#1B1B1B] hover:text-[#79747E] font-medium text-sm leading-6 tracking-normal text-center transition-colors duration-300 whitespace-nowrap">
-        {userName}
+        {displayName}
       </span>
     </div>
   );
