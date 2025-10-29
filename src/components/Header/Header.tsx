@@ -6,8 +6,8 @@ import UserMenu from './UserMenu';
 
 export interface HeaderProps {
   isLoggedIn: boolean;
-  userName?: string;
-  userImage?: string;
+  userName: string;
+  userImage: string;
   onNotificationClick?: () => void;
 }
 
