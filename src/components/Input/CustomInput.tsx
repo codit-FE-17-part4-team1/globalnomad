@@ -56,6 +56,7 @@ export default function CustomInput({
             border-gray-700 focus:outline-none
             min-h-[240px]
             text-lg text-black placeholder-gray-600
+            resize-none
             ${inputClassName || ''}`}
         />
       ) : (

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import DatePickerComponent from '@/components/datepicker/DatePicker';
+import DatePickerComponent from '@/components/Datepicker/DatePicker';
 import StartTimePicker from '@/components/TimePicker/StartTimePicker';
 import EndTimePicker from '@/components/TimePicker/EndTimePicker';
 

@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getUser, patchUser } from '@/actions/user.action';
+import { getUser, updateUser } from '@/lib/users/api';
 import FormInput from '@/components/Input/FormInput';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
+import ConfirmModal from '@/components/Modal/ConfirmModal';
 
 type UserType = {
   createdAt: string;
@@ -37,8 +38,22 @@ export default function MyInfo() {
 
   const [isEdit, setIsEdit] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [modal, setModal] = useState({
+    isOpen: false,
+    message: '',
+  });
   const Label_Style = 'font-bold! text-2xl! mb-4! text-black!';
+  // 모달 열기
+  const showModal = (message: string) => {
+    setModal({ isOpen: true, message });
+  };
 
+  // 모달 닫기
+  const closeModal = () => {
+    setModal({ isOpen: false, message: '' });
+  };
+
+  // 유저정보 업데이트
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -56,6 +71,7 @@ export default function MyInfo() {
         setPasswordConfirmError('');
       } catch (error) {
         console.error(error);
+        alert('사용자 정보를 불러올 수 없습니다.');
       }
     };
     fetchUser();
@@ -63,46 +79,9 @@ export default function MyInfo() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
-    setForm((prev) => {
-      const next = { ...prev, [name]: value };
-
-      if (isEdit) {
-        if (name === 'nickname') {
-          setNicknameError(
-            value.length > 10 ? '열 자 이하로 작성해주세요.' : ''
-          );
-        }
-
-        if (name === 'password') {
-          setPasswordError(
-            value && value.length < 8 ? '비밀번호는 8자 이상이어야 합니다.' : ''
-          );
-          // 비번 바뀌면 확인 일치도 재검사
-          setPasswordConfirmError(
-            next.passwordConfirm
-              ? value === next.passwordConfirm
-                ? ''
-                : '비밀번호가 일치하지 않습니다.'
-              : ''
-          );
-        }
-
-        if (name === 'passwordConfirm') {
-          setPasswordConfirmError(
-            value
-              ? next.password === value
-                ? ''
-                : '비밀번호가 일치하지 않습니다.'
-              : ''
-          );
-        }
-      }
-
-      return next;
-    });
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
-
+  //
   const handleSave = async () => {
     // 저장 직전 마지막 방어 (에러 있으면 중단)
     if (nicknameError || passwordError || passwordConfirmError) {
@@ -111,26 +90,31 @@ export default function MyInfo() {
     }
 
     if (form.password && form.password.length < 8) {
-      alert('비밀번호는 8자 이상이어야 합니다.');
+      showModal('비밀번호는 8자 이상이어야 합니다.');
       return;
     }
 
     if (form.password !== form.passwordConfirm) {
-      alert('비밀번호가 일치하지 않습니다.');
+      showModal('비밀번호가 일치하지 않습니다.');
       return;
     }
 
     setLoading(true);
 
     try {
-      await patchUser(form);
-      alert('수정이 완료되었습니다.');
+      const updatedUser = await updateUser({
+        nickname: form.nickname,
+        newPassword: form.password || undefined,
+      });
+
+      setUser(updatedUser);
+      showModal('수정이 완료되었습니다.');
       setIsEdit(false);
       setForm((prev) => ({ ...prev, password: '', passwordConfirm: '' }));
       setPasswordError('');
       setPasswordConfirmError('');
     } catch (error) {
-      alert('수정에 실패했습니다.');
+      alert(error instanceof Error ? error.message : '수정에 실패했습니다.');
       console.error(error);
     } finally {
       setLoading(false);
@@ -205,6 +189,14 @@ export default function MyInfo() {
           />
         </fieldset>
       </form>
+      {/* 확인모달 */}
+      <ConfirmModal
+        isOpen={modal.isOpen}
+        onClose={closeModal}
+        message={modal.message}
+        className="bg-white"
+        onConfirm={closeModal}
+      />
     </div>
   );
 }

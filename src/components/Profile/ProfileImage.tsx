@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { getUser, patchUser, uploadProfileImage } from '@/actions/user.action';
 
 type MyInfoType = {
   createdAt: string;
@@ -22,7 +21,8 @@ export default function ProfileImage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const data = await getUser();
+        const response = await fetch('/api/users/me');
+        const data = await response.json();
         setGetMyInfo(data);
       } catch (error) {
         console.error(error);
@@ -41,19 +41,27 @@ export default function ProfileImage() {
     try {
       const formData = new FormData();
       formData.append('image', file);
-      const result = await uploadProfileImage(formData);
+
+      const uploadResponse = await fetch('/api/users/me/image', {
+        method: 'POST',
+        body: formData,
+      });
+      const result = await uploadResponse.json();
       const uploadedUrl = result.profileImageUrl;
 
       setImage(uploadedUrl);
 
-      await patchUser({
-        nickname: getMyInfo?.nickname || '',
-        email: getMyInfo?.email || '',
-        password: '',
-        passwordConfirm: '',
-        profileImageUrl: uploadedUrl,
+      await fetch('/api/users/me', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nickname: getMyInfo?.nickname || '',
+          profileImageUrl: uploadedUrl,
+        }),
       });
-      const updatedData = await getUser();
+
+      const userResponse = await fetch('/api/users/me');
+      const updatedData = await userResponse.json();
       setGetMyInfo(updatedData);
       setImage(uploadedUrl);
 
@@ -65,13 +73,10 @@ export default function ProfileImage() {
       setLoading(false);
     }
   };
-
   return (
     <div className="relative mx-auto mb-6 h-28 w-28">
       <Image
-        src={
-          image || getMyInfo?.profileImageUrl || '/images/zootopia_asloth.jpg'
-        }
+        src={image || getMyInfo?.profileImageUrl || '/images/defalt_user.png'}
         alt="프로필"
         fill
         className="rounded-full object-cover"
