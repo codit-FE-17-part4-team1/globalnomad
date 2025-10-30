@@ -112,7 +112,7 @@ export default function ExperienceSelect({
                 className={`
                   w-full text-left px-4 py-3 border-b-[var(--color-gray-800)]
                   hover:bg-[var(--color-green-light)] hover:text-black
-                  ${exp.id === selectedExperienceId ? 'bg-[var(--color-gray-200)]' : ''}
+                  ${exp.id === selectedExperienceId ? 'bg-[var(--color-gray-100)]' : ''}
                 `}
                 role="option"
                 aria-selected={exp.id === selectedExperienceId} // 접근성을 위함 (자동 생성되어 확인해봄)
