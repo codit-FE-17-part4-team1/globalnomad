@@ -8,7 +8,6 @@ import { logoutAction } from '@/actions/logout.action';
 
 export default function ProfileCard() {
   const pathname = usePathname();
-  // next.js의 App Router에서 현재 URL의 경로(path) 부분을 읽어오는 클라이언트 컴포넌트 훅이라고 하는데, 이건 다른 페이지가 생성되면 연결하면 되는걸지? --> 확인 완료
 
   const MENU = [
     {
@@ -81,7 +80,7 @@ export default function ProfileCard() {
               key={item.key}
               href={item.href}
               className={[
-                'flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors duration-200',
+                'flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors duration-200 hover:bg-[var(--color-gray-100)]',
                 isActive
                   ? 'bg-[var(--color-green-light)] text-[var(--color-green-dark)] font-bold'
                   : 'text-[var(--color-gray-400)] font-semibold',

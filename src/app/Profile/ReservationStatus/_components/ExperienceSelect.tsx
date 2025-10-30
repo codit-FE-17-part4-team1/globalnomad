@@ -66,12 +66,13 @@ export default function ExperienceSelect({
         {label}
       </label>
 
+      {/* 여기를 FormInput 을 써도 되려나 */}
       <button
         ref={btnRef}
         type="button"
         // onClick={handleOverLayClick}
         onClick={() => setOpen((v) => !v)}
-        className="w-full rounded-md border px-4 py-4 text-left border-[var(--color-gray-800)] bg-white text-[var(--color-gray-800)] flex items-center justify-between"
+        className="w-full rounded-md border px-4 py-4 text-left border-gray-500 bg-white text-[var(--color-gray-800)] flex items-center justify-between"
       >
         <span className="truncate">
           {experiences.find((exp) => exp.id === selectedExperienceId)?.title ||
@@ -111,7 +112,7 @@ export default function ExperienceSelect({
                 className={`
                   w-full text-left px-4 py-3 border-b-[var(--color-gray-800)]
                   hover:bg-[var(--color-green-light)] hover:text-black
-                  ${exp.id === selectedExperienceId ? 'bg-[var(--color-gray-200)]' : ''}
+                  ${exp.id === selectedExperienceId ? 'bg-[var(--color-gray-100)]' : ''}
                 `}
                 role="option"
                 aria-selected={exp.id === selectedExperienceId} // 접근성을 위함 (자동 생성되어 확인해봄)
