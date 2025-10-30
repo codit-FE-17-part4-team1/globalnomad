@@ -16,6 +16,7 @@ interface CanceledModalProps {
     id: number;
   }[];
   status: ReservationStatus;
+  position?: { top: number; left: number };
 }
 
 export default function CanceledModal({
@@ -25,6 +26,7 @@ export default function CanceledModal({
   time,
   reservations,
   status,
+  position,
 }: CanceledModalProps) {
   return (
     <ReservationModalBase
@@ -34,6 +36,7 @@ export default function CanceledModal({
       date={date}
       time={time}
       reservations={reservations}
+      position={position}
     />
   );
 }

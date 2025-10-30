@@ -24,7 +24,7 @@ interface ReservationModalBaseProps {
   }[];
   onApprove?: (reservationId: number) => void;
   onReject?: (reservationId: number) => void;
-  position?: { top: number; left: number }; // 모달을 달력 옆에 두도록 구현하고자 함 (absolute로..?)
+  position?: { top: number; left: number }; // 모달을 달력 옆에 두도록 구현하고자 함
 }
 
 export default function ReservationModalBase({
@@ -64,11 +64,14 @@ export default function ReservationModalBase({
 
   // 2. 현재 활성화된 탭(신청/승인/거절)에 해당하는 예약 목록
   const reservationsByStatus = reservations.filter((item) => {
+    if (activeTab === 'pending') {
+      return item.status === 'pending';
+    }
     if (activeTab === 'confirmed') {
       return item.status === 'confirmed';
     }
     if (activeTab === 'canceled') {
-      return item.status === 'declined' || item.status === 'canceled';
+      return item.status === 'declined';
     }
     return item.status === activeTab;
   });
@@ -84,7 +87,7 @@ export default function ReservationModalBase({
   const tabs: { key: ReservationStatus; label: string }[] = [
     { key: 'pending', label: '신청' },
     { key: 'confirmed', label: '승인' },
-    { key: 'canceled', label: '거절' },
+    { key: 'declined', label: '거절' },
   ];
 
   // 선택된 탭과 시간에 따라 최종적으로 보여줄 예약 목록 필터링
@@ -96,7 +99,7 @@ export default function ReservationModalBase({
     if (tabKey === 'confirmed') {
       return reservations.filter((r) => r.status === 'confirmed').length;
     }
-    if (tabKey === 'canceled') {
+    if (tabKey === 'declined') {
       return reservations.filter(
         (r) => r.status === 'declined' || r.status === 'canceled'
       ).length;

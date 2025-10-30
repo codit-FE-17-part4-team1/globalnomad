@@ -89,6 +89,9 @@ export default function ReservationCalendar({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selected, setSelected] = useState<CalEvent | null>(null);
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
+  const [modalPosition, setModalPosition] = useState<
+    { top: number; left: number } | undefined
+  >(undefined);
 
   // 달력 텍스트 추가를 위한 커스텀 작업
   function CalendarEvent({ event }: { event: CalEvent }) {
@@ -108,9 +111,9 @@ export default function ReservationCalendar({
     } else if (event.status.includes('confirmed')) {
       text = `승인 ${dashboardItem.reservations.confirmed}`;
       textColor = '#FF9B00';
-    } else if (event.status.includes('declined')) {
-      text = `거절 ${dashboardItem.reservations.declined}`;
-      textColor = '#6B7280';
+      // } else if (event.status.includes('declined')) {
+      //   text = `거절 ${dashboardItem.reservations.declined}`;
+      //   textColor = '#6B7280';
     } else if (event.status.includes('completed')) {
       text = `완료 ${dashboardItem.reservations.completed}`;
       textColor = '#063b2d';
@@ -227,8 +230,24 @@ export default function ReservationCalendar({
     const dateString = dayjs(ev.start).format('YYYY-MM-DD');
     onSelectDate(dateString);
 
-    // 클릭한 요소를 anchorElement로 저장
-    setAnchorElement(e.currentTarget as HTMLElement);
+    const target = e.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    const modalWidth = 430;
+
+    let left = rect.right + 10; // 달력 셀 오른쪽에 10px 간격
+    let top = rect.top;
+
+    // 화면 밖으로 나가면 왼쪽에 표시
+    if (left + modalWidth > window.innerWidth) {
+      left = rect.left - modalWidth - 10;
+    }
+
+    // 아래로 나가면 조정
+    if (top + 600 > window.innerHeight) {
+      top = Math.max(10, window.innerHeight - 610);
+    }
+
+    setModalPosition({ top, left });
     setIsModalOpen(true);
   };
 
@@ -290,7 +309,7 @@ export default function ReservationCalendar({
         }}
       />
 
-      {/* 조건부로 모달 열리게 하기 - anchorElement 추가 */}
+      {/* 조건부로 모달 열리게 하기 */}
       {isModalOpen && selected && (
         <>
           {selected.status.includes('pending') && (
@@ -303,6 +322,7 @@ export default function ReservationCalendar({
               reservations={formattedReservationsForModal}
               onApprove={onApprove}
               onReject={onReject}
+              position={modalPosition} // 추가!
             />
           )}
           {selected.status.includes('confirmed') && (
@@ -313,19 +333,22 @@ export default function ReservationCalendar({
               date={formatDate(selected.start)}
               time=""
               reservations={formattedReservationsForModal}
+              position={modalPosition} // 추가!
             />
           )}
           {selected.status.includes('declined') && (
             <CanceledModal
               isOpen={isModalOpen}
               onClose={handleCloseModal}
-              status="canceled"
+              status="declined"
               date={formatDate(selected.start)}
               time=""
               reservations={formattedReservationsForModal}
+              position={modalPosition} // 추가!
             />
           )}
-          {selected.status.includes('completed') && (
+          {/* 완료 항목은 어차피 내용이 없어서 모달 안 보여지도록 다시 수정 */}
+          {/* {selected.status.includes('completed') && (
             <CanceledModal
               isOpen={isModalOpen}
               onClose={handleCloseModal}
@@ -334,7 +357,7 @@ export default function ReservationCalendar({
               time=""
               reservations={formattedReservationsForModal}
             />
-          )}
+          )} */}
         </>
       )}
     </>

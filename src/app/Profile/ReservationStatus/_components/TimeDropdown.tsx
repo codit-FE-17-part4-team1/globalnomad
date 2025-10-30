@@ -10,7 +10,6 @@ export default function TimeDropdown({
   options,
   onChange,
   placeholder = '예약 시간', // 이걸 해줘야 할 지 고민인데, 일단 해둠
-  // className = '',
   closeOnOverlay = true,
   closeOnEsc = true,
 }: {
