@@ -1,4 +1,4 @@
-import Chips from '@/components/Chips/Chips';
+import Chips from '@/components/chips/Chips';
 
 export default function ChipTest() {
   // color옵션 'white' 이 기본 'blue' | 'gray' | 'orange' | 'red'중 선택 사용
