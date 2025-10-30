@@ -13,7 +13,7 @@ export const validatePassword = (password: string) => {
 };
 
 export const validateNickname = (nickname: string) => {
-  return nickname.length <= 20 ? '' : '열 자 이하로 작성해주세요.';
+  return nickname.length <= 10 ? '' : '열 자 이하로 작성해주세요.';
 };
 
 export const validatePasswordConfirm = (password: string, confirm: string) => {
