@@ -134,8 +134,14 @@ export default function AlertModal({
 
       {/* 빈 상태 */}
       {!isLoading && localAlerts.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-12 text-[var(--color-gray-700)]">
-          알림이 없습니다.
+        <div className="flex flex-col items-center justify-center py-12 ">
+          <Image
+            src="/icon/earth.svg"
+            alt="예약 내역 없음"
+            width={50}
+            height={50}
+          />
+          <p className="text-[var(--color-gray-700)] pt-5">알림이 없습니다.</p>
         </div>
       )}
 
