@@ -11,6 +11,7 @@ import type { AuthResult } from '@/types/auth';
 import ConfirmModal from '@/components/Modal/ConfirmModal';
 import FormInput from '@/components/Input/FormInput';
 import MyButton from '@/components/Button/Button';
+import KakaoLoginButton from '@/components/Button/KakaoButton';
 
 const initialState: AuthResult = { ok: false, message: '' };
 
@@ -29,12 +30,12 @@ export default function LoginPage() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // ✅ 성공 즉시 리다이렉트
+  // 성공 즉시 리다이렉트
   useEffect(() => {
     if (state.ok) router.push('/');
   }, [state.ok, router]);
 
-  // ✅ 실패 + message 있을 때만 모달 노출
+  // 실패 + message 있을 때만 모달 노출
   useEffect(() => {
     if (!state.ok && state.message) {
       setModalMsg(state.message);
@@ -114,17 +115,7 @@ export default function LoginPage() {
         </div>
 
         <div className="flex justify-center gap-4">
-          <MyButton
-            className="w-12 h-12 rounded-full flex items-center justify-center bg-transparent border-none"
-            onClick={() => alert('카카오 로그인')}
-          >
-            <Image
-              src="/icon/social/kakao.svg"
-              alt="Kakao"
-              width={72}
-              height={72}
-            />
-          </MyButton>
+          <KakaoLoginButton className="w-12 h-12 rounded-full flex items-center justify-center bg-transparent border-none" />
         </div>
 
         <ConfirmModal
