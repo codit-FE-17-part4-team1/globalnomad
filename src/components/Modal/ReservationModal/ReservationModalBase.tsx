@@ -154,8 +154,8 @@ export default function ReservationModalBase({
           bg-white rounded-lg shadow-xl overflow-y-auto z-[9999]
           ${
             isMobile
-              ? 'fixed bottom-0 left-0 right-0 w-full max-h-[85vh] rounded-t-2xl rounded-b-none'
-              : 'absolute w-[430px] max-h-[700px]'
+              ? 'fixed bottom-0 left-0 right-0 w-full max-h-[50vh] rounded-t-2xl rounded-b-none'
+              : 'absolute w-[430px] h-[600px]'
           }
         `}
         style={
@@ -263,7 +263,7 @@ export default function ReservationModalBase({
                 {activeTab === 'pending' && onApprove && onReject && (
                   <div className="flex space-x-2">
                     <Button
-                      className="bg-orange-dark p-2 text-white text-sm hover:bg-orange-dark"
+                      className="bg-orange-dark p-2 border-orange-dark text-white text-sm hover:bg-orange-dark"
                       onClick={() => onApprove(item.id)}
                     >
                       승인하기
