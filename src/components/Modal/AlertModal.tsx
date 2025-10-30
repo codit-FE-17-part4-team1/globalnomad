@@ -19,10 +19,11 @@ interface AlertModalProps {
   onClose: () => void;
   alerts?: Alert[];
   onDelete: (id: number) => void;
-  onLoadMore: () => void;
-  hasNext: boolean;
+  // onLoadMore: () => void;
+  hasMore: boolean;
   isLoading: boolean;
   error?: string;
+  lastElementRef: (node: HTMLElement | null) => void;
 }
 
 export default function AlertModal({
@@ -30,10 +31,11 @@ export default function AlertModal({
   onClose,
   alerts = [],
   onDelete,
-  onLoadMore,
-  hasNext,
+  // onLoadMore,  // 무한스크롤 훅이 자동으로 내려가기 때문에 더보기 버튼이 의미가 없어짐..!
+  hasMore,
   isLoading,
   error,
+  lastElementRef,
 }: AlertModalProps) {
   const [localAlerts, setLocalAlerts] = useState<Alert[]>(alerts);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -103,10 +105,10 @@ export default function AlertModal({
       ref={modalRef}
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 md:absolute md:top-15 md:right-0 md:inset-auto bg-[var(--color-green-light)] rounded-none md:rounded-lg shadow-xl h-screen md:h-auto md:max-h-[400px] overflow-auto z-[9999] w-screen md:w-[375px]"
+      className="fixed inset-0 md:absolute md:top-15 md:right-0 md:inset-auto bg-orange-light rounded-none md:rounded-lg shadow-xl h-screen md:h-auto md:max-h-[400px] overflow-auto z-[9999] w-screen md:w-[375px]"
     >
       {/* 헤더 */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-gray-200)]">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
         <h2 className="text-lg font-semibold">알림 {localAlerts.length}개</h2>
         <Image
           className="cursor-pointer"
@@ -132,7 +134,7 @@ export default function AlertModal({
 
       {/* 빈 상태 */}
       {!isLoading && localAlerts.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-12 text-[var(--color-gray-500)]">
+        <div className="flex flex-col items-center justify-center py-12 text-[var(--color-gray-700)]">
           알림이 없습니다.
         </div>
       )}
@@ -195,16 +197,21 @@ export default function AlertModal({
         ))}
       </div>
 
-      {/* 더보기 버튼 (필요시) */}
-      {hasNext && (
-        <div className="p-4 border-t border-[var(--color-gray-200)]">
-          <button
-            onClick={onLoadMore}
-            disabled={isLoading}
-            className="w-full py-2 text-sm text-[var(--color-blue)] hover:bg-[var(--color-gray-50)] rounded transition-colors disabled:opacity-50"
-          >
-            {isLoading ? '로딩 중...' : '더보기'}
-          </button>
+      {/* 여기에 무한스크롤을 적용 */}
+      {hasMore && (
+        <div ref={lastElementRef} className="p-4 border-t border-gray-200">
+          {isLoading && (
+            <div className="text-xs text-[var(--color-gray-500)]">
+              로딩 중...
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 모든 알림 확인 완료 */}
+      {!hasMore && alerts.length > 0 && (
+        <div className="p-4 text-center mb-4 text-md text-[var(--color-gray-700)]">
+          모든 알림을 확인했습니다.
         </div>
       )}
     </div>
