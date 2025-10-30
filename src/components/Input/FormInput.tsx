@@ -22,6 +22,9 @@ type FormInputProps = {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   passwordValue?: string;
 
+  //에러
+  errorOverride?: string;
+
   // 사용자 스타일 수정 prop
   wrapperClassName?: string;
   labelClassName?: string;
@@ -40,6 +43,7 @@ export default function FormInput({
   disabled,
   onChange,
   passwordValue,
+  errorOverride,
   wrapperClassName,
   labelClassName,
   labelUnstyled = false,
@@ -63,12 +67,16 @@ export default function FormInput({
     validate(e.target.value);
   };
 
+  const finalError = errorOverride ?? error;
+
   const getMaxLength = (t: string) => {
     switch (t) {
       case 'email':
         return 50;
       case 'password':
         return 20;
+      case 'nickname':
+        return 30;
       case 'text':
       case 'number':
         return 30;
@@ -101,8 +109,7 @@ export default function FormInput({
           className={`w-full px-5 py-4 rounded-md border
             border-gray-300 focus:outline-none focus:border-gray-500
             text-lg text-black placeholder-gray-500
-           disabled:text-gray-500
-            ${error ? 'border-red focus:border-red' : 'border-gray-300 focus:ring-blue-500'}
+            ${finalError ? 'border-red focus:border-red' : 'border-gray-300 focus:outline-none focus:border-gray-500'}
             ${inputClassName || ''}`}
         />
         {(type === 'password' || type === 'passwordConfirm') && (
@@ -124,9 +131,9 @@ export default function FormInput({
           </button>
         )}
       </div>
-      {error && (
+      {finalError && (
         <p className={`mt-1 text-xs text-red-500 ${errorClassName || ''}`}>
-          {error}
+          {finalError}
         </p>
       )}
     </div>

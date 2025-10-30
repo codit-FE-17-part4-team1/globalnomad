@@ -17,27 +17,66 @@ const initialState: AuthResult = { ok: false, message: '' };
 export default function SignupPage() {
   const router = useRouter();
 
+  // 폼 값
   const [form, setForm] = useState({
     email: '',
     nickname: '',
     password: '',
     passwordConfirmation: '',
   });
+
+  // 로컬에서만 관리하는 에러 (닉네임 / 비밀번호확인)
+  const [nicknameError, setNicknameError] = useState('');
+  const [passwordConfirmError, setPasswordConfirmError] = useState('');
+
+  // 서버 액션 상태
   const [state, formAction] = useActionState(signupAction, initialState);
 
+  // 모달
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
 
+  // 버튼 disabled
   const disabled =
     !form.email ||
     !form.nickname ||
     !form.password ||
     !form.passwordConfirmation;
 
+  // 인풋 변경 핸들러
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+
+    setForm((prev) => {
+      const next = { ...prev, [name]: value };
+
+      // 닉네임 에러: 10자 제한
+      if (name === 'nickname') {
+        if (value.length > 10) {
+          setNicknameError('열 자 이하로 작성해주세요.');
+        } else {
+          setNicknameError('');
+        }
+      }
+
+      // 비밀번호 확인 에러: password와 passwordConfirmation 비교
+      if (name === 'password' || name === 'passwordConfirmation') {
+        if (
+          next.password &&
+          next.passwordConfirmation &&
+          next.password !== next.passwordConfirmation
+        ) {
+          setPasswordConfirmError('비밀번호가 일치하지 않습니다.');
+        } else {
+          setPasswordConfirmError('');
+        }
+      }
+
+      return next;
+    });
   };
 
+  // 서버 응답 처리 (모달)
   useEffect(() => {
     if (state?.message) {
       setModalMsg(state.message);
@@ -66,7 +105,9 @@ export default function SignupPage() {
           </Link>
         </div>
 
+        {/* 서버 액션으로 제출 */}
         <form action={formAction} autoComplete="off" className="space-y-4">
+          {/* 이메일 */}
           <FormInput
             id="email"
             name="email"
@@ -75,32 +116,35 @@ export default function SignupPage() {
             placeholder="이메일을 입력하세요"
             value={form.email}
             onChange={handleChange}
-            labelClassName="text-black"
-            labelUnstyled
+            // 이메일은 지금 로컬 에러 안 줘서 override 없음
           />
+          {/* 서버에서 온 이메일 에러 (예: 이미 가입된 이메일 등) */}
           {!state.ok && state.fieldErrors?.email && (
             <p className="mt-1 text-sm text-red-600">
               {state.fieldErrors.email}
             </p>
           )}
 
+          {/* 닉네임 */}
           <FormInput
             id="nickname"
             name="nickname"
-            type="text"
+            type="nickname"
             labelText="닉네임"
             placeholder="닉네임을 입력하세요"
             value={form.nickname}
             onChange={handleChange}
-            labelClassName="text-black"
-            labelUnstyled
+            //로컬 닉네임 에러를 override로 내려줌
+            errorOverride={nicknameError}
           />
+          {/* 서버 닉네임 에러 (중복 닉네임 등) */}
           {!state.ok && state.fieldErrors?.nickname && (
             <p className="mt-1 text-sm text-red-600">
               {state.fieldErrors.nickname}
             </p>
           )}
 
+          {/* 비밀번호 */}
           <FormInput
             id="password"
             name="password"
@@ -109,8 +153,7 @@ export default function SignupPage() {
             placeholder="비밀번호를 입력하세요"
             value={form.password}
             onChange={handleChange}
-            labelClassName="text-black"
-            labelUnstyled
+            // 로컬 override 없음 (규칙 검증은 blur 시 훅이 할 거고 그대로 둠)
           />
           {!state.ok && state.fieldErrors?.password && (
             <p className="mt-1 text-sm text-red-600">
@@ -118,16 +161,18 @@ export default function SignupPage() {
             </p>
           )}
 
+          {/* 비밀번호 확인 */}
           <FormInput
             id="passwordConfirmation"
             name="passwordConfirmation"
-            type="password"
+            type="passwordConfirm"
             labelText="비밀번호 확인"
             placeholder="비밀번호를 다시 입력하세요"
             value={form.passwordConfirmation}
             onChange={handleChange}
-            labelClassName="text-black"
-            labelUnstyled
+            passwordValue={form.password}
+            // 로컬 비번확인 에러 override
+            errorOverride={passwordConfirmError}
           />
           {!state.ok && state.fieldErrors?.passwordConfirmation && (
             <p className="mt-1 text-sm text-red-600">

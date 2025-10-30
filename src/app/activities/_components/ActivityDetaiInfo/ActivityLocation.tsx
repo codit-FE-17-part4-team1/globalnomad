@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import Script from 'next/script';
 import type { ActivityDetailInfo } from '@/types/activity';
@@ -17,7 +17,7 @@ interface GeocoderResult {
 }
 
 const ActivityLocation = ({ address }: ActivityLocationProps) => {
-  const [isKakaoLoaded, setIsKakaoLoaded] = useState(false);
+  const [loading, setLoading] = useState(true);
   const mapRef = useRef<HTMLDivElement>(null);
 
   // 지도 초기화 함수
@@ -27,11 +27,14 @@ const ActivityLocation = ({ address }: ActivityLocationProps) => {
 
     const maps = kakao.maps;
     const container = mapRef.current;
+
+    // 처음 로딩되는 지도
     const mapOption = {
-      center: new maps.LatLng(37.5665, 126.978),
+      center: new maps.LatLng(37.5665, 126.978), // 초기 중심 좌표
       level: 3,
     };
     const map = new maps.Map(container, mapOption);
+
     const geocoder = new maps.services.Geocoder();
 
     geocoder.addressSearch(
@@ -44,11 +47,13 @@ const ActivityLocation = ({ address }: ActivityLocationProps) => {
           );
           map.setCenter(coords);
 
+          // 마커
           const marker = new maps.Marker({
             map,
             position: coords,
           });
 
+          // 인포윈도우
           const iwContent = `
           <div style="padding:15px 10px;text-align:left;font-size:13px;line-height:1.4;width:250px;">
             <div style="font-weight:600; margin-bottom:6px;">${address}</div>
@@ -71,14 +76,18 @@ const ActivityLocation = ({ address }: ActivityLocationProps) => {
 
           infowindow.open(map, marker);
 
+          // 마커 클릭 이벤트
           let isOpen = true;
           maps.event.addListener(marker, 'click', () => {
             if (isOpen) infowindow.close();
             else infowindow.open(map, marker);
             isOpen = !isOpen;
           });
+
+          setLoading(false); // 지도 로딩 완료
         } else {
           console.error('주소 변환 실패:', status, address);
+          setLoading(false);
         }
       }
     );
@@ -86,30 +95,37 @@ const ActivityLocation = ({ address }: ActivityLocationProps) => {
 
   // SDK 로드 후 지도 초기화
   useEffect(() => {
-    const kakao = window.kakao;
-    if (isKakaoLoaded && kakao?.maps) {
-      kakao.maps.load(() => {
-        initializeMap();
-      });
+    // mapRef가 존재하고 Kakao SDK가 이미 로드된 경우 초기화
+    if (mapRef.current && window.kakao?.maps) {
+      window.kakao.maps.load(initializeMap);
     }
-  }, [isKakaoLoaded, initializeMap]);
+  }, [initializeMap]);
 
   return (
     <div className="w-full flex flex-col gap-2">
       {/* Kakao Map SDK 로드 */}
       <Script
-        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=f0b27e2a9ba99a3eb688c3aba9e9d651&autoload=false&libraries=services`}
+        src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=f0b27e2a9ba99a3eb688c3aba9e9d651&autoload=false&libraries=services`}
         strategy="afterInteractive"
-        onLoad={() => setIsKakaoLoaded(true)}
+        onLoad={() => {
+          if (mapRef.current && window.kakao?.maps) {
+            window.kakao.maps.load(initializeMap); // setIsKakaoLoaded 제거
+          }
+        }}
         onError={() => console.error('Kakao SDK 로드 실패')}
       />
-
       {/* 지도 영역 */}
       <div
         ref={mapRef}
         id="map"
-        className="w-full h-[450px] rounded-2xl bg-gray-200"
-      />
+        className="w-full h-[450px] rounded-2xl bg-gray-200 relative"
+      >
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-200 rounded-2xl">
+            <span className="text-gray-500">지도 로딩 중...</span>
+          </div>
+        )}
+      </div>
 
       {/* 주소 표시 */}
       {address && (

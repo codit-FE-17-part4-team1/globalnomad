@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 
 interface ProfileImageProps {
-  imageUrl?: string;
-  name?: string;
+  imageUrl: string;
+  name: string;
 }
 
 const ProfileImage: React.FC<ProfileImageProps> = ({ imageUrl, name }) => {
