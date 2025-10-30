@@ -136,7 +136,7 @@ export default function AlertModal({
       {!isLoading && localAlerts.length === 0 && (
         <div className="flex flex-col items-center justify-center py-12 ">
           <Image
-            src="/icon/images/design_2/earth.png"
+            src="/images/design_2/earth.png"
             alt="예약 내역 없음"
             width={50}
             height={50}
