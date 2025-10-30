@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import type { TimeOption } from '@/app/Profile/ReservationStatus/_components/TimeDropdown';
-// import BaseModal from '@/components/Modal/BaseModal';
 import type { ReservationStatus } from '@/types/calendar';
 import Button from '@/components/Button/Button';
 import Chips from '@/components/chips/Chips';
@@ -20,7 +19,7 @@ interface ReservationModalBaseProps {
     people: number;
     status: ReservationStatus;
     time: string;
-    id: number; // reservationId
+    id: number;
   }[];
   onApprove?: (reservationId: number) => void;
   onReject?: (reservationId: number) => void;
@@ -77,7 +76,6 @@ export default function ReservationModalBase({
     };
   }, [isOpen, onClose]);
 
-  // 2. 현재 활성화된 탭(신청/승인/거절)에 해당하는 예약 목록
   const reservationsByStatus = reservations.filter((item) => {
     if (activeTab === 'pending') {
       return item.status === 'pending';
@@ -123,13 +121,6 @@ export default function ReservationModalBase({
   };
 
   return (
-    // BaseModal 을 쓰면 안될 듯 ㅠ
-    // <BaseModal
-    //   isOpen={isOpen}
-    //   onClose={onClose}
-    //   title="예약 정보"
-    //   className="lg:w-[430px] md:w-[430px] xs:w-[375px] bg-white"
-    // >
     <div className="fixed inset-0 z-40">
       <div
         ref={modalRef}
@@ -186,7 +177,6 @@ export default function ReservationModalBase({
               >
                 {tab.label}
                 {getTabCount(tab.key)}
-                {/* {reservations.filter((r) => r.status === tab.key).length} */}
               </button>
             ))}
           </div>
@@ -272,7 +262,6 @@ export default function ReservationModalBase({
             ))}
           </div>
         </div>
-        {/* // </BaseModal> */}
       </div>
     </div>
   );
