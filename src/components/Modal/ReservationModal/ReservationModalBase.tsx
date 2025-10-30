@@ -225,7 +225,7 @@ export default function ReservationModalBase({
           <div className="mb-4">
             <p className="text-lg font-semibold mb-2">예약 날짜</p>
             <p className="mb-1">{date}</p>
-            {timeOptions.length > 0 && (
+            {timeOptions.length > 0 && ( // 데이터가 없어도 드롭다운은 뜨도록 할거임
               <TimeDropdown
                 className="mt-2"
                 value={selectedTime}
@@ -241,6 +241,18 @@ export default function ReservationModalBase({
           {/* 예약 내역 */}
           <div>
             <h3 className="font-semibold mb-2">예약 내역</h3>
+            {/* 데이터가 없을 경우 귀염뽀짝한 이미지를 추가해볼까 */}
+            {filteredReservations.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-8">
+                <Image
+                  src="/icon/earth.svg"
+                  alt="예약 내역 없음"
+                  width={100}
+                  height={100}
+                />
+                <p className="text-gray-500 pt-8">예약 내역이 없습니다</p>
+              </div>
+            )}
             {filteredReservations.map((item, idx) => (
               <div
                 key={idx}
