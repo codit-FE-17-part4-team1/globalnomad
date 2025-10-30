@@ -58,13 +58,11 @@ export default function TimeDropdown({
         ref={btnRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between rounded-md border border-[var(--color-gray-500)] px-4 py-2 text-left"
+        className="w-full flex items-center justify-between rounded-md border border-[var(--color-gray-400)] px-4 py-2 text-left"
       >
-        {' '}
         <span className={selectedLabel ? '' : 'text-gray-400'}>
-          {' '}
-          {selectedLabel || placeholder}{' '}
-        </span>{' '}
+          {selectedLabel || placeholder}
+        </span>
         <Image
           src="/icon/btn/down_arrow.svg"
           alt="펼치기"
@@ -77,7 +75,7 @@ export default function TimeDropdown({
         <ul
           ref={listRef}
           role="listbox"
-          className="absolute top-full left-0 z-50 mt-2 max-h-56 w-full overflow-auto rounded-md border border-[var(--color-gray-500)] bg-white shadow-lg"
+          className="absolute top-full left-0 z-50 mt-2 max-h-56 w-full overflow-auto rounded-md border border-[var(--color-gray-400)] bg-white shadow-lg"
         >
           {options.map((opt) => (
             <li
@@ -92,7 +90,7 @@ export default function TimeDropdown({
                   setOpen(false);
                 }}
                 className={`block w-full px-4 py-2 text-left hover:bg-[var(--color-green-light)] ${
-                  opt.value === value ? 'bg-[var(--color-gray-200)]' : ''
+                  opt.value === value ? 'bg-[var(--color-gray-100)]' : ''
                 }`}
               >
                 {opt.label}

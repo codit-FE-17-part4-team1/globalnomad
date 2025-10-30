@@ -53,7 +53,7 @@ export default function CustomInput({
           onChange={onChange} // 수정
           // onChange={onChange as (e: ChangeEvent<HTMLTextAreaElement>) => void}
           className={`w-full px-5 py-4 rounded-md border
-            border-gray-700 focus:outline-none
+            border-gray-400 focus:outline-none
             min-h-[240px]
             text-lg text-black placeholder-gray-600
             resize-none
@@ -69,7 +69,7 @@ export default function CustomInput({
           onChange={onChange} // 수정
           // onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void}
           className={`w-full px-5 py-4 rounded-md border
-            border-gray-700 focus:outline-none
+            border-gray-400 focus:outline-none
             text-lg text-black placeholder-gray-600
             ${inputClassName || ''}`}
         />
