@@ -296,7 +296,7 @@ export default function ReservationCalendar({
               backgroundColor: background,
               border: 'none',
               borderRadius: '4px',
-              height: '20px',
+              height: '23px',
               marginBottom: '2px',
             },
           };

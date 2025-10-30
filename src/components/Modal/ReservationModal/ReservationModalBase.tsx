@@ -186,7 +186,7 @@ export default function ReservationModalBase({
           </div>
 
           {/* 탭 */}
-          <div className="flex space-x-4 border-b mb-6">
+          <div className="flex space-x-6 border-b mb-6">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
@@ -209,7 +209,7 @@ export default function ReservationModalBase({
                   });
                   setSelectedTime(reservationsInNewTab[0]?.time || 'all');
                 }}
-                className={`pb-2 pr-4 flex justify-evenly font-semibold ${
+                className={`pb-2 px-4 flex justify-center items-center font-semibold ${
                   activeTab === tab.key
                     ? 'text-orange-dark border-b-3 border-orange-dark'
                     : 'text-gray-400'
