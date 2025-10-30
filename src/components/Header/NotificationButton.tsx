@@ -17,7 +17,7 @@ export default function NotificationButton({
     <button
       type="button"
       onClick={onClick}
-      className="relative rounded-full p-2 hover:bg-[#DDDDDD]"
+      className="relative rounded-full p-2 hover:bg-gray-200"
       aria-label="알림"
     >
       <Image

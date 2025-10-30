@@ -26,7 +26,7 @@ export default function Profile({ userName, userImage }: ProfileProps) {
         <ProfileImage imageUrl={userImage} name={userName} />
       </div>
       {/* 이름 */}
-      <span className="text-[#1B1B1B] hover:text-[#79747E] font-medium text-sm leading-6 tracking-normal text-center transition-colors duration-300 whitespace-nowrap">
+      <span className="text-black hover:text-orange font-medium text-sm leading-6 tracking-normal text-center transition-colors duration-300 whitespace-nowrap">
         {displayName}
       </span>
     </div>

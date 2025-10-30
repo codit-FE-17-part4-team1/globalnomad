@@ -29,8 +29,8 @@ const ProfileImage: React.FC<ProfileImageProps> = ({ imageUrl, name }) => {
 
   // fallback: 이미지 없거나 로딩 실패 시 이니셜 표시
   return (
-    <div className="w-full h-full rounded-full bg-[#DDDDDD] flex items-center justify-center">
-      <span className="text-lg font-medium text-[#1B1B1B]">{initial}</span>
+    <div className="w-full h-full rounded-full bg-orange-400 flex items-center justify-center">
+      <span className="text-lg font-medium text-white">{initial}</span>
     </div>
   );
 };

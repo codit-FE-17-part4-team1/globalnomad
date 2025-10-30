@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import MainBanner from './main/_components/MainBanner';
 import SearchBar from './main/_components/SearchBar';
 import PopularActivities from './main/_components/PopularActivities';
@@ -17,6 +18,8 @@ const SectionContainer: React.FC<{
 );
 
 const MainPage: React.FC = () => {
+  const router = useRouter();
+
   const categories = [
     '전체',
     '문화·예술',
@@ -43,6 +46,19 @@ const MainPage: React.FC = () => {
   const cardsPerPage = 3;
   const [isDesktop, setIsDesktop] = useState(false);
 
+  // 검색바 클릭 시 필터 초기화
+  const handleSearchFocus = () => {
+    setSelectedCategory('전체');
+    setPriceSort('');
+    setCurrentPage(1);
+  };
+
+  // 검색 실행
+  const handleSearch = (keyword: string) => {
+    if (!keyword || !keyword.trim()) return;
+    router.push(`/search?keyword=${encodeURIComponent(keyword.trim())}`);
+  };
+
   // 화면 크기 체크
   useEffect(() => {
     const handleResize = () => {
@@ -56,12 +72,12 @@ const MainPage: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // localStorage에서 초기 상태 로드
+  // sessionStorage에서 초기 상태 로드
   useEffect(() => {
-    const savedCategory = localStorage.getItem('selectedCategory');
-    const savedPage = localStorage.getItem('allActivitiesPage');
-    const savedItemsPerPage = localStorage.getItem('itemsPerPage');
-    const savedPriceSort = localStorage.getItem('priceSort');
+    const savedCategory = sessionStorage.getItem('selectedCategory');
+    const savedPage = sessionStorage.getItem('allActivitiesPage');
+    const savedItemsPerPage = sessionStorage.getItem('itemsPerPage');
+    const savedPriceSort = sessionStorage.getItem('priceSort');
 
     if (savedCategory) setSelectedCategory(savedCategory);
     if (savedPage) setCurrentPage(Number(savedPage));
@@ -111,35 +127,43 @@ const MainPage: React.FC = () => {
 
   // 필터링 + 정렬 + 페이지네이션
   useEffect(() => {
-    if (!activities?.length) return;
+    if (!activities.length) {
+      setVisibleActivities([]);
+      setTotalCount(0);
+      return;
+    }
 
-    const filtered: Activity[] =
-      selectedCategory === '전체'
-        ? [...activities]
-        : activities.filter((act) => act.category === selectedCategory);
+    let filtered = [...activities];
 
-    if (priceSort === '가격 낮은 순')
+    // 카테고리 필터링
+    if (selectedCategory !== '전체') {
+      filtered = filtered.filter((act) => act.category === selectedCategory);
+    }
+
+    // 가격 정렬
+    if (priceSort === '가격 낮은 순') {
       filtered.sort((a, b) => a.price - b.price);
-    else if (priceSort === '가격 높은 순')
+    } else if (priceSort === '가격 높은 순') {
       filtered.sort((a, b) => b.price - a.price);
-    else
+    } else {
+      // 기본은 최신순
       filtered.sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
+    }
 
+    // 페이지네이션
     setTotalCount(filtered.length);
-
-    // 페이지네이션 로직
     const startIdx = (currentPage - 1) * itemsPerPage;
     const endIdx = startIdx + itemsPerPage;
     setVisibleActivities(filtered.slice(startIdx, endIdx));
 
-    // localStorage 동기화
-    localStorage.setItem('selectedCategory', selectedCategory);
-    localStorage.setItem('priceSort', priceSort);
-    localStorage.setItem('allActivitiesPage', currentPage.toString());
-    localStorage.setItem('itemsPerPage', itemsPerPage.toString());
+    // sessionStorage 동기화
+    sessionStorage.setItem('selectedCategory', selectedCategory);
+    sessionStorage.setItem('priceSort', priceSort);
+    sessionStorage.setItem('allActivitiesPage', currentPage.toString());
+    sessionStorage.setItem('itemsPerPage', itemsPerPage.toString());
   }, [activities, selectedCategory, priceSort, currentPage, itemsPerPage]);
 
   // 필터나 정렬이 바뀌면 페이지를 1로 초기화
@@ -152,7 +176,10 @@ const MainPage: React.FC = () => {
       <div className="relative w-full">
         <MainBanner />
         <div className="absolute left-1/2 bottom-0 transform -translate-x-1/2 translate-y-2/3 z-10 w-full max-w-[1240px]">
-          <SearchBar />
+          <SearchBar
+            onSearchFocus={handleSearchFocus}
+            onSearch={handleSearch}
+          />
         </div>
       </div>
 

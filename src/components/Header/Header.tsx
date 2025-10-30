@@ -18,7 +18,7 @@ export default function Header({
   onNotificationClick,
 }: HeaderProps) {
   return (
-    <header className="w-full h-[70px] bg-white border-b border-[#DDDDDD]">
+    <header className="w-full h-[70px] bg-white border-b border-gray-200">
       <div className="flex items-center justify-between h-full w-full min-w-[375px] max-w-[1240px] mx-auto px-5">
         {/* 로고 */}
         <Link href="/" className="relative w-[10.75rem] h-[1.875rem]">
@@ -34,13 +34,13 @@ export default function Header({
           <div className="flex items-center justify-center gap-6">
             <Link
               href="/Login"
-              className="text-[#1B1B1B] hover:text-[#79747E] font-medium text-sm leading-6 tracking-normal text-center transition-colors duration-300 whitespace-nowrap"
+              className="text-black hover:text-orange font-medium text-sm leading-6 tracking-normal text-center transition-colors duration-300 whitespace-nowrap"
             >
               로그인
             </Link>
             <Link
               href="/Signup"
-              className="text-[#1B1B1B] hover:text-[#79747E] font-medium text-sm leading-6 tracking-normal text-center transition-colors duration-300 whitespace-nowrap"
+              className="text-black hover:text-orange font-medium text-sm leading-6 tracking-normal text-center transition-colors duration-300 whitespace-nowrap"
             >
               회원가입
             </Link>

@@ -16,7 +16,7 @@ const OptionSelectButton: React.FC<OptionSelectButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`text-black-nomad font-semibold text-lg hover:underline focus:outline-none ${className}`}
+      className={`text-black-nomad font-semibold text-lg hover:underline hover:text-orange focus:outline-none ${className}`}
     >
       {label}
     </button>

@@ -99,6 +99,7 @@ const ReservationSidebar: React.FC<ReservationSidebarProps> = ({
           <TimePicker
             selectedTimeId={selectedTimeId || undefined}
             availableTimes={availableTimes}
+            selectedDate={selectedDate || undefined}
             onSelectTime={onSelectTime}
           />
         </div>
