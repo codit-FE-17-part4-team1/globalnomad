@@ -8,7 +8,8 @@ import FormInput from '@/components/Input/CustomInput';
 import { useInputValue } from '@/hooks/useInputValue';
 import Dropdown from '@/components/Dropdown/Dropdown';
 import MypageHeader from '@/app/Profile/_components/MypageHeader/MypageHeader';
-import ImageUploader from '@/app/Profile/_components/ImageUploader/ImageUploader';
+//import ImageUploader from '@/app/Profile/_components/ImageUploader/ImageUploader';
+import ImageUploaderAdd from '@/app/Profile/_components/ImageUploader/ImageUploaderAdd';
 import DaumPostcode from 'react-daum-postcode';
 import TimeSlots, {
   TimeSlot,
@@ -27,7 +28,7 @@ export default function ExperienceAdd() {
   });
 
   const [bannerImages, setBannerImages] = useState<string[]>([]);
-  const [introImages, setIntroImages] = useState<string[]>([]);
+  const [subImages, setSubImages] = useState<string[]>([]);
   const [selectedSlots, setSelectedSlots] = useState<TimeSlot[]>([]);
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -38,6 +39,7 @@ export default function ExperienceAdd() {
   };
 
   const isFormValid = useMemo(() => {
+    /*
     const { title, category, price, address, description } = form;
 
     const baseValid =
@@ -47,22 +49,38 @@ export default function ExperienceAdd() {
       address.trim() &&
       description.trim();
 
-    const imagesValid = bannerImages.length > 0 && introImages.length > 0;
+    const imagesValid = bannerImages.length > 0 && subImages.length > 0;
     const timeValid = selectedSlots.length > 0;
 
     return !!(baseValid && imagesValid && timeValid);
-  }, [form, bannerImages, introImages, selectedSlots]);
+    */
+
+    return !!(
+      form.title &&
+      form.category &&
+      form.description &&
+      form.price &&
+      form.address &&
+      bannerImages.length &&
+      //subImages.length &&
+      selectedSlots.length
+    );
+  }, [form, bannerImages, selectedSlots]);
 
   const handleSubmit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!isFormValid) return alert('모든 항목을 입력해주세요');
+    //if (e) e.preventDefault();
+    e?.preventDefault();
+    if (!isFormValid) return alert('필수 항목을 입력해주세요');
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const now = new Date();
 
+    let hasInvalidTime = false;
+
     const schedules = selectedSlots
       .filter((slot) => slot.date && slot.startTime && slot.endTime)
+      /*
       .filter((slot) => {
         const slotDate = new Date(slot.date!);
         slotDate.setHours(0, 0, 0, 0);
@@ -71,26 +89,91 @@ export default function ExperienceAdd() {
           return false;
         return true;
       })
+        */
       .map((slot) => {
-        const date = slot.date!.toISOString().split('T')[0];
+        //const date = slot.date!.toISOString().split('T')[0];
+        /*
+        const date = `${slot.date!.getFullYear()}-${(slot.date!.getMonth() + 1)
+          .toString()
+          .padStart(
+            2,
+            '0'
+          )}-${slot.date!.getDate().toString().padStart(2, '0')}`;
         const formatTime = (d: Date) =>
           `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
         return {
           date,
           startTime: formatTime(slot.startTime!),
           endTime: formatTime(slot.endTime!),
-        };
-      });
+        };*/
 
+        const slotDate = new Date(slot.date!);
+        slotDate.setHours(0, 0, 0, 0);
+
+        const startTime = slot.startTime!;
+        const endTime = slot.endTime!;
+
+        if (slotDate < today) {
+          hasInvalidTime = true;
+          return null;
+        }
+
+        if (
+          slotDate.getTime() === today.getTime() &&
+          (endTime.getHours() < now.getHours() ||
+            (endTime.getHours() === now.getHours() &&
+              endTime.getMinutes() <= now.getMinutes()))
+        ) {
+          hasInvalidTime = true;
+          return null;
+        }
+
+        const formatTime = (d: Date) =>
+          `${d.getHours().toString().padStart(2, '0')}:${d
+            .getMinutes()
+            .toString()
+            .padStart(2, '0')}`;
+
+        return {
+          date: `${slot.date!.getFullYear()}-${(slot.date!.getMonth() + 1)
+            .toString()
+            .padStart(
+              2,
+              '0'
+            )}-${slot.date!.getDate().toString().padStart(2, '0')}`,
+          startTime: formatTime(startTime),
+          endTime: formatTime(endTime),
+        };
+      })
+      .filter(Boolean) as {
+      date: string;
+      startTime: string;
+      endTime: string;
+    }[];
+
+    if (hasInvalidTime) {
+      alert('오늘 이전 또는 이미 지난 시간대는 등록할 수 없음');
+      return;
+    }
+
+    /*
     if (schedules.length === 0) {
       alert('오늘 이전 또는 이미 지난 시간대는 예약할 수 없슷비낟.');
       return;
     }
+    */
 
+    if (!schedules.length) return alert('예약 가능한 시간대를 선택해주세요');
+
+    /*
     const getValidUrl = (url: string) =>
       url.startsWith('blob:')
         ? 'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/globalnomad/activity_registration_image/default.png'
         : url;
+    */
+
+    console.log('bannerImages:', bannerImages);
+    console.log('subImages:', subImages);
 
     const body = {
       title: form.title,
@@ -98,8 +181,10 @@ export default function ExperienceAdd() {
       description: form.description,
       price: Number(form.price),
       address: form.address,
-      bannerImageUrl: getValidUrl(bannerImages[0] || ''),
-      subImages: introImages.map((url) => ({ imageUrl: getValidUrl(url) })),
+      //bannerImageUrl: getValidUrl(bannerImages[0] || ''),
+      bannerImageUrl: bannerImages[0] || '',
+      //subImages: subImages.map((url) => ({ imageUrl: getValidUrl(url) })),
+      subImageUrls: subImages,
       schedules,
     };
 
@@ -109,15 +194,16 @@ export default function ExperienceAdd() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
+        //credentials: 'include',
         body: JSON.stringify(body),
       });
-
+      /*
       if (!res.ok) {
         const text = await res.text();
         throw new Error(`서버 오류 (${res.status})\n${text}`);
       }
-
+        */
+      if (!res.ok) throw new Error(await res.text());
       setIsConfirmOpen(true);
     } catch (err) {
       console.error('체험등록실패:', err);
@@ -176,16 +262,20 @@ export default function ExperienceAdd() {
           value={form.description}
           onChange={handleChange}
         />
-        <h1 className="text-xl font-bold mb-[16px] lg:text-2xl">가격</h1>
+        <h1 className="text-xl font-bold mb-[16px] lg:text-2xl">
+          가격 <span className="text-red-600">*</span>
+        </h1>
         <FormInput
           id="price"
           name="price"
           type="text"
-          placeholder="가격"
+          placeholder="가격 (특수문자 사용 불가)"
           value={form.price}
           onChange={handleChange}
         />
-        <h1 className="text-xl font-bold mb-[16px] lg:text-2xl">주소</h1>
+        <h1 className="text-xl font-bold mb-[16px] lg:text-2xl">
+          주소 <span className="text-red-600">*</span>
+        </h1>
         <div className="relative">
           <FormInput
             id="address"
@@ -218,22 +308,33 @@ export default function ExperienceAdd() {
           </div>
         )}
 
-        <h1 className="text-2xl font-bold mb-[16px]">예약 가능한 시간대</h1>
+        <h1 className="text-2xl font-bold mb-[16px]">
+          예약 가능한 시간대 <span className="text-red-600">*</span>
+        </h1>
         <TimeSlots
           selectedSlots={selectedSlots}
           setSelectedSlots={setSelectedSlots}
         />
-        <ImageUploader
-          title="배너이미지"
+        <h1 className="text-xl font-bold mb-[16px] lg:text-2xl">
+          배너이미지 <span className="text-red-600">*</span>
+        </h1>
+        <ImageUploaderAdd
+          title=""
           images={bannerImages}
           setImages={setBannerImages}
+          maxCount={1}
         />
-        <ImageUploader
-          title="소개이미지"
-          images={introImages}
-          setImages={setIntroImages}
+        <p className="mb-[16px]">배너 이미지는 1개까지 등록 가능합니다.</p>
+        <h1 className="text-xl font-bold mb-[16px] lg:text-2xl">
+          소개이미지(선택)
+        </h1>
+        <ImageUploaderAdd
+          title=""
+          images={subImages}
+          setImages={setSubImages}
+          maxCount={4}
         />
-        <p>이미지는 최대 4개까지 등록 가능합니다.</p>
+        <p>소개 이미지는 최대 4개까지 등록 가능합니다.</p>
       </form>
 
       <ConfirmModal

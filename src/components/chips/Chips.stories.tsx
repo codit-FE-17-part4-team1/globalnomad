@@ -4,13 +4,13 @@ import Chips from './Chips';
 
 const meta = {
   component: Chips,
-    argTypes: {
+  argTypes: {
     color: {
-      options: ['white', 'blue', 'gray', 'orange','red'],
+      options: ['white', 'blue', 'gray', 'orange', 'red'],
     },
-    variant :{
-      options:['normal','round']
-    }
+    variant: {
+      options: ['normal', 'round'],
+    },
   },
 } satisfies Meta<typeof Chips>;
 
@@ -20,8 +20,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    children: "기본",
+    children: '기본',
     color: 'white',
-    variant: 'normal'
+    variant: 'normal',
   },
 };
