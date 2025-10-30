@@ -137,7 +137,7 @@ function AuthenticatedContent() {
             updateError={updateError}
           />
         ) : (
-          <div className="flex flex-col items-center pt-50 h-full text-2xl font-medium text-[var(--color-gray-700)]">
+          <div className="flex flex-col items-center pt-50 h-full text-2xl font-medium text-gray-700">
             <Image
               src="/images/empty.svg"
               alt="체험없음"

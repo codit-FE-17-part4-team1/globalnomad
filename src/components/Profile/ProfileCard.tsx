@@ -57,7 +57,7 @@ export default function ProfileCard() {
               <form
                 key={item.key}
                 action={logoutAction}
-                className="flex items-center gap-3 rounded-xl px-4 py-3 text-[var(--color-gray-400)] font-semibold cursor-pointer hover:bg-[var(--color-gray-100)] transition-colors"
+                className="flex items-center gap-3 rounded-xl px-4 py-3 text-gray-500 font-semibold cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 <button
                   type="submit"
@@ -80,10 +80,10 @@ export default function ProfileCard() {
               key={item.key}
               href={item.href}
               className={[
-                'flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors duration-200 hover:bg-[var(--color-gray-100)]',
+                'flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors hover:bg-gray-100',
                 isActive
-                  ? 'bg-[var(--color-green-light)] text-[var(--color-green-dark)] font-bold'
-                  : 'text-[var(--color-gray-400)] font-semibold',
+                  ? 'bg-orange-light text-orange-dark font-bold'
+                  : 'text-gray-500 font-semibold',
               ].join(' ')}
               style={{ fontSize: 'var(--text-lg)' }}
             >
