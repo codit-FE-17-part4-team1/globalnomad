@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import type { TimeOption } from '@/app/Profile/ReservationStatus/_components/TimeDropdown';
-import BaseModal from '@/components/Modal/BaseModal';
+// import BaseModal from '@/components/Modal/BaseModal';
 import type { ReservationStatus } from '@/types/calendar';
 import Button from '@/components/Button/Button';
 import Chips from '@/components/chips/Chips';
@@ -39,6 +39,7 @@ export default function ReservationModalBase({
 }: ReservationModalBaseProps) {
   const [activeTab, setActiveTab] = useState<ReservationStatus>(status);
   const [selectedTime, setSelectedTime] = useState<string>('all');
+  const modalRef = useRef<HTMLDivElement>(null);
 
   // 모달이 열릴 때마다 탭과 시간 상태를 초기화
   useEffect(() => {
@@ -60,6 +61,20 @@ export default function ReservationModalBase({
     };
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isOpen, onClose]);
 
   // 2. 현재 활성화된 탭(신청/승인/거절)에 해당하는 예약 목록
@@ -117,10 +132,11 @@ export default function ReservationModalBase({
     // >
     <div className="fixed inset-0 z-40">
       <div
+        ref={modalRef}
         className="absolute z-50 bg-white rounded-lg shadow-xl w-full max-w-[430px] lg:w-[430px] md:w-[430px] xs:w-[375px] max-h-[calc(100vh-100px)] overflow-y-auto"
         style={{
-          top: `${position?.top || 0}px`,
-          left: `${position?.left || 0}px`,
+          top: `${position?.top}px`,
+          left: `${position?.left}px`,
         }}
       >
         <div className="p-6 relative">
