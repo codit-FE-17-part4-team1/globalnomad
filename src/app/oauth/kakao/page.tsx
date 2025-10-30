@@ -65,21 +65,20 @@ export default function KakaoCallbackPage() {
 
       // ✅ 미가입(403)인 경우: 새 code를 얻기 위해 다시 카카오 인증으로
       if (res.status === 403 || message.includes('등록되지 않은 사용자')) {
-        // 가입으로 이어지도록 의도 저장
+        // 가입 화면에서 자동 닉네임으로 바로 가입 제출하도록 힌트 남김
         sessionStorage.setItem('oauth_after', '/signup-kakao');
+        sessionStorage.setItem('oauth_autonick', '1');
         const newState = crypto.randomUUID();
         sessionStorage.setItem('oauth_state', newState);
-        // fresh code 발급을 위해 동의창 재진입
-        window.location.href = kakaoAuthUrl(newState);
+        window.location.href = kakaoAuthUrl(newState); // fresh code 발급
         return;
       }
 
-      if (res.status === 404) {
-        // 백엔드가 404로 미가입을 주는 경우를 대비
-        sessionStorage.setItem('oauth_after', '/signup-kakao');
-        const newState = crypto.randomUUID();
-        sessionStorage.setItem('oauth_state', newState);
-        window.location.href = kakaoAuthUrl(newState);
+      // ... 페이지 맨 위쪽 after 처리 분기에도 유지
+      const after = sessionStorage.getItem('oauth_after');
+      if (after === '/signup-kakao') {
+        sessionStorage.removeItem('oauth_after');
+        router.replace(`/signup-kakao?code=${encodeURIComponent(code)}`);
         return;
       }
 
