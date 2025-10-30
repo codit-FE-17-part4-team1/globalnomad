@@ -36,16 +36,27 @@ export default function SignupPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
 
-  // 버튼 disabled
+  // 이용약관
+  const [termsAgreed, setTermsAgreed] = useState(false);
+
+  // 버튼 disabled (약관 체크까지 포함)
   const disabled =
     !form.email ||
     !form.nickname ||
     !form.password ||
-    !form.passwordConfirmation;
+    !form.passwordConfirmation ||
+    !termsAgreed;
 
   // 인풋 변경 핸들러
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const target = e.target as HTMLInputElement;
+    const { name, value, type, checked } = target;
+
+    // 체크박스 처리
+    if (type === 'checkbox' && name === 'termsAgreed') {
+      setTermsAgreed(checked);
+      return;
+    }
 
     setForm((prev) => {
       const next = { ...prev, [name]: value };
@@ -116,9 +127,8 @@ export default function SignupPage() {
             placeholder="이메일을 입력하세요"
             value={form.email}
             onChange={handleChange}
-            // 이메일은 지금 로컬 에러 안 줘서 override 없음
           />
-          {/* 서버에서 온 이메일 에러 (예: 이미 가입된 이메일 등) */}
+          {/* 서버에서 온 이메일 에러 */}
           {!state.ok && state.fieldErrors?.email && (
             <p className="mt-1 text-sm text-red-600">
               {state.fieldErrors.email}
@@ -134,10 +144,10 @@ export default function SignupPage() {
             placeholder="닉네임을 입력하세요"
             value={form.nickname}
             onChange={handleChange}
-            //로컬 닉네임 에러를 override로 내려줌
+            // 로컬 닉네임 에러 override
             errorOverride={nicknameError}
           />
-          {/* 서버 닉네임 에러 (중복 닉네임 등) */}
+          {/* 서버 닉네임 에러 */}
           {!state.ok && state.fieldErrors?.nickname && (
             <p className="mt-1 text-sm text-red-600">
               {state.fieldErrors.nickname}
@@ -153,7 +163,6 @@ export default function SignupPage() {
             placeholder="비밀번호를 입력하세요"
             value={form.password}
             onChange={handleChange}
-            // 로컬 override 없음 (규칙 검증은 blur 시 훅이 할 거고 그대로 둠)
           />
           {!state.ok && state.fieldErrors?.password && (
             <p className="mt-1 text-sm text-red-600">
@@ -179,6 +188,21 @@ export default function SignupPage() {
               {state.fieldErrors.passwordConfirmation}
             </p>
           )}
+
+          {/* 이용약관 동의 */}
+          <div className="flex items-center gap-2 mt-2">
+            <input
+              id="termsAgreed"
+              name="termsAgreed"
+              type="checkbox"
+              checked={termsAgreed}
+              onChange={handleChange}
+              className="w-4 h-4"
+            />
+            <label htmlFor="termsAgreed" className="text-sm text-gray-700">
+              이용약관 및 개인정보 처리방침에 동의합니다.
+            </label>
+          </div>
 
           <SubmitButton disabled={disabled} />
         </form>
