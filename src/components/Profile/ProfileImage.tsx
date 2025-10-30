@@ -76,9 +76,7 @@ export default function ProfileImage() {
   return (
     <div className="relative mx-auto mb-6 h-28 w-28">
       <Image
-        src={
-          image || getMyInfo?.profileImageUrl || '/images/zootopia_asloth.jpg'
-        }
+        src={image || getMyInfo?.profileImageUrl || '/images/defalt_user.png'}
         alt="프로필"
         fill
         className="rounded-full object-cover"
