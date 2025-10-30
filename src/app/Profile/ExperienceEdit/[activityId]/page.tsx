@@ -1,5 +1,3 @@
-//1027 업데이트 완료
-
 'use client';
 
 import 'react-datepicker/dist/react-datepicker.css';
@@ -9,7 +7,7 @@ import FormInput from '@/components/Input/CustomInput';
 import { useInputValue } from '@/hooks/useInputValue';
 import Dropdown from '@/components/Dropdown/Dropdown';
 import MypageHeader from '@/app/Profile/_components/MypageHeader/MypageHeader';
-import ImageUploader from '@/app/Profile/_components/ImageUploader/ImageUploader';
+import ImageUploaderEdit from '@/app/Profile/_components/ImageUploader/ImageUploaderEdit';
 import DaumPostcode from 'react-daum-postcode';
 import TimeSlots, {
   TimeSlot,
@@ -17,6 +15,7 @@ import TimeSlots, {
 import ConfirmModal from '@/components/Modal/ConfirmModal';
 
 interface Schedule {
+  id?: number;
   date: string;
   startTime: string;
   endTime: string;
@@ -30,7 +29,7 @@ interface ExperienceData {
   address: string;
   description: string;
   bannerImageUrl?: string;
-  subImageUrls: string[];
+  subImages?: { id: number; imageUrl: string }[];
   schedules: Schedule[];
 }
 
@@ -50,9 +49,12 @@ export default function ExperienceEdit() {
   });
 
   const [bannerImages, setBannerImages] = useState<string[]>([]);
-  const [introImages, setIntroImages] = useState<string[]>([]);
-  const [selectedSlots, setSelectedSlots] = useState<TimeSlot[]>([]);
+  //const [subImages, setSubImages] = useState<string[]>([]);
+  const [subImages, setSubImages] = useState<{ id?: number; url: string }[]>(
+    []
+  );
 
+  const [selectedSlots, setSelectedSlots] = useState<TimeSlot[]>([]);
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
   const [initialData, setInitialData] = useState<ExperienceData | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -88,10 +90,15 @@ export default function ExperienceEdit() {
         });
 
         setBannerImages(data.bannerImageUrl ? [data.bannerImageUrl] : []);
-        setIntroImages(data.subImageUrls || []);
+        //setSubImages(data.subImageUrls || []);
+        setSubImages(
+          data.subImages
+            ? data.subImages.map((img) => ({ id: img.id, url: img.imageUrl }))
+            : []
+        );
 
         const slots: TimeSlot[] = (data.schedules || []).map((s, i) => ({
-          id: i,
+          id: s.id ?? i,
           date: new Date(s.date),
           startTime: new Date(`${s.date}T${s.startTime}`),
           endTime: new Date(`${s.date}T${s.endTime}`),
@@ -111,24 +118,16 @@ export default function ExperienceEdit() {
     setForm((prev) => ({ ...prev, address: data.address }));
     setIsPostcodeOpen(false);
   };
-
-  const handleBannerImages: React.Dispatch<React.SetStateAction<string[]>> = (
-    imgs
-  ) => {
-    setBannerImages((prev) =>
-      typeof imgs === 'function' ? imgs(prev).slice(0, 1) : imgs.slice(0, 1)
-    );
+  /*
+  const handleBannerImages = (imgs: string[]) => {
+    setBannerImages(imgs.slice(0, 1));
   };
+  */
+  const handleBannerImages: React.Dispatch<React.SetStateAction<string[]>> =
+    setBannerImages;
 
-  const handleIntroImages: React.Dispatch<React.SetStateAction<string[]>> = (
-    imgs
-  ) => {
-    setIntroImages((prev) => {
-      const newImgs = typeof imgs === 'function' ? imgs(prev) : imgs;
-      const combined = [...prev, ...newImgs];
-      const unique = Array.from(new Set(combined));
-      return unique.slice(0, 3);
-    });
+  const handleSubImages = (urls: { id?: number; url: string }[]) => {
+    setSubImages(urls);
   };
 
   //PATCH
@@ -140,29 +139,62 @@ export default function ExperienceEdit() {
     today.setHours(0, 0, 0, 0);
     const now = new Date();
 
-    const schedules: Schedule[] = selectedSlots
-      .filter((slot) => slot.date && slot.startTime && slot.endTime)
-      .filter((slot) => {
-        const slotDate = new Date(slot.date!);
-        slotDate.setHours(0, 0, 0, 0);
+    let hasInvalidTime = false;
+    const schedulesToAdd: {
+      date: string;
+      startTime: string;
+      endTime: string;
+    }[] = [];
+    const scheduleIdsToRemove: number[] = [];
 
-        //오늘 이전 날짜 제외
-        if (slotDate < today) return false;
-        //오늘 날짜인데 종료 시간이 현재 시간 이전이면 제외
-        if (slotDate.getTime() === today.getTime() && slot.endTime! < now)
-          return false;
-        return true;
-      })
-      .map((slot) => ({
-        date: slot.date!.toISOString().split('T')[0],
-        startTime: `${slot.startTime!.getHours().toString().padStart(2, '0')}:${slot.startTime!.getMinutes().toString().padStart(2, '0')}`,
-        endTime: `${slot.endTime!.getHours().toString().padStart(2, '0')}:${slot.endTime!.getMinutes().toString().padStart(2, '0')}`,
-      }));
+    (initialData?.schedules || []).forEach((schedule) => {
+      if (schedule.id !== undefined) scheduleIdsToRemove.push(schedule.id);
+    });
 
-    if (schedules.length === 0) {
-      alert('오늘 이전 또는 이미 지난 시간대는 예약할 수 없슷비낟.');
+    selectedSlots.forEach((slot) => {
+      if (!slot.date || !slot.startTime || !slot.endTime) return;
+
+      const dateStr = `${slot.date.getFullYear()}-${(slot.date.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}-${slot.date.getDate().toString().padStart(2, '0')}`;
+      const startTimeStr = `${slot.startTime.getHours().toString().padStart(2, '0')}:${slot.startTime
+        .getMinutes()
+        .toString()
+        .padStart(2, '0')}`;
+      const endTimeStr = `${slot.endTime.getHours().toString().padStart(2, '0')}:${slot.endTime
+        .getMinutes()
+        .toString()
+        .padStart(2, '0')}`;
+
+      const slotDate = new Date(slot.date);
+      slotDate.setHours(0, 0, 0, 0);
+
+      if (
+        slotDate < today ||
+        (slotDate.getTime() === today.getTime() && slot.endTime < now)
+      ) {
+        hasInvalidTime = true;
+        return;
+      }
+
+      schedulesToAdd.push({
+        date: dateStr,
+        startTime: startTimeStr,
+        endTime: endTimeStr,
+      });
+    });
+
+    if (hasInvalidTime) {
+      alert('오늘 이전 또는 이미 지난 시간대는 등록할 수 없습니다.');
       return;
     }
+
+    const subImageIdsToRemove = initialData?.subImages
+      ? initialData.subImages
+          .map((img) => img.id)
+          .filter((id) => !subImages.find((s) => s.id === id))
+      : [];
+    const subImageUrlsToAdd = subImages.filter((s) => !s.id).map((s) => s.url);
 
     const body = {
       title: form.title,
@@ -171,9 +203,17 @@ export default function ExperienceEdit() {
       price: Number(form.price),
       address: form.address,
       bannerImageUrl: bannerImages[0] || '',
-      subImageUrls: introImages,
-      schedules,
+      //subImageUrls: subImages,
+      //schedules,
+      subImageIdsToRemove,
+      subImageUrlsToAdd,
+      scheduleIdsToRemove,
+      schedulesToAdd,
     };
+
+    console.log('PATCH 요청 보내기 전 body:', JSON.stringify(body, null, 2));
+    console.log('schedulesToAdd:', schedulesToAdd);
+    console.log('scheduleIdsToRemove:', scheduleIdsToRemove);
 
     try {
       const res = await fetch(`/api/myactivities/${activityId}`, {
@@ -184,10 +224,7 @@ export default function ExperienceEdit() {
         body: JSON.stringify(body),
       });
 
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`수정 실패: ${text}`);
-      }
+      if (!res.ok) throw new Error(await res.text());
       setIsConfirmOpen(true);
     } catch (err) {
       console.error('수정 실패:', err);
@@ -197,27 +234,38 @@ export default function ExperienceEdit() {
 
   const isFormChanged = useMemo(() => {
     if (!initialData) return false;
+    const initialBanner = initialData.bannerImageUrl
+      ? [initialData.bannerImageUrl]
+      : [];
+    const initialSubImages =
+      initialData.subImages?.map((s) => s.imageUrl) || [];
+
+    const currentSlots = selectedSlots.map((s) => ({
+      date: s.date?.toISOString().split('T')[0] ?? '',
+      startTime: s.startTime
+        ? `${s.startTime.getHours().toString().padStart(2, '0')}:${s.startTime.getMinutes().toString().padStart(2, '0')}`
+        : '',
+      endTime: s.endTime
+        ? `${s.endTime.getHours().toString().padStart(2, '0')}:${s.endTime.getMinutes().toString().padStart(2, '0')}`
+        : '',
+    }));
+    const initialSlots = initialData.schedules.map((s) => ({
+      date: s.date,
+      startTime: s.startTime.padStart(5, '0'),
+      endTime: s.endTime.padStart(5, '0'),
+    }));
     return (
       form.title !== initialData.title ||
       form.category !== initialData.category ||
       form.description !== initialData.description ||
       form.address !== initialData.address ||
       Number(form.price) !== initialData.price ||
-      JSON.stringify(bannerImages) !==
-        JSON.stringify(
-          initialData.bannerImageUrl ? [initialData.bannerImageUrl] : []
-        ) ||
-      JSON.stringify(introImages) !==
-        JSON.stringify(initialData.subImageUrls || []) ||
-      JSON.stringify(
-        selectedSlots.map((s) => ({
-          date: s.date,
-          startTime: s.startTime,
-          endTime: s.endTime,
-        }))
-      ) !== JSON.stringify(initialData.schedules)
+      JSON.stringify(bannerImages) !== JSON.stringify(initialBanner) ||
+      JSON.stringify(subImages.map((s) => s.url)) !==
+        JSON.stringify(initialSubImages) ||
+      JSON.stringify(currentSlots) !== JSON.stringify(initialSlots)
     );
-  }, [form, bannerImages, introImages, selectedSlots, initialData]);
+  }, [form, bannerImages, subImages, selectedSlots, initialData]);
 
   return (
     <div className="w-[100%] lg:w-[792px]">
@@ -264,7 +312,9 @@ export default function ExperienceEdit() {
           onChange={handleChange}
         />
 
-        <h1 className="text-xl font-bold mb-[16px] lg:text-2xl">가격</h1>
+        <h1 className="text-xl font-bold mb-[16px] lg:text-2xl">
+          가격 <span className="text-red-600">*</span>
+        </h1>
         <FormInput
           id="price"
           name="price"
@@ -274,7 +324,9 @@ export default function ExperienceEdit() {
           onChange={handleChange}
         />
 
-        <h1 className="text-xl font-bold mb-[16px] lg:text-2xl">주소</h1>
+        <h1 className="text-xl font-bold mb-[16px] lg:text-2xl">
+          주소 <span className="text-red-600">*</span>
+        </h1>
         <div className="relative">
           <FormInput
             id="address"
@@ -307,23 +359,31 @@ export default function ExperienceEdit() {
           </div>
         )}
 
-        <h1 className="text-2xl font-bold mb-[16px]">예약 가능한 시간대</h1>
+        <h1 className="text-2xl font-bold mb-[16px]">
+          예약 가능한 시간대 <span className="text-red-600">*</span>
+        </h1>
         <TimeSlots
           selectedSlots={selectedSlots}
           setSelectedSlots={setSelectedSlots}
         />
 
-        <ImageUploader
-          title="배너이미지"
+        <h1 className="text-xl font-bold mb-[16px] lg:text-2xl">
+          배너이미지 <span className="text-red-600">*</span>
+        </h1>
+        <ImageUploaderEdit
+          title=""
           images={bannerImages}
           setImages={handleBannerImages}
+          maxCount={1}
         />
-        <ImageUploader
-          title="소개이미지"
-          images={introImages}
-          setImages={handleIntroImages}
+        <h1 className="text-xl font-bold mb-[16px] lg:text-2xl">소개이미지</h1>
+        <ImageUploaderEdit
+          title=""
+          images={subImages}
+          setImages={setSubImages}
+          maxCount={4}
         />
-        <p>이미지는 배너 1장, 소개 최대 3장까지 등록 가능합니다.</p>
+        <p>이미지는 최대 4개까지 등록 가능합니다.</p>
       </form>
 
       <ConfirmModal
