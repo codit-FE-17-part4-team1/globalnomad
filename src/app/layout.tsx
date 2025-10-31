@@ -8,14 +8,14 @@ import HeaderServer from '@/components/Header/HeaderServer';
 import Footer from '@/components/Footer/Footer';
 
 export const metadata: Metadata = {
-  title: 'globalNomad',
+  title: 'GlobalNomad',
   description: '여행 체험을 등록하고 예약할 수 있는 플랫폼',
   icons: {
     icon: '/images/design_2/earth.png',
   },
 
   openGraph: {
-    title: 'globalNomad',
+    title: 'GlobalNomad',
     description:
       'GlobalNomad는 사용자가 판매자와 체험자 모두 될 수 있는 체험 예약 플랫폼입니다.',
     images: [
