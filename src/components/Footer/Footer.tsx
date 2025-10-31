@@ -31,7 +31,7 @@ const socialLinks = [
 export default function Footer({ className = '' }: FooterProps) {
   return (
     <footer
-      className={`w-full h-[160px] bg-[#112211] text-[#676767] mb-[83px] md:mb-0 ${className}`}
+      className={`w-full h-[160px] bg-orange-dark text-white mb-[83px] md:mb-0 ${className}`}
     >
       <div className="mx-auto h-full w-full min-w-[375px] max-w-[1240px] pt-8 pb-16 flex flex-col gap-4 px-5">
         {/* 모바일 (<768px): 저작권 + 개인정보처리방침 */}
