@@ -65,7 +65,7 @@ export default function ImageUploaderAdd({
       />
       <ul className="overflow-hidden">
         <li
-          className="relative aspect-square w-[49%] float-left mb-[8px] lg:w-[180px] lg:mr-[24px] lg:mb-[24px] cursor-pointer"
+          className="relative aspect-square w-[48%] mr-[3%] float-left mb-[8px] lg:w-[180px] lg:mr-[24px] lg:mb-[24px] cursor-pointer"
           onClick={handleClick}
         >
           <Image
@@ -78,8 +78,9 @@ export default function ImageUploaderAdd({
         {images.map((url, i) => (
           <li
             key={i}
-            className={`relative aspect-square w-[49%] mb-[8px] lg:w-[180px] lg:mb-[24px] rounded-3xl overflow-hidden float-left ${
-              i % 3 === 2 ? 'lg:mr-0' : 'lg:mr-[24px]'
+            className={`relative aspect-square w-[48%] mb-[8px] lg:w-[180px] lg:mb-[24px] rounded-3xl overflow-hidden float-left ${
+              //i % 3 === 2 ? 'lg:mr-0 mr-0' : 'lg:mr-[24px] mr-[3%]'
+              i === 1 || i === 3 ? 'mr-[3%]' : ''
             }`}
           >
             <Image

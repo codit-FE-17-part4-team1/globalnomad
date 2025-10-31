@@ -88,11 +88,11 @@ export default function ActivityReservation({
     }
     const daySchedule = scheduleData.find((d) => d.date === selectedDate);
     if (daySchedule) {
-      setAvailableTimes(daySchedule.times);
+      setAvailableTimes(daySchedule.times); // 예약 가능한 시간 세팅
       // 날짜가 변경되면 무조건 시간 선택 초기화
       setSelectedTimeId(null);
     } else {
-      setAvailableTimes([]);
+      setAvailableTimes([]); // 예약 시간이 없음
       setSelectedTimeId(null);
     }
   }, [selectedDate, scheduleData]);
