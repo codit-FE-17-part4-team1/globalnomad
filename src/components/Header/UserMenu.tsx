@@ -66,7 +66,7 @@ export default function UserMenu({
         </div>
 
         {/* 세로 구분선 */}
-        <span className="text-[#DDDDDD] select-none">|</span>
+        <span className="text-gray-200 select-none">|</span>
 
         <Profile userName={userName} userImage={userImage} />
       </div>

@@ -10,11 +10,12 @@ import ExperienceSelect from '@/app/Profile/ReservationStatus/_components/Experi
 import useReservationsDashboard from '@/hooks/useReservationsDashboard';
 import useReservationsStatus from '@/hooks/useReservationsStatus';
 import { ensureRefreshed } from '@/lib/auth/apiFetch';
+import ConfirmModal from '@/components/Modal/ConfirmModal';
 
 export default function ReservationStatusPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
-  const [authError, setAuthError] = useState<string | null>(null); // ✅ 에러 상태 추가
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -51,44 +52,6 @@ export default function ReservationStatusPage() {
     );
   }
 
-  if (authError) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen gap-4">
-        <div className="text-red-500 text-xl">❌ 인증 실패</div>
-        <div className="text-gray-700 max-w-md text-center bg-gray-100 p-4 rounded">
-          {authError}
-        </div>
-        <div className="text-sm text-gray-500">
-          콘솔을 확인하여 로그를 봐주세요
-        </div>
-        <button
-          onClick={() => (window.location.href = '/Login')}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          로그인 페이지로 이동
-        </button>
-      </div>
-    );
-  }
-
-  // ✅ 인증 실패 시
-  if (!isAuthenticated) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen gap-4">
-        <div className="text-yellow-500 text-xl">⚠️ 미인증 상태</div>
-        <div className="text-gray-700">
-          인증되지 않았지만 에러는 발생하지 않았습니다.
-        </div>
-        <button
-          onClick={() => (window.location.href = '/Login')}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          로그인 페이지로 이동
-        </button>
-      </div>
-    );
-  }
-
   return <AuthenticatedContent />;
 }
 
@@ -115,12 +78,18 @@ function AuthenticatedContent() {
     refreshDashboard
   );
 
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    message: '',
+  });
+
   const handleApprove = (reservationId: number) => {
     handleUpdateStatus(reservationId, 'confirmed', async () => {
       if (selectedDate) {
         await handleDateSelect(selectedDate); // 모달 내용 갱신
-        refreshDashboard(); // ✅ 달력 카운트 갱신
+        refreshDashboard(); // 달력 카운트 갱신
       }
+      setConfirmModal({ isOpen: true, message: '승인이 완료되었습니다.' });
     });
   };
 
@@ -128,9 +97,14 @@ function AuthenticatedContent() {
     handleUpdateStatus(reservationId, 'declined', async () => {
       if (selectedDate) {
         await handleDateSelect(selectedDate); // 모달 내용 갱신
-        refreshDashboard(); // ✅ 달력 카운트 갱신
+        refreshDashboard(); // 달력 카운트 갱신
       }
+      setConfirmModal({ isOpen: true, message: '거절이 완료되었습니다.' });
     });
+  };
+
+  const handleConfirmModalClose = () => {
+    setConfirmModal({ isOpen: false, message: '' });
   };
 
   return (
@@ -175,6 +149,12 @@ function AuthenticatedContent() {
           </div>
         )}
       </div>
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={handleConfirmModalClose}
+        message={confirmModal.message}
+        className="bg-white"
+      />
     </div>
   );
 }

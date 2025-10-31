@@ -25,8 +25,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearchFocus, onSearch }) => {
 
   const handleSearch = () => {
     if (!keyword.trim()) {
-      alert('검색어를 입력해주세요');
-      return;
+      return; // 키워드가 공백이면 아무 동작도 안 함
     }
     if (onSearch) onSearch(keyword); // 부모에게 onSearch(keyword) 를 전달함
   };

@@ -18,6 +18,7 @@ interface PendingModalProps {
   onApprove: (reservationId: number) => void;
   onReject: (reservationId: number) => void;
   status: ReservationStatus;
+  position?: { top: number; left: number };
 }
 
 export default function PendingModal({
@@ -29,6 +30,7 @@ export default function PendingModal({
   onApprove,
   onReject,
   status,
+  position,
 }: PendingModalProps) {
   return (
     <ReservationModalBase
@@ -40,6 +42,7 @@ export default function PendingModal({
       reservations={reservations}
       onApprove={onApprove}
       onReject={onReject}
+      position={position}
     />
   );
 }

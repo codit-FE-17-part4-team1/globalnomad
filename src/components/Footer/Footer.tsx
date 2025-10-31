@@ -28,10 +28,15 @@ const socialLinks = [
   },
 ];
 
+const footerLinks = [
+  { href: 'https://www.codeit.kr/', label: 'Privacy Policy' },
+  { href: 'https://www.codeit.kr/', label: 'FAQ' },
+];
+
 export default function Footer({ className = '' }: FooterProps) {
   return (
     <footer
-      className={`w-full h-[160px] bg-[#112211] text-[#676767] mb-[83px] md:mb-0 ${className}`}
+      className={`w-full h-[160px] bg-black text-gray-600 mb-[83px] md:mb-0 ${className}`}
     >
       <div className="mx-auto h-full w-full min-w-[375px] max-w-[1240px] pt-8 pb-16 flex flex-col gap-4 px-5">
         {/* 모바일 (<768px): 저작권 + 개인정보처리방침 */}
@@ -40,18 +45,15 @@ export default function Footer({ className = '' }: FooterProps) {
             ©codeit-2023
           </span>
           <nav className="flex gap-6 text-lg">
-            <Link
-              href="https://www.codeit.kr/"
-              className="hover:text-[#DDDDDD] transition-colors duration-300 whitespace-nowrap"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="https://www.codeit.kr/"
-              className="hover:text-[#DDDDDD] transition-colors duration-300 whitespace-nowrap"
-            >
-              FAQ
-            </Link>
+            {footerLinks.map(({ href, label }) => (
+              <Link
+                key={label}
+                href={href}
+                className="hover:text-white transition-colors duration-300 whitespace-nowrap"
+              >
+                {label}
+              </Link>
+            ))}
           </nav>
         </div>
 
@@ -82,18 +84,15 @@ export default function Footer({ className = '' }: FooterProps) {
             ©codeit-2023
           </span>
           <nav className="flex gap-6 text-lg">
-            <Link
-              href="/privacy"
-              className="hover:text-[#DDDDDD] transition-colors duration-300"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="/faq"
-              className="hover:text-[#DDDDDD] transition-colors duration-300"
-            >
-              FAQ
-            </Link>
+            {footerLinks.map(({ href, label }) => (
+              <Link
+                key={label}
+                href={href}
+                className="hover:text-white transition-colors duration-300"
+              >
+                {label}
+              </Link>
+            ))}
           </nav>
           <div className="flex gap-4">
             {socialLinks.map(({ href, alt, icon }) => (

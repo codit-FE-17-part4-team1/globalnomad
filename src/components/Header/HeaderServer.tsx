@@ -9,7 +9,11 @@ export default async function HeaderServer() {
   const access = cookieStore.get('accessToken')?.value;
   if (!access)
     return (
-      <Header isLoggedIn={false} userName="" userImage="/images/default.png" />
+      <Header
+        isLoggedIn={false}
+        userName=""
+        userImage="/images/defalt_user.png"
+      />
     );
 
   try {
@@ -18,12 +22,16 @@ export default async function HeaderServer() {
       <Header
         isLoggedIn
         userName={me.nickname}
-        userImage={me.profileImageUrl || '/images/default.png'}
+        userImage={me.profileImageUrl || '/images/defalt_user.png'}
       />
     );
   } catch {
     return (
-      <Header isLoggedIn={false} userName="" userImage="/images/default.png" />
+      <Header
+        isLoggedIn={false}
+        userName=""
+        userImage="/images/defalt_user.png"
+      />
     );
   }
 }

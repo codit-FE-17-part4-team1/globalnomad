@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import MainBanner from './main/_components/MainBanner';
 import SearchBar from './main/_components/SearchBar';
@@ -176,10 +176,12 @@ const MainPage: React.FC = () => {
       <div className="relative w-full">
         <MainBanner />
         <div className="absolute left-1/2 bottom-0 transform -translate-x-1/2 translate-y-2/3 z-10 w-full max-w-[1240px]">
-          <SearchBar
-            onSearchFocus={handleSearchFocus}
-            onSearch={handleSearch}
-          />
+          <Suspense fallback={<div>로딩 중...</div>}>
+            <SearchBar
+              onSearchFocus={handleSearchFocus}
+              onSearch={handleSearch}
+            />
+          </Suspense>
         </div>
       </div>
 

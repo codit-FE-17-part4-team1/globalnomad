@@ -20,6 +20,8 @@ export default function Experience() {
   );
   const [loading, setLoading] = useState(true);
 
+  const [deleteMessage, setDeleteMessage] = useState('정말 삭제하시겠습니까?');
+
   useEffect(() => {
     (async () => {
       try {
@@ -46,7 +48,6 @@ export default function Experience() {
     })();
   }, []);
 
-  /*1026*/
   const handleDelete = async () => {
     if (!selectedActivityId) return;
 
@@ -56,20 +57,37 @@ export default function Experience() {
         credentials: 'include',
       });
 
-      if (!res.ok) {
+      if (res.ok) {
+        /*
         if (res.status === 401) {
           alert('로그인 필요');
           return;
         }
         throw new Error(`삭제 실패: ${res.status}`);
+        */
+        setActivities((prev) =>
+          prev.filter((a) => a.id !== selectedActivityId)
+        );
+        setDeleteMessage('삭제가 완료되었습니다.');
+      } else if (res.status === 400 || res.status === 409) {
+        setDeleteMessage('예약이 되어있는 체험은 삭제가 불가능합니다.');
+      } else if (res.status === 401) {
+        alert('로그인이 필요합니다.');
+        return;
+      } else {
+        setDeleteMessage(`삭제 실패: ${res.status}`);
       }
 
-      setActivities((prev) => prev.filter((a) => a.id !== selectedActivityId));
-      setIsDeleteModalOpen(false);
-      alert('삭제가 완료되었습니다');
+      //setActivities((prev) => prev.filter((a) => a.id !== selectedActivityId));
+      //setIsDeleteModalOpen(false);
+      //alert('삭제가 완료되었습니다');
+      //setDeleteMessage('삭제가 완료되었습니다.');
     } catch (err) {
       console.error(err);
-      alert('예약이 되어있는 체험은 삭제가 불가능합니다.');
+      //alert('예약이 되어있는 체험은 삭제가 불가능합니다.');
+      setDeleteMessage('삭제 중 오류가 발생했습니다.');
+    } finally {
+      setIsDeleteModalOpen(true);
     }
   };
 
@@ -111,12 +129,12 @@ export default function Experience() {
           activities.map((activity) => (
             <ul
               key={activity.id}
-              className="bg-white rounded-3xl flex shadow-xl mb-[24px]"
+              className="bg-white rounded-3xl flex shadow mb-[24px]"
             >
               <li className="relative flex w-[128px] h-[128px] md:w-[156px] md:h-[156px] lg:w-[204px] lg:h-[204px] overflow-hidden rounded-l-3xl">
                 <Image
-                  src="/images/street_dance.png"
-                  alt="로고"
+                  src={activity.bannerImageUrl || '/images/street_dance.png'}
+                  alt={activity.title}
                   fill
                   className=""
                 />
@@ -148,6 +166,7 @@ export default function Experience() {
                       onSelect={(value) => {
                         if (value === '삭제하기') {
                           setSelectedActivityId(activity.id);
+                          setDeleteMessage('정말 삭제하시겠습니까?');
                           setIsDeleteModalOpen(true);
                         } else if (value === '수정하기') {
                           router.push(`/Profile/ExperienceEdit/${activity.id}`);
@@ -185,10 +204,16 @@ export default function Experience() {
       <ConfirmModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        message="삭제가 완료되었습니다."
+        message={deleteMessage}
         confirmLabel="확인"
         className="bg-white"
-        onConfirm={handleDelete}
+        onConfirm={async () => {
+          if (deleteMessage === '정말 삭제하시겠습니까?') {
+            await handleDelete();
+          } else {
+            setIsDeleteModalOpen(false);
+          }
+        }}
       />
     </div>
   );
