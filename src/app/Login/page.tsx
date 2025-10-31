@@ -51,7 +51,7 @@ export default function LoginPage() {
         <div className="flex justify-center mb-[54px]">
           <Link href="/">
             <Image
-              src="/icon/logo/logo_big.svg"
+              src="/images/design_2/logo_Horizontal.svg"
               alt="메인 로고"
               width={340}
               height={0}
