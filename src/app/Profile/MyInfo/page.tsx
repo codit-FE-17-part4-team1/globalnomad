@@ -142,14 +142,13 @@ export default function MyInfo() {
           <FormInput
             id="nickname"
             name="nickname"
-            type="text"
+            type="nickname"
             labelText="닉네임"
             placeholder="닉네임을 입력하세요"
             value={form.nickname}
             onChange={handleChange}
             disabled={!isEdit || loading}
             labelClassName={Label_Style}
-            errorOverride={isEdit ? nicknameError : ''}
           />
           <FormInput
             id="email"
@@ -172,12 +171,11 @@ export default function MyInfo() {
             onChange={handleChange}
             disabled={!isEdit}
             labelClassName={Label_Style}
-            errorOverride={isEdit ? passwordError : ''}
           />
           <FormInput
             id="passwordConfirm"
             name="passwordConfirm"
-            type="password"
+            type="passwordConfirm"
             labelText="비밀번호 재입력"
             placeholder="비밀번호를 한번 더 입력해 주세요"
             value={form.passwordConfirm}
@@ -185,7 +183,6 @@ export default function MyInfo() {
             passwordValue={form.password}
             disabled={!isEdit}
             labelClassName={Label_Style}
-            errorOverride={isEdit ? passwordConfirmError : ''}
           />
         </fieldset>
       </form>
