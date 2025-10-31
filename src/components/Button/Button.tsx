@@ -24,13 +24,13 @@ export default function MyButton({
 }: MyButtonProps) {
   const colorClasses = {
     buttonPrimary:
-      'bg-black-nomad text-white border border-black-nomad rounded-lg text-lg font-bold',
+      'bg-orange-dark text-white border border-orange-dark rounded-lg text-lg font-bold hover:bg-orange-light hover:text-orange-dark',
     buttonSecondary:
-      'bg-white text-black-nomad border border-black-nomad rounded-lg text-lg font-bold',
+      'bg-white text-black-nomad border border-orange-dark rounded-lg text-lg font-bold hover:bg-orange-light',
     buttonCategory:
-      'bg-white text-black-nomad border border-black-nomad rounded-lg text-lg font-medium',
+      'bg-white text-black-nomad border border-orange-dark rounded-lg text-lg font-medium hover:bg-orange-light hover:text-orange-dark',
     buttonCategoryActive:
-      'bg-black-nomad text-white border border-black-nomad rounded-lg text-lg font-medium',
+      'bg-orange-dark text-white border border-orange-dark rounded-lg text-lg font-medium',
     buttonTransparent: 'bg-transparent',
   };
 
