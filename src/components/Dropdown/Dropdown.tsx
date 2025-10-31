@@ -71,9 +71,9 @@ const buttonStyles: { [key: string]: string } = {
   dropdownPrimary:
     'px-4 py-4 border border-[#79747E] text-[#a4a1aa] bg-white rounded-sm flex items-center justify-between mb-4',
   dropdownSecondary:
-    'w-[127px] h-[53px] py-[13.5px] px-[20px] rounded-2xl bg-white border border-[#0b3b2d] text-[#0b3b2d] text-lg flex items-center justify-between',
+    'w-[127px] h-[53px] py-[13.5px] px-[20px] rounded-2xl bg-white border border-orange-dark text-orange-dark text-lg flex items-center justify-between',
   dropdownTertiary:
-    'w-[160px] h-[53px] rounded-2xl bg-white border border-[#0b3b2d] text-[#0b3b2d] text-lg flex items-center justify-between px-4',
+    'w-[160px] h-[53px] rounded-2xl bg-white border border-orange-dark text-orange-dark text-lg flex items-center justify-between px-4',
   dropdownSet: 'w-[40px] h-[40px]',
 };
 
@@ -219,7 +219,7 @@ function DropdownItem({
     return (
       <button
         onClick={handleClick}
-        className="group relative border-b last:border-b-0 py-[16px] border-[#ddd] hover:bg-[#ddd] hover:text-white w-full text-center flex text-lg"
+        className="group relative border-b last:border-b-0 py-[16px] border-[#ddd] hover:bg-orange-light hover:text-orange-dark w-full text-center flex text-lg"
       >
         <span className="flex-1">{children}</span>
       </button>

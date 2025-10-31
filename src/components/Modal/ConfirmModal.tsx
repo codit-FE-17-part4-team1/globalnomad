@@ -54,7 +54,7 @@ export default function ConfirmModal({
           <MyButton
             color="buttonPrimary"
             onClick={onConfirm ?? onClose}
-            className="px-10 py-2 rounded bg-[var(--color-green-dark)] text-white disabled:opacity-50 border-none hover:bg-[var(--color-green-light)]"
+            className="px-10 py-2 rounded bg-[var(--color-orange-dark)] text-white disabled:opacity-50 border-none hover:bg-[var(--color-orange-light)]"
           >
             {confirmLabel}
           </MyButton>

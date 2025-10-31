@@ -5,30 +5,11 @@ import BaseModal from '@/components/Modal/BaseModal';
 import Button from '@/components/Button/Button';
 import ConfirmModal from '@/components/Modal/ConfirmModal';
 
-type ReservationData = {
-  totalCount: number;
-  reservations: Array<{
-    id: number;
-    status: string;
-    date: string;
-    startTime: string;
-    endTime: string;
-    headCount: number;
-    totalPrice: number;
-    reviewSubmitted: boolean;
-    activity: {
-      title: string;
-      bannerImageUrl: string;
-    };
-  }>;
-  cursorId: null | string;
-};
-
 type ModalType = {
   isRawOpen: boolean;
   setRawOpen: React.Dispatch<React.SetStateAction<boolean>>;
   reservationId?: number;
-  setData: React.Dispatch<React.SetStateAction<ReservationData | null>>;
+  setData: () => void;
 };
 
 export default function CancelModal({
@@ -41,15 +22,15 @@ export default function CancelModal({
     isOpen: false,
     message: '',
   });
-  // 모달 열기
+
   const showModal = (message: string) => {
     setModal({ isOpen: true, message });
   };
 
-  // 모달 닫기
   const closeModal = () => {
     setModal({ isOpen: false, message: '' });
   };
+
   const handleCancel = async () => {
     if (!reservationId) return;
     try {
@@ -59,15 +40,7 @@ export default function CancelModal({
       if (!response.ok) {
         throw new Error('예약 취소에 실패했습니다.');
       }
-      setData((prev) => {
-        if (!prev) return null;
-        return {
-          ...prev,
-          reservations: prev.reservations.map((list) =>
-            list.id === reservationId ? { ...list, status: 'canceled' } : list
-          ),
-        };
-      });
+      setData();
       showModal('예약이 취소되었습니다.');
       setRawOpen(false);
     } catch (error) {
@@ -111,7 +84,6 @@ export default function CancelModal({
           </div>
         </div>
       </BaseModal>
-      {/* 확인모달 */}
       <ConfirmModal
         isOpen={modal.isOpen}
         onClose={closeModal}

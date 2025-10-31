@@ -6,7 +6,7 @@
 /* 캘린더 header */
 .react-datepicker__header {
   padding: 12px 0;
-  background-color: var(--color-green-dark);
+  background-color: var(--color-orange-dark);
   border-top-right-radius: 12px;
   border-top-left-radius: 12px;
   border-bottom: none;
@@ -38,10 +38,10 @@
 }
 /* 선택된 날짜 hover */
 .react-datepicker__day--selected:not([aria-disabled='true']):hover {
-  background-color: var(--color-green-dark);
+  background-color: var(--color-orange-dark);
 }
 .react-datepicker__day--keyboard-selected {
-  background-color: var(--color-green-light);
+  background-color: var(--color-orange-light);
 }
 /* 지난달 */
 .react-datepicker__day--outside-month {

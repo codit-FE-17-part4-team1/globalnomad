@@ -41,13 +41,13 @@ export default function ReservationStickyFooter({
             <OptionSelectButton
               onClick={onOpenParticipantsModal}
               label={`/ ${participants}명`}
-              className="text-lg font-medium text-green-dark hover:underline focus:outline-none"
+              className="text-lg font-medium text-orange-dark hover:underline focus:outline-none"
             />
           </div>
           <OptionSelectButton
             onClick={onOpenDateModal}
             label={selectedDateText || '날짜 선택하기'}
-            className="text-md font-semibold text-green-dark hover:underline focus:outline-none"
+            className="text-md font-semibold text-orange-dark hover:underline focus:outline-none"
           />
         </div>
 

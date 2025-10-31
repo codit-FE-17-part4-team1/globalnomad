@@ -135,10 +135,10 @@ export default function ReviewModal({
             onChange={(e) => setContent(e.target.value)}
           />
         </div>
-        <div className="mt-6 flex justify-end">
+        <div className="flex justify-end">
           <button
             onClick={handleSubmit}
-            className="w-full h-12 rounded bg-[var(--color-green-dark)] text-white"
+            className="w-full h-12 rounded bg-[var(--color-orange-dark)] text-white"
           >
             작성하기
           </button>

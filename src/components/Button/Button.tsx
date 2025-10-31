@@ -26,7 +26,7 @@ export default function MyButton({
     buttonPrimary:
       'bg-orange-dark text-white border border-orange-dark rounded-lg text-lg font-bold hover:bg-orange-light hover:text-orange-dark',
     buttonSecondary:
-      'bg-white text-black-nomad border border-orange-dark rounded-lg text-lg font-bold hover:bg-orange-light',
+      'bg-white text-black-nomad border border-orange-dark rounded-lg text-lg font-bold hover:bg-orange-light hover:text-orange-dark',
     buttonCategory:
       'bg-white text-black-nomad border border-orange-dark rounded-lg text-lg font-medium hover:bg-orange-light hover:text-orange-dark',
     buttonCategoryActive:
