@@ -219,8 +219,9 @@ export default function SignupPage() {
           onClose={() => setIsModalOpen(false)}
           onConfirm={handleConfirm}
           message={modalMsg}
-          confirmLabel="확인"
+          confirmLabel={state.ok ? '메인으로' : '확인'}
           className="bg-white"
+          type={state.ok ? 'success' : 'error'}
         />
       </div>
     </div>
