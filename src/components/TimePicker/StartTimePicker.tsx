@@ -34,9 +34,8 @@ export default function StartTimePicker({
         placeholderText="0:00"
         className={clsx(
           className,
-          'border px-3 py-2 rounded w-[80px] text-center cursor-pointer text-md',
-          'md:text-lg md:py-[15px]',
-          'lg:w-[140px]'
+          'border px-3 py-2 rounded text-left cursor-pointer text-md',
+          'md:text-lg md:py-[15px]'
         )}
       />
       <button

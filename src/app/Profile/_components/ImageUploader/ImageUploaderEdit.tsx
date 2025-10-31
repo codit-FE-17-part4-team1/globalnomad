@@ -90,7 +90,8 @@ export default function ImageUploaderEdit<
             <li
               key={i}
               className={`relative aspect-square w-[49%] mb-[8px] lg:w-[180px] lg:mb-[24px] rounded-3xl overflow-hidden float-left ${
-                i % 3 === 2 ? 'lg:mr-0' : 'lg:mr-[24px]'
+                //i % 3 === 2 ? 'lg:mr-0' : 'lg:mr-[24px]'
+                i === 1 || i === 3 ? 'mr-[3%]' : ''
               }`}
             >
               <Image
