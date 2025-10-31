@@ -42,7 +42,7 @@ const reviewTextStyle = {
 // 제목 스타일
 const titleStyle = {
   lg: 'text-white font-bold text-2lg md:text-3xl',
-  sm: 'text-black font-semibold text-lg md:text-xl',
+  sm: 'text-black hover:text-orange font-semibold text-lg md:text-xl',
 };
 
 // 가격 스타일
@@ -66,7 +66,12 @@ const LargeCard: React.FC<ActivityCardProps> = ({
   reviewCount,
   onClick,
 }) => (
-  <div className={`relative ${cardSize.lg} cursor-pointer`} onClick={onClick}>
+  <div
+    className={`relative ${cardSize.lg} cursor-pointer 
+    border-[3px] border-transparent hover:border-orange rounded-[23px]
+    transition-all duration-200`}
+    onClick={onClick}
+  >
     {/* 카드 이미지 */}
     <Image
       src={bannerImageUrl}

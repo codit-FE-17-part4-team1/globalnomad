@@ -10,7 +10,9 @@ export default function Page() {
       <section className="relative w-full">
         <MainBanner />
         <div className="absolute left-1/2 bottom-0 transform -translate-x-1/2 translate-y-2/3 z-10 w-full max-w-[1240px]">
-          <SearchBar />
+          <Suspense fallback={<div>로딩 중...</div>}>
+            <SearchBar />
+          </Suspense>
         </div>
       </section>
 
