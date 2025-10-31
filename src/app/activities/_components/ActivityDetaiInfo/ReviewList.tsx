@@ -20,13 +20,13 @@ const ReviewList: React.FC<ReviewListProps> = ({ data }) => {
   const currentReviews = reviews.slice(startIndex, startIndex + reviewsPerPage);
 
   const ratingText =
-    averageRating >= 4.5
+    averageRating >= 5
       ? '매우 만족'
-      : averageRating >= 3.5
+      : averageRating >= 4
         ? '만족'
-        : averageRating >= 2.5
+        : averageRating >= 3
           ? '보통'
-          : averageRating >= 1.5
+          : averageRating >= 2
             ? '불만족'
             : '매우 불만족';
 

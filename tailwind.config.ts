@@ -45,6 +45,8 @@ const config: Config = {
         'red-pale': 'var(--color-red-pale)',
         orange: 'var(--color-orange)',
         'orange-pale': 'var(--color-orange-pale)',
+        'orange-dark': 'var(--color-orange-dark)',
+        'orange-light': 'var(--color-orange-light)',
         background: 'var(--color-background)',
         foreground: 'var(--color-foreground)',
       },

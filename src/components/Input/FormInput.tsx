@@ -107,9 +107,9 @@ export default function FormInput({
           onBlur={handleBlur}
           maxLength={getMaxLength(type)}
           className={`w-full px-5 py-4 rounded-md border
-            border-gray-300 focus:outline-none focus:border-gray-500
+            border-gray-400 focus:outline-none focus:border-gray-500
             text-lg text-black placeholder-gray-500
-            ${finalError ? 'border-red focus:border-red' : 'border-gray-300 focus:outline-none focus:border-gray-500'}
+            ${finalError ? 'border-red focus:border-red' : 'border-gray-400 focus:outline-none focus:border-gray-500'}
             ${inputClassName || ''}`}
         />
         {(type === 'password' || type === 'passwordConfirm') && (

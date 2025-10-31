@@ -70,12 +70,12 @@ function AuthenticatedContent() {
     handleDateSelect,
     selectedDate,
     currentDate,
-    refreshDashboard,
+    // refreshDashboard,
   } = useReservationsDashboard();
 
   const { handleUpdateStatus, isUpdating, updateError } = useReservationsStatus(
-    selectedActivityId,
-    refreshDashboard
+    selectedActivityId
+    // refreshDashboard
   );
 
   const [confirmModal, setConfirmModal] = useState({
@@ -87,7 +87,7 @@ function AuthenticatedContent() {
     handleUpdateStatus(reservationId, 'confirmed', async () => {
       if (selectedDate) {
         await handleDateSelect(selectedDate); // 모달 내용 갱신
-        refreshDashboard(); // 달력 카운트 갱신
+        // refreshDashboard(); // 달력 카운트 갱신
       }
       setConfirmModal({ isOpen: true, message: '승인이 완료되었습니다.' });
     });
@@ -97,7 +97,7 @@ function AuthenticatedContent() {
     handleUpdateStatus(reservationId, 'declined', async () => {
       if (selectedDate) {
         await handleDateSelect(selectedDate); // 모달 내용 갱신
-        refreshDashboard(); // 달력 카운트 갱신
+        // refreshDashboard(); // 달력 카운트 갱신
       }
       setConfirmModal({ isOpen: true, message: '거절이 완료되었습니다.' });
     });
@@ -137,7 +137,7 @@ function AuthenticatedContent() {
             updateError={updateError}
           />
         ) : (
-          <div className="flex flex-col items-center pt-50 h-full text-2xl font-medium text-[var(--color-gray-700)]">
+          <div className="flex flex-col items-center pt-50 h-full text-2xl font-medium text-gray-700">
             <Image
               src="/images/empty.svg"
               alt="체험없음"

@@ -41,7 +41,7 @@ const Pagination: React.FC<PaginationProps> = ({
         className={`md:w-[55px] md:h-[55px] w-[40px] h-[40px] p-3 rounded-[15px] md:rounded-xl border flex items-center justify-center ${
           currentPage <= 1
             ? 'bg-white border-gray-200 cursor-not-allowed'
-            : 'bg-white border-green-dark'
+            : 'bg-white border-green-dark hover:bg-gray-200'
         }`}
         onClick={() => handlePageClick(currentPage - 1)}
         disabled={currentPage <= 1}
@@ -63,7 +63,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className={`md:w-[55px] md:h-[55px] w-[40px] h-[40px] p-3 rounded-[15px] md:rounded-xl border flex items-center justify-center ${
             page === currentPage
               ? 'bg-green-dark text-white border-green-dark'
-              : 'bg-white text-green-dark border-green-dark'
+              : 'bg-white text-green-dark border-green-dark hover:bg-gray-200'
           }`}
         >
           {page}
@@ -75,7 +75,7 @@ const Pagination: React.FC<PaginationProps> = ({
         className={`md:w-[55px] md:h-[55px] w-[40px] h-[40px] p-3 rounded-[15px] md:rounded-xl border flex items-center justify-center ${
           currentPage >= totalPages
             ? 'bg-white border-gray-200 cursor-not-allowed'
-            : 'bg-white border-green-dark'
+            : 'bg-white border-green-dark hover:bg-gray-200'
         }`}
         onClick={() => handlePageClick(currentPage + 1)}
         disabled={currentPage >= totalPages}

@@ -1,21 +1,33 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import MyButton from '@/components/Button/Button';
 
-const SearchBar: React.FC = () => {
-  const router = useRouter();
-  const [keyword, setKeyword] = useState('');
+type SearchBarProps = {
+  onSearchFocus?: () => void; // 클릭 시 필터 초기화
+  onSearch?: (keyword: string) => void; // 검색 실행
+};
+
+const SearchBar: React.FC<SearchBarProps> = ({ onSearchFocus, onSearch }) => {
+  const searchParams = useSearchParams();
+
+  // URL에서 keyword 파라미터 읽기
+  const initialKeyword = searchParams.get('keyword') || '';
+  const [keyword, setKeyword] = useState(initialKeyword);
   const [isFocused, setIsFocused] = useState(false);
+
+  // URL 파라미터 변경 시 검색창 내용 업데이트
+  useEffect(() => {
+    setKeyword(initialKeyword);
+  }, [initialKeyword]);
 
   const handleSearch = () => {
     if (!keyword.trim()) {
-      alert('검색어를 입력해주세요');
-      return;
+      return; // 키워드가 공백이면 아무 동작도 안 함
     }
-    router.push(`/search?keyword=${encodeURIComponent(keyword)}`);
+    if (onSearch) onSearch(keyword); // 부모에게 onSearch(keyword) 를 전달함
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -50,7 +62,10 @@ const SearchBar: React.FC = () => {
               type="text"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
-              onFocus={() => setIsFocused(true)}
+              onFocus={() => {
+                setIsFocused(true);
+                if (onSearchFocus) onSearchFocus();
+              }}
               onBlur={() => setIsFocused(false)}
               onKeyDown={handleKeyDown}
               className="w-full max-w-[1000px] min-w-[130px] outline-none text-black font-normal text-md md:text-lg leading-[26px] bg-transparent"

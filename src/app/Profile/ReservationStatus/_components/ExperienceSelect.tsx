@@ -70,9 +70,8 @@ export default function ExperienceSelect({
       <button
         ref={btnRef}
         type="button"
-        // onClick={handleOverLayClick}
         onClick={() => setOpen((v) => !v)}
-        className="w-full rounded-md border px-4 py-4 text-left border-gray-500 bg-white text-[var(--color-gray-800)] flex items-center justify-between"
+        className="w-full rounded-md border px-4 py-4 text-left border-gray-400 bg-white text-[var(--color-gray-800)] flex items-center justify-between"
       >
         <span className="truncate">
           {experiences.find((exp) => exp.id === selectedExperienceId)?.title ||
@@ -111,7 +110,7 @@ export default function ExperienceSelect({
                 }}
                 className={`
                   w-full text-left px-4 py-3 border-b-[var(--color-gray-800)]
-                  hover:bg-[var(--color-green-light)] hover:text-black
+                  hover:bg-orange-light hover:text-black
                   ${exp.id === selectedExperienceId ? 'bg-[var(--color-gray-100)]' : ''}
                 `}
                 role="option"

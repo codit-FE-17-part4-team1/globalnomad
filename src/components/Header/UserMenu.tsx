@@ -23,10 +23,10 @@ export default function UserMenu({
     notifications,
     isLoading,
     error,
-    hasNext,
-    loadMore,
+    hasMore,
+    lastElementRef,
     handleDeleteNotification,
-  } = useNotification();
+  } = useNotification(10);
 
   // 알림 / 읽지 않은 알림 확인
   const hasUnreadAlerts = notifications.length > 0;
@@ -57,16 +57,16 @@ export default function UserMenu({
               onClose={handleNotificationClose}
               alerts={notifications}
               onDelete={handleDeleteNotification}
-              onLoadMore={loadMore}
-              hasNext={hasNext}
+              hasMore={hasMore}
               isLoading={isLoading}
               error={error}
+              lastElementRef={lastElementRef}
             />
           )}
         </div>
 
         {/* 세로 구분선 */}
-        <span className="text-[#DDDDDD] select-none">|</span>
+        <span className="text-gray-200 select-none">|</span>
 
         <Profile userName={userName} userImage={userImage} />
       </div>
