@@ -1,4 +1,3 @@
-// /types/kakao/guards.ts
 import type { OAuthUser, SignOk } from '@/types/kakao/oauth';
 
 function isRecord(v: unknown): v is Record<string, unknown> {

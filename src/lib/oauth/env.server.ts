@@ -1,4 +1,3 @@
-// /lib/oauth/env.server.ts
 function mustGet(name: string): string {
   const v = process.env[name];
   if (!v) throw new Error(`Missing env: ${name}`);

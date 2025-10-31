@@ -1,5 +1,3 @@
-// /types/kakao/oauth.ts
-
 // Kakao 인증 성공 후, 우리 백엔드가 내려주는 사용자 타입
 export interface OAuthUser {
   id: number;
@@ -16,7 +14,7 @@ export interface SignOk {
   refreshToken: string;
 }
 
-// 우리 API 라우트 바디
+// API 라우트 바디
 export interface SignInBody {
   code: string;
 }

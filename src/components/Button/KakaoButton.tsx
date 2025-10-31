@@ -1,4 +1,3 @@
-// /components/Button/KakaoButton.tsx
 'use client';
 
 import { kakaoAuthUrl } from '@/lib/oauth/auth.client';

@@ -1,5 +1,3 @@
-// /lib/oauth/auth.client.ts
-
 function ensure(name: string, v: string | undefined): string {
   if (!v) throw new Error(`Missing env: ${name}`);
   return v;

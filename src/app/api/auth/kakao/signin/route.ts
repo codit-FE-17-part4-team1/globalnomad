@@ -1,4 +1,3 @@
-// /app/api/auth/kakao/signin/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { API_BASE, KAKAO_REDIRECT_URI } from '@/lib/oauth/env.server';
 import type { SignInBody } from '@/types/kakao/oauth';
@@ -41,13 +40,11 @@ export async function POST(req: NextRequest) {
   if (!r.ok) {
     let raw = '';
     try {
-      raw = await r.text(); // 원문을 먼저 한 번만 읽는다
-    } catch {
-      // ignore
-    }
+      raw = await r.text();
+    } catch {}
     console.error('[KAKAO SIGNIN ERROR]', r.status, raw);
 
-    // 사람이 읽기 좋은 메시지 추출
+    // 오류 메세지 출력
     let msg = 'signin failed';
     try {
       const j = JSON.parse(raw);

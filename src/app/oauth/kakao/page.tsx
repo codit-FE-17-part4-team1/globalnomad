@@ -1,4 +1,3 @@
-// /app/oauth/kakao/page.tsx
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
@@ -36,7 +35,7 @@ export default function KakaoCallbackPage() {
       return;
     }
 
-    // ✅ 가입 플로우로 되돌아올 예정이면: sign-in 호출하지 않고 바로 가입 페이지로 넘김
+    // 가입 플로우로 되돌아올 예정이면: sign-in 호출하지 않고 바로 가입 페이지로 넘김
     const after = sessionStorage.getItem('oauth_after');
     if (after === '/signup-kakao') {
       sessionStorage.removeItem('oauth_after');
@@ -63,7 +62,7 @@ export default function KakaoCallbackPage() {
         return;
       }
 
-      // ✅ 미가입(403)인 경우: 새 code를 얻기 위해 다시 카카오 인증으로
+      // 미가입(403)인 경우: 새 code를 얻기 위해 다시 카카오 인증으로
       if (res.status === 403 || message.includes('등록되지 않은 사용자')) {
         // 가입 화면에서 자동 닉네임으로 바로 가입 제출하도록 힌트 남김
         sessionStorage.setItem('oauth_after', '/signup-kakao');
@@ -74,7 +73,7 @@ export default function KakaoCallbackPage() {
         return;
       }
 
-      // ... 페이지 맨 위쪽 after 처리 분기에도 유지
+      // 페이지 맨 위쪽 after 처리 분기에도 유지
       const after = sessionStorage.getItem('oauth_after');
       if (after === '/signup-kakao') {
         sessionStorage.removeItem('oauth_after');
