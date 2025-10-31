@@ -1,7 +1,5 @@
-// 해당 훅은 GET, DELETE를 통해 데이터를 가져온 후에 삭제하기
-// api 함수를 가져와서 UI 에 전달해줘야 하는 건데,
-
-import { useState, useCallback, useEffect } from 'react';
+import { useMemo } from 'react';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import {
   getNotifications,
   deleteNotification,
@@ -11,13 +9,10 @@ import type { Alert } from '@/components/Modal/AlertModal';
 
 /**
  * API 응답(Notification)을 UI 모델(Alert)로 변환
- * "코인 노래방(2025-10-24 12:00~13:00) 예약이 거절되었습니다." 형식의 문자열을 파싱
- * @param notification API에서 받은 알림 객체
  */
 function transformNotificationToAlert(notification: Notification): Alert {
   const { id, content, createdAt } = notification;
 
-  // 알림 받는 데이터 정보 파싱
   const titleMatch = content.match(/^(.*?)\(/);
   const timeMatch = content.match(/\((.*?)\)/);
   const statusMatch = content.match(/예약이 (승인|거절)되었습니다/);
@@ -36,86 +31,66 @@ function transformNotificationToAlert(notification: Notification): Alert {
 }
 
 /**
- * 알림 목록(조회, 삭제)
- * @param size 한번에 불러올 알림 개수
+ * 알림 목록(조회, 삭제) 훅
  */
 export default function useNotification(
   size: number = 10,
   currentUserId?: number
 ) {
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | undefined>(undefined);
-  const [cursorId, setCursorId] = useState<number | undefined>(undefined);
-  const [hasNext, setHasNext] = useState(true);
+  // useInfiniteScroll 사용
+  const {
+    data: rawNotifications,
+    isLoading,
+    isError,
+    error: scrollError,
+    hasMore,
+    lastElementRef,
+    reset,
+  } = useInfiniteScroll<Notification>({
+    fetchData: async (cursor) => {
+      const cursorId = cursor ? Number(cursor) : undefined;
+      const data = await getNotifications(cursorId, size);
 
-  const fetchNotifications = useCallback(
-    async (currentCursorId?: number) => {
-      if (!hasNext && currentCursorId) return; // 더 이상 데이터가 없으면 요청하지 않음
-
-      setIsLoading(true);
-      setError(undefined);
-
-      try {
-        const data = await getNotifications(currentCursorId, size);
-
-        const filteredNotifications = currentUserId
-          ? data.notifications.filter((n) => n.userId === currentUserId)
-          : data.notifications;
-
-        const newAlerts = filteredNotifications.map(
-          transformNotificationToAlert
-        );
-
-        setAlerts((prev) => {
-          const result = currentCursorId ? [...prev, ...newAlerts] : newAlerts;
-          return result;
-        });
-
-        setCursorId(data.cursorId ?? undefined);
-        setHasNext(!!data.cursorId);
-      } catch (e) {
-        setError(
-          e instanceof Error ? e.message : '알림을 불러오지 못했습니다.'
-        );
-      } finally {
-        setIsLoading(false);
-      }
+      return {
+        data: data.notifications,
+        nextCursor: data.cursorId ? String(data.cursorId) : null,
+      };
     },
-    [size, hasNext, currentUserId]
-  );
+    pageSize: size,
+  });
 
-  // 첫 알림 목록 로드 , 이 아래 부분들이 필요한지 확인이 필요할 듯
-  useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
+  // 현재 사용자의 알림만 필터링 & Alert 형태로 변환
+  const notifications = useMemo(() => {
+    const filtered = currentUserId
+      ? rawNotifications.filter((n) => n.userId === currentUserId)
+      : rawNotifications;
 
-  const loadMore = useCallback(() => {
-    if (hasNext && !isLoading) {
-      fetchNotifications(cursorId);
+    const uniqueNotifications = Array.from(
+      new Map(filtered.map((item) => [item.id, item])).values()
+    );
+
+    return uniqueNotifications.map(transformNotificationToAlert);
+  }, [rawNotifications, currentUserId]);
+
+  // 알림 삭제 후 리셋
+  const handleDeleteNotification = async (notificationId: number) => {
+    try {
+      await deleteNotification(notificationId);
+      // 삭제 후 전체 데이터 새로고침
+      reset();
+    } catch (e) {
+      console.error('알림 삭제 실패:', e);
+      throw e;
     }
-  }, [hasNext, isLoading, cursorId, fetchNotifications]);
-
-  const handleDeleteNotification = useCallback(
-    async (notificationId: number) => {
-      try {
-        await deleteNotification(notificationId);
-        setAlerts((prev) =>
-          prev.filter((notif) => notif.id !== notificationId)
-        );
-      } catch (e) {
-        console.error('알림 삭제 실패:', e);
-      }
-    },
-    []
-  );
+  };
 
   return {
-    notifications: alerts,
+    notifications,
     isLoading,
-    error,
-    hasNext,
-    loadMore,
+    error: isError ? scrollError?.message : undefined,
+    hasMore,
+    lastElementRef,
     handleDeleteNotification,
+    reset,
   };
 }
