@@ -137,7 +137,7 @@ function AuthenticatedContent() {
         ) : (
           <div className="flex flex-col items-center pt-50 h-full text-2xl font-medium text-gray-700">
             <Image
-              src="/images/empty.svg"
+              src="/images/design_2/empty.png"
               alt="체험없음"
               width={200}
               height={200}
