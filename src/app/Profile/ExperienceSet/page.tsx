@@ -150,8 +150,10 @@ export default function Experience() {
                         className=""
                       />
                     </span>
-                    <span>4.9</span>
-                    <span>(293)</span>
+                    <span>
+                      {activity.rating > 0 ? activity.rating.toFixed(1) : '0.0'}
+                    </span>
+                    <span>({activity.reviewCount})</span>
                   </p>
                   <h1 className="text-lg font-bold truncate max-w-[199px] md:text-2lg md:max-w-[355px] lg:max-w-[542px]">
                     {activity.title}

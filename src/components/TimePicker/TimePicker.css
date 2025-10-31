@@ -1,10 +1,12 @@
 /**/
 .timePicker {
-  posiiton: relative;
+  position: relative;
 }
 .react-datepicker__input-container > input {
   height: 56px;
 }
+/*
 .react-datepicker__input-container > input::placeholder {
   color: red;
 }
+*/
