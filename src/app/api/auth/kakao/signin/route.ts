@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { API_BASE, KAKAO_REDIRECT_URI } from '@/lib/oauth/env.server';
+import { API_BASE } from '@/lib/oauth/env.server';
 import type { SignInBody } from '@/types/kakao/oauth';
 import { assertIsSignOk } from '@/types/kakao/guards';
 
 export async function POST(req: NextRequest) {
-  // 1) 요청 바디 파싱/검증
+  // 1) Body 파싱/검증
   let bodyUnknown: unknown;
   try {
     bodyUnknown = await req.json();
@@ -21,30 +21,29 @@ export async function POST(req: NextRequest) {
   }
   const { code } = bodyUnknown as SignInBody;
 
-  // 디버그: 콜백에서 받은 code 확인 (1회성)
-  console.log('[SIGNIN CODE]', code);
+  // 2) 현재 요청 origin 기준으로 redirect_uri 생성 (프리뷰/프로덕션/로컬 모두 안전)
+  const redirectUri = new URL('/oauth/kakao', req.nextUrl.origin).toString();
 
-  // 2) 백엔드 토큰 교환 호출
+  // 3) 백엔드 토큰 교환
   const r = await fetch(`${API_BASE}/oauth/sign-in/kakao`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ redirectUri: KAKAO_REDIRECT_URI, token: code }),
+    body: JSON.stringify({ redirectUri, token: code }),
   });
 
-  // 3) 404는 가입 미완성 시그널로 그대로 전달
   if (r.status === 404) {
+    // 미가입 시그널 그대로 반환
     return NextResponse.json({ message: 'not found' }, { status: 404 });
   }
 
-  // 4) 에러 처리(단 한 번만) + 원문 로그 남기기
   if (!r.ok) {
+    // 한 번만 읽어 에러 메시지 파싱
     let raw = '';
     try {
       raw = await r.text();
     } catch {}
     console.error('[KAKAO SIGNIN ERROR]', r.status, raw);
 
-    // 오류 메세지 출력
     let msg = 'signin failed';
     try {
       const j = JSON.parse(raw);
@@ -55,12 +54,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: msg }, { status: r.status });
   }
 
-  // 5) 성공 처리 (여기서는 r.body를 처음 읽는다)
+  // 4) 성공 처리
   const rawOk: unknown = await r.json();
   assertIsSignOk(rawOk);
-  const data = rawOk; // { user, accessToken, refreshToken }
+  const data = rawOk as { accessToken: string; refreshToken: string };
 
-  // 6) httpOnly 쿠키 설정은 응답 객체에서
+  // 5) httpOnly 쿠키 설정
   const res = NextResponse.json({ ok: true });
   const secure = process.env.NODE_ENV === 'production';
 
@@ -69,14 +68,14 @@ export async function POST(req: NextRequest) {
     sameSite: 'lax',
     path: '/',
     secure,
-    maxAge: 60 * 60,
+    maxAge: 60 * 60, // 1h
   });
   res.cookies.set('refreshToken', data.refreshToken, {
     httpOnly: true,
     sameSite: 'lax',
     path: '/',
     secure,
-    maxAge: 60 * 60 * 24 * 14,
+    maxAge: 60 * 60 * 24 * 14, // 14d
   });
 
   return res;

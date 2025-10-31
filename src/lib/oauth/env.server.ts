@@ -13,14 +13,11 @@ function mustBeUrl(name: string, value: string): string {
   }
 }
 
+// 백엔드 베이스
 export const API_BASE = mustBeUrl(
-  'NEXT_PUBLIC_API_SERVER_URL', // 네이밍은 유지하되 서버에서만 사용
+  'NEXT_PUBLIC_API_SERVER_URL',
   mustGet('NEXT_PUBLIC_API_SERVER_URL')
 );
 
-export const KAKAO_REDIRECT_URI = mustBeUrl(
-  'NEXT_PUBLIC_KAKAO_REDIRECT_URI',
-  mustGet('NEXT_PUBLIC_KAKAO_REDIRECT_URI')
-);
-
+// 로그인 성공 후 이동 경로 (없으면 /)
 export const AFTER_LOGIN_PATH = process.env.NEXT_PUBLIC_AFTER_LOGIN_PATH || '/';
