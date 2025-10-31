@@ -105,10 +105,14 @@ export default function AlertModal({
       ref={modalRef}
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 md:absolute md:top-15 md:right-0 md:inset-auto bg-orange-light rounded-none md:rounded-lg shadow-xl h-screen md:h-auto md:max-h-[400px] overflow-auto z-[9999] w-screen md:w-[375px]"
+      className="fixed inset-0 md:absolute md:top-15 md:right-0 md:inset-auto bg-orange-light rounded-none md:rounded-lg shadow-xl h-screen md:h-auto md:max-h-[400px] overflow-auto [&::-webkit-scrollbar]:hidden z-[9999] w-screen md:w-[375px]"
+      style={{
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
+      }}
     >
       {/* 헤더 */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-300">
         <h2 className="text-lg font-semibold">알림 {localAlerts.length}개</h2>
         <Image
           className="cursor-pointer"
