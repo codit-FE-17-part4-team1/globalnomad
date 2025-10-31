@@ -11,7 +11,7 @@ export default function Head() {
       <meta name="theme-color" content="#ffffff" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta charSet="utf-8" />
-      <link rel="icon" href="/favicon.png" />
+      <link rel="icon" href="/images/design_2/earth.png" />
 
       {/* Open Graph */}
       <meta property="og:type" content="website" />

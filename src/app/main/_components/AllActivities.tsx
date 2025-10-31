@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import ActivityCard from './ActivityCard';
 import Pagination from '../../../components/Pagination/Pagination';
@@ -40,7 +41,7 @@ const AllActivities: React.FC<AllActivitiesProps> = ({
   const router = useRouter();
 
   const statusContainerClass =
-    'col-span-full flex items-center justify-center h-[586px] md:h-[1154px] lg:h-[897px] text-xl md:text-2xl';
+    'col-span-full flex items-center justify-center h-[400px] md:h-[600px] lg:h-[600px] text-lg';
 
   return (
     <section className="w-full max-w-[1240px] mx-auto px-5">
@@ -60,39 +61,52 @@ const AllActivities: React.FC<AllActivitiesProps> = ({
       </div>
 
       {/* 활동 카드 */}
-      <div
-        className={[
-          'grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
-          'justify-items-center',
-          activities.length > 0 ? 'items-start' : 'items-center justify-center',
-        ].join(' ')}
-      >
-        {loading ? (
-          <div className={`${statusContainerClass} text-gray-500`}>
-            로딩 중...⏳
-          </div>
-        ) : error ? (
-          <div className={`${statusContainerClass} text-red-500`}>{error}</div>
-        ) : activities.length > 0 ? (
-          activities.map((exp) => (
+      {loading ? ( // 로딩 화면
+        <div
+          className={`${statusContainerClass} flex flex-col items-center justify-center`}
+        >
+          <Image
+            src="/images/loading.png"
+            alt="로딩 중 이미지"
+            width={80}
+            height={80}
+          />
+          <p className="text-gray-500">로딩 중...</p>
+        </div>
+      ) : error ? ( // 에러
+        <div
+          className={`${statusContainerClass} text-red-500 flex items-center justify-center`}
+        >
+          {error}
+        </div>
+      ) : activities.length === 0 ? ( // 빈페이지
+        <div
+          className={`${statusContainerClass} flex flex-col items-center justify-center`}
+        >
+          <Image
+            src="/images/design_2/_empty.svg"
+            alt="빈 페이지 이미지"
+            width={80}
+            height={80}
+          />
+          <p className="text-gray-500">아직 등록된 체험이 없습니다.</p>
+        </div>
+      ) : (
+        // 카드 랜더링
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center items-start">
+          {activities.map((exp) => (
             <ActivityCard
               key={exp.id}
               {...exp}
               type="sm"
               onClick={() => router.push(`/activities/${exp.id}`)}
             />
-          ))
-        ) : (
-          <div
-            className={`${statusContainerClass} text-gray-500 font-medium flex flex-col`}
-          >
-            아직 등록된 체험이 없습니다 😅
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* 페이지네이션 */}
-      {totalCount > 0 && (
+      {activities.length > 0 && totalCount > 0 && (
         <div className="mt-[50px] mb-[150px]">
           <Pagination
             totalItems={totalCount}
