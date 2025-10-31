@@ -44,14 +44,6 @@ export default function ReservationStatusPage() {
     checkAuth();
   }, []);
 
-  // if (isAuthChecking) {
-  //   return (
-  //     <div className="flex items-center justify-center h-screen">
-  //       <div className="text-gray-500">checking...</div>
-  //     </div>
-  //   );
-  // }
-
   return <AuthenticatedContent />;
 }
 
