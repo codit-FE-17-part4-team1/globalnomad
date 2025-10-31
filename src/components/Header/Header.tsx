@@ -23,7 +23,7 @@ export default function Header({
         {/* 로고 */}
         <Link href="/" className="relative w-[10.75rem] h-[1.875rem]">
           <Image
-            src="/icon/logo/header_logo_lg.svg"
+            src="/images/design_2/logo_Vertical.svg"
             alt="logo"
             fill
             style={{ objectFit: 'contain' }}
@@ -34,13 +34,13 @@ export default function Header({
           <div className="flex items-center justify-center gap-6">
             <Link
               href="/Login"
-              className="text-black hover:text-orange font-medium text-sm leading-6 tracking-normal text-center transition-colors duration-300 whitespace-nowrap"
+              className="text-black hover:text-orange-dark font-medium text-sm leading-6 tracking-normal text-center transition-colors duration-300 whitespace-nowrap"
             >
               로그인
             </Link>
             <Link
               href="/Signup"
-              className="text-black hover:text-orange font-medium text-sm leading-6 tracking-normal text-center transition-colors duration-300 whitespace-nowrap"
+              className="text-black hover:text-orange-dark font-medium text-sm leading-6 tracking-normal text-center transition-colors duration-300 whitespace-nowrap"
             >
               회원가입
             </Link>

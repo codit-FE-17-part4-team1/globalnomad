@@ -22,7 +22,7 @@ export default async function HeaderServer() {
       <Header
         isLoggedIn
         userName={me.nickname}
-        userImage={me.profileImageUrl || '/images/defalt_user.png'}
+        userImage={me.profileImageUrl || ''}
       />
     );
   } catch {

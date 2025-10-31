@@ -34,8 +34,8 @@ const PopularActivities: React.FC<PopularActivitiesProps> = ({
   const currentCards = activities.slice(startIndex, endIndex);
   const displayedCards = isDesktop ? currentCards : activities;
 
-  if (loading) return <p className="text-center py-10">로딩 중...⏳</p>;
-  if (error) return <p className="text-center py-10 text-red-500">{error}</p>;
+  const statusContainerClass =
+    'w-full flex flex-col items-center justify-center h-[200px] md:h-[300px] text-lg';
 
   return (
     <section className="w-full max-w-[1240px] mx-auto px-5">
@@ -80,15 +80,39 @@ const PopularActivities: React.FC<PopularActivitiesProps> = ({
       </div>
 
       <div className="flex overflow-x-auto gap-4 scrollbar-hide lg:flex-nowrap lg:overflow-hidden lg:justify-start">
-        {displayedCards.map((exp) => (
-          <div key={exp.id} className="flex-shrink-0">
-            <ActivityCard
-              {...exp}
-              type="lg"
-              onClick={() => router.push(`/activities/${exp.id}`)}
+        {loading ? (
+          <div className={statusContainerClass}>
+            <Image
+              src="/images/loading.png"
+              alt="로딩 중 이미지"
+              width={80}
+              height={80}
             />
+            <p className="text-gray-500">로딩 중...</p>
           </div>
-        ))}
+        ) : error ? (
+          <div className={statusContainerClass + ' text-red-500'}>{error}</div>
+        ) : displayedCards.length === 0 ? (
+          <div className={statusContainerClass}>
+            <Image
+              src="/images/design_2/_empty.svg"
+              alt="빈 페이지 이미지"
+              width={80}
+              height={80}
+            />
+            <p className="text-gray-500">아직 등록된 체험이 없습니다.</p>
+          </div>
+        ) : (
+          displayedCards.map((exp) => (
+            <div key={exp.id} className="flex-shrink-0">
+              <ActivityCard
+                {...exp}
+                type="lg"
+                onClick={() => router.push(`/activities/${exp.id}`)}
+              />
+            </div>
+          ))
+        )}
       </div>
     </section>
   );

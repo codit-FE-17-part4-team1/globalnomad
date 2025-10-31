@@ -22,7 +22,7 @@ const MainPage: React.FC = () => {
 
   const categories = [
     '전체',
-    '문화·예술',
+    '문화 · 예술',
     '식음료',
     '스포츠',
     '투어',
@@ -33,7 +33,7 @@ const MainPage: React.FC = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [popularActivities, setPopularActivities] = useState<Activity[]>([]);
   const [visibleActivities, setVisibleActivities] = useState<Activity[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [selectedCategory, setSelectedCategory] = useState('전체');

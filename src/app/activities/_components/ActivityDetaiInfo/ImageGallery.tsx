@@ -25,6 +25,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
           transition-all duration-300
           bg-gray-200
           md:rounded-tl-xl md:rounded-bl-xl
+          overflow-hidden
         "
       >
         {bannerImageUrl && (
@@ -55,6 +56,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
               key={idx}
               className={`relative w-full h-full bg-gray-200 
                 ${idx === 1 ? 'rounded-tr-xl' : idx === 3 ? 'rounded-br-xl' : 'rounded-none'}
+                overflow-hidden
               `}
             >
               {subImage?.imageUrl && (

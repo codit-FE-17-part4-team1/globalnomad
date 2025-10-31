@@ -36,7 +36,7 @@ const footerLinks = [
 export default function Footer({ className = '' }: FooterProps) {
   return (
     <footer
-      className={`w-full h-[160px] bg-black text-gray-600 mb-[83px] md:mb-0 ${className}`}
+      className={`w-full h-[160px] bg-orange-dark text-white mb-[83px] md:mb-0 ${className}`}
     >
       <div className="mx-auto h-full w-full min-w-[375px] max-w-[1240px] pt-8 pb-16 flex flex-col gap-4 px-5">
         {/* 모바일 (<768px): 저작권 + 개인정보처리방침 */}
@@ -49,7 +49,7 @@ export default function Footer({ className = '' }: FooterProps) {
               <Link
                 key={label}
                 href={href}
-                className="hover:text-white transition-colors duration-300 whitespace-nowrap"
+                className="hover:text-orange-light transition-colors duration-300 whitespace-nowrap"
               >
                 {label}
               </Link>
@@ -72,7 +72,7 @@ export default function Footer({ className = '' }: FooterProps) {
                 alt={alt}
                 width={20}
                 height={20}
-                className="hover:opacity-80"
+                className="hover:bg-orange-light"
               />
             </a>
           ))}
@@ -88,7 +88,7 @@ export default function Footer({ className = '' }: FooterProps) {
               <Link
                 key={label}
                 href={href}
-                className="hover:text-white transition-colors duration-300"
+                className="hover:text-orange-light transition-colors duration-300"
               >
                 {label}
               </Link>

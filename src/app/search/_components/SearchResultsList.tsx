@@ -49,28 +49,15 @@ const SearchResultsList: React.FC<SearchResultsProps> = ({
       </div>
 
       {/* 카드 영역 */}
-      <div
-        className={[
-          'grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center',
-          visibleCards.length > 0
-            ? 'items-start'
-            : 'items-center justify-center h-[300px] md:h-[500px] lg:h-[900px]',
-        ].join(' ')}
-      >
-        {visibleCards.length > 0 ? (
-          visibleCards.map((exp) => (
-            <ActivitiesCard
-              key={exp.id}
-              {...exp}
-              type="sm"
-              onClick={() => router.push(`/activities/${exp.id}`)}
-            />
-          ))
-        ) : (
-          <div className="col-span-full flex flex-col items-center justify-center text-gray-500 text-xl md:text-2xl font-medium">
-            검색 결과가 없습니다😅
-          </div>
-        )}
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center items-start">
+        {visibleCards.map((exp) => (
+          <ActivitiesCard
+            key={exp.id}
+            {...exp}
+            type="sm"
+            onClick={() => router.push(`/activities/${exp.id}`)}
+          />
+        ))}
       </div>
 
       {/* Pagination */}

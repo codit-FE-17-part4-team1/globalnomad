@@ -73,8 +73,16 @@ const ReviewList: React.FC<ReviewListProps> = ({ data }) => {
             </li>
           ))
         ) : (
-          <div className="flex items-center justify-center h-60">
-            <p className="text-gray-500 text-lg">아직 후기가 없습니다.</p>
+          <div className="flex flex-col items-center justify-center h-60">
+            <Image
+              src="/images/design_2/_empty.svg"
+              alt="빈 페이지 이미지"
+              width={80}
+              height={80}
+            />
+            <p className="text-gray-500 text-lg">
+              아직 등록된 후기가 없습니다.
+            </p>
           </div>
         )}
 
