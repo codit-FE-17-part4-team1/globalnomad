@@ -1,6 +1,5 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
 
 interface PriceFilterProps {
   selected: string;
@@ -41,19 +40,13 @@ const PriceFilter: React.FC<PriceFilterProps> = ({ selected, setSelected }) => {
           min-w-[90px] h-[41px] text-md        
           md:min-w-[120px] md:h-[53px] md:text-2lg
           lg:min-w-[127px] lg:h-[53px]    
-          font-medium text-green-dark px-[20px] py-[16px] transition-colors whitespace-nowrap
-          ${selected ? 'bg-gray-200 border border-gray-200 rounded-l-[15px]' : 'bg-white border border-green-dark rounded-[15px]'}
+          font-medium px-[20px] py-[16px] transition-colors whitespace-nowrap
+          ${selected ? 'bg-orange-light border border-orange-light rounded-l-[15px] text-orange-dark' : 'bg-white border border-gray-400 rounded-[15px] text-black'}
         `}
         onClick={() => setIsOpen(!isOpen)}
       >
         {selected || '가격'}
-        <Image
-          src="/icon/btn/alt_arrow_down.svg"
-          alt="dropdown arrow"
-          width={22}
-          height={22}
-          className="ml-1"
-        />
+        <span className="ml-2 text-[13px] leading-none">▼</span>
       </button>
 
       {/* 필터 리셋 X 버튼 */}
@@ -62,7 +55,7 @@ const PriceFilter: React.FC<PriceFilterProps> = ({ selected, setSelected }) => {
           className={`
             w-[53px] 
             h-[41px] md:h-[53px] lg:h-[53px]   
-            flex justify-center items-center bg-gray-200 text-2lg font-medium text-green-dark rounded-r-[15px]
+            flex justify-center items-center bg-orange-light text-2lg font-medium text-orange-dark border border-orange-light rounded-r-[15px]
           `}
           onClick={handleReset}
         >
@@ -86,7 +79,7 @@ const PriceFilter: React.FC<PriceFilterProps> = ({ selected, setSelected }) => {
                 whitespace-nowrap
                 ${idx === 0 ? 'rounded-t-[6px]' : ''}
                 ${idx === options.length - 1 ? 'rounded-b-[6px]' : ''}
-                ${opt === selected ? 'bg-gray-200' : 'hover:bg-gray-200'}
+                ${opt === selected ? 'bg-orange-light text-orange-dark' : 'hover:bg-gray-200'}
               `}
               onClick={() => handleOptionClick(opt)}
             >

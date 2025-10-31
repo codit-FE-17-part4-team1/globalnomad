@@ -121,8 +121,14 @@ const ActivityLocation = ({ address }: ActivityLocationProps) => {
         className="w-full h-[450px] rounded-2xl bg-gray-200 relative"
       >
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-200 rounded-2xl">
-            <span className="text-gray-500">지도 로딩 중...</span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-200 rounded-2xl">
+            <Image
+              src="/images/loading.png"
+              alt="로딩 중 이미지"
+              width={80}
+              height={80}
+            />
+            <p className="text-gray-500">로딩 중...</p>
           </div>
         )}
       </div>

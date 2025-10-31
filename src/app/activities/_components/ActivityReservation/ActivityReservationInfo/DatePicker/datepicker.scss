@@ -33,7 +33,7 @@ div.react-datepicker {
 
   /* 오늘 날짜 */
   .today-date {
-    color: #386641 !important;
+    color: #f37322 !important;
     font-weight: 700;
     background: transparent;
     border-radius: 0.3rem;
@@ -46,7 +46,7 @@ div.react-datepicker {
       left: 50%;
       transform: translateX(-50%);
       font-size: 10px;
-      color: #386641;
+      color: #f37322;
       white-space: nowrap; // 줄바꿈 방지
     }
   }
