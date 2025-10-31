@@ -44,13 +44,13 @@ export default function ReservationStatusPage() {
     checkAuth();
   }, []);
 
-  if (isAuthChecking) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-gray-500">checking...</div>
-      </div>
-    );
-  }
+  // if (isAuthChecking) {
+  //   return (
+  //     <div className="flex items-center justify-center h-screen">
+  //       <div className="text-gray-500">checking...</div>
+  //     </div>
+  //   );
+  // }
 
   return <AuthenticatedContent />;
 }
@@ -120,8 +120,14 @@ function AuthenticatedContent() {
       {/* 여기서 조립해야 할 듯? - 체험이 없을 경우를 조건부로! */}
       <div className="h-[560px] md:h-[620px] lg:h-[680px]">
         {isLoadingActivities || isLoadingDashboard ? (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            Loading...
+          <div className="flex flex-col items-center justify-center h-full">
+            <Image
+              src="/images/loading.png"
+              alt="로딩중"
+              width={100}
+              height={100}
+            />
+            <p className="text-gray-500">로딩중...</p>
           </div>
         ) : selectedActivityId ? (
           <ReservationCalendar
