@@ -245,7 +245,7 @@ export default function ReservationModalBase({
             {filteredReservations.length === 0 && (
               <div className="flex flex-col items-center justify-center py-8">
                 <Image
-                  src="/images/design_2/earth.png"
+                  src="/images/design_2/empty.png"
                   alt="예약 내역 없음"
                   width={100}
                   height={100}
