@@ -279,10 +279,6 @@ export default function Experience() {
             );
           })
         )}
-<<<<<<< HEAD
-=======
-
->>>>>>> develop
         <div className="h-[560px] md:h-[620px] lg:h-[680px]">
           {isLoading && (
             <div className="flex flex-col items-center justify-center h-full">
