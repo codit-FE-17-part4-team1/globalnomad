@@ -44,7 +44,7 @@ export default function ProfileCard() {
   ];
 
   return (
-    <div className="hidden md:block w-full rounded-2xl border border-[var(--color-gray-200)] shadow h-[470px] bg-white p-6 lg:w-[370px] md:w-[250px]">
+    <div className="hidden md:block w-full rounded-2xl border border-[var(--color-gray-200)] shadow h-[470px] bg-white p-6 lg:w-[370px] md:w-[250px] sticky top-10 mt-10">
       {/* 프로필 이미지 수정*/}
       <ProfileImage />
       {/* 메뉴 */}

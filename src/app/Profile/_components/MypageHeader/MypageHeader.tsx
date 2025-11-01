@@ -24,8 +24,7 @@ export default function MypageHeader({
   return (
     <div
       className={clsx(
-        'flex justify-between sticky z-50 top-0 h-[50px] items-start bg-background',
-        'xs:h-[62px]'
+        'flex justify-between sticky z-50 md:h-[118px] items-start bg-background top-0 pt-10'
       )}
     >
       <h2 className={clsx('text-3xl font-bold')}>{title}</h2>
