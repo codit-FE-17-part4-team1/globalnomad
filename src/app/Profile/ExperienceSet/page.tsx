@@ -279,18 +279,19 @@ export default function Experience() {
             );
           })
         )}
-
-        {isLoading && (
-          <div className="flex flex-col items-center justify-center h-full">
-            <Image
-              src="/images/loading.png"
-              alt="로딩중"
-              width={100}
-              height={100}
-            />
-            <p className="text-gray-500">로딩중...</p>
-          </div>
-        )}
+        <div className="h-[560px] md:h-[620px] lg:h-[680px]">
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center h-full">
+              <Image
+                src="/images/loading.png"
+                alt="로딩중"
+                width={100}
+                height={100}
+              />
+              <p className="text-gray-500">로딩중...</p>
+            </div>
+          )}
+        </div>
 
         {!hasMore && !isLoading && uniqueActivities.length > 0 && (
           <div className="text-center py-4 text-gray-500">
