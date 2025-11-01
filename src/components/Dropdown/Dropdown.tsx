@@ -195,11 +195,11 @@ function DropdownItem({
     return (
       <button
         onClick={handleClick}
-        className="group relative py-2 px-4 hover:bg-black-nomad hover:text-white w-full text-left rounded-md flex items-center"
+        className="group relative py-2 px-4 hover:bg-orange-light hover:text-black w-full text-left rounded-md flex items-center"
       >
         <span className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100">
           <svg
-            className="w-4 h-4 text-white"
+            className="w-4 h-4 text-black"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"

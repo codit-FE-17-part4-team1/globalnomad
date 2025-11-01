@@ -20,6 +20,12 @@ export default function ImageUploaderEdit<
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleClick = () => {
+    if (loading) return;
+
+    if (images.length >= maxCount) {
+      alert(`이미지는 최대 ${maxCount}장까지 가능합니다.`);
+      return;
+    }
     fileInputRef.current?.click();
   };
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,7 +79,7 @@ export default function ImageUploaderEdit<
       />
       <ul className="overflow-hidden">
         <li
-          className="relative aspect-square w-[49%] float-left mb-[8px] lg:w-[180px] lg:mr-[24px] lg:mb-[24px] cursor-pointer"
+          className="relative aspect-square w-[48%] float-left mr-[3%] mb-[8px] lg:w-[180px] lg:mr-[24px] lg:mb-[24px] cursor-pointer"
           onClick={handleClick}
         >
           <Image
@@ -89,9 +95,10 @@ export default function ImageUploaderEdit<
           return (
             <li
               key={i}
-              className={`relative aspect-square w-[49%] mb-[8px] lg:w-[180px] lg:mb-[24px] rounded-3xl overflow-hidden float-left ${
-                //i % 3 === 2 ? 'lg:mr-0' : 'lg:mr-[24px]'
-                i === 1 || i === 3 ? 'mr-[3%]' : ''
+              className={`relative aspect-square w-[48%] mb-[8px] lg:w-[180px] lg:mb-[24px] rounded-3xl overflow-hidden float-left ${
+                i % 3 === 2 ? 'lg:mr-0' : 'lg:mr-[24px]'
+              }
+                ${i === 1 || i === 3 ? 'mr-[3%]' : ''}
               }`}
             >
               <Image

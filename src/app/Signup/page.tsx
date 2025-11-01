@@ -144,15 +144,10 @@ export default function SignupPage() {
             placeholder="닉네임을 입력하세요"
             value={form.nickname}
             onChange={handleChange}
-            // 로컬 닉네임 에러 override
-            errorOverride={nicknameError}
+            errorOverride={
+              nicknameError || (!state.ok ? state.fieldErrors?.nickname : '')
+            }
           />
-          {/* 서버 닉네임 에러 */}
-          {!state.ok && state.fieldErrors?.nickname && (
-            <p className="mt-1 text-sm text-red-600">
-              {state.fieldErrors.nickname}
-            </p>
-          )}
 
           {/* 비밀번호 */}
           <FormInput
@@ -180,14 +175,11 @@ export default function SignupPage() {
             value={form.passwordConfirmation}
             onChange={handleChange}
             passwordValue={form.password}
-            // 로컬 비번확인 에러 override
-            errorOverride={passwordConfirmError}
+            errorOverride={
+              passwordConfirmError ||
+              (!state.ok ? state.fieldErrors?.passwordConfirmation : '')
+            }
           />
-          {!state.ok && state.fieldErrors?.passwordConfirmation && (
-            <p className="mt-1 text-sm text-red-600">
-              {state.fieldErrors.passwordConfirmation}
-            </p>
-          )}
 
           {/* 이용약관 동의 */}
           <div className="flex items-center gap-2 mt-2">
@@ -219,8 +211,9 @@ export default function SignupPage() {
           onClose={() => setIsModalOpen(false)}
           onConfirm={handleConfirm}
           message={modalMsg}
-          confirmLabel="확인"
+          confirmLabel={state.ok ? '메인으로' : '확인'}
           className="bg-white"
+          type={state.ok ? 'success' : 'error'}
         />
       </div>
     </div>

@@ -17,7 +17,13 @@ export default function ImageUploaderAdd({
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const handleClick = () => {
-    if (loading || images.length >= maxCount) return;
+    //if (loading || images.length >= maxCount) return;
+    if (loading) return;
+
+    if (images.length >= maxCount) {
+      alert(`이미지는 최대 ${maxCount}장까지 가능합니다.`);
+      return;
+    }
     fileInputRef.current?.click();
   };
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,9 +85,8 @@ export default function ImageUploaderAdd({
           <li
             key={i}
             className={`relative aspect-square w-[48%] mb-[8px] lg:w-[180px] lg:mb-[24px] rounded-3xl overflow-hidden float-left ${
-              //i % 3 === 2 ? 'lg:mr-0 mr-0' : 'lg:mr-[24px] mr-[3%]'
-              i === 1 || i === 3 ? 'mr-[3%]' : ''
-            }`}
+              i % 3 === 2 ? 'lg:mr-0' : 'lg:mr-[24px]'
+            }  ${i === 1 || i === 3 ? 'mr-[3%]' : ''}`}
           >
             <Image
               key={i}

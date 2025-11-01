@@ -125,6 +125,7 @@ export default function LoginPage() {
           message={modalMsg}
           confirmLabel="확인"
           className="bg-white"
+          type="error"
         />
       </div>
     </div>

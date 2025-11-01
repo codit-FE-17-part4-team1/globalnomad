@@ -85,10 +85,10 @@ const PopularActivities: React.FC<PopularActivitiesProps> = ({
             <Image
               src="/images/loading.png"
               alt="로딩 중 이미지"
-              width={80}
-              height={80}
+              width={100}
+              height={100}
             />
-            <p className="text-gray-500">로딩 중...</p>
+            <p className="text-gray-700">로딩 중...</p>
           </div>
         ) : error ? (
           <div className={statusContainerClass + ' text-red-500'}>{error}</div>
