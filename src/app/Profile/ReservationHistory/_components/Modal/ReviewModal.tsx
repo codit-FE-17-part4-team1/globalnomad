@@ -94,7 +94,7 @@ export default function ReviewModal({
       <Modal
         isOpen={isRawOpen}
         onClose={() => setRawOpen(false)}
-        className="bg-white md:!w-[480px] !w-[375px]"
+        className="bg-white md:!w-[480px] !w-[375px] overflow-y-auto scrollbar-hide"
       >
         <div className="md:p-6 p-4 relative">
           <div className="sticky top-6 flex justify-between items-center md:mb-10 mb-8">
@@ -115,10 +115,10 @@ export default function ReviewModal({
                 width={126}
                 height={126}
                 alt="체험 사진"
-                className="rounded-xl md:w-[126px] w-[100px]"
+                className="rounded-xl md:size-[126px] size-[100px] flex-shrink-0 object-cover"
               />
-              <div className="flex flex-col md:gap-3 gap-1.5 flex-auto pl-6 ">
-                <h3 className="md:text-[20px] text-lg font-bold">
+              <div className="flex flex-col md:gap-3 gap-1.5 flex-auto pl-6 min-w-0">
+                <h3 className="md:text-[20px] text-lg font-bold text-ellipsis whitespace-nowrap overflow-hidden">
                   {reservationInfo.activity.title}
                 </h3>
                 <p className="md:text-2lg text-md">

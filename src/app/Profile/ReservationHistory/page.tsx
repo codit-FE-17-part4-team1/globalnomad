@@ -97,7 +97,18 @@ export default function ReservationHistory() {
     return reservations.filter((r) => r.status === statusKey).length;
   }, [reservations, selected]);
 
-  if (loading) return <p>로딩 중</p>;
+  if (loading)
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <Image
+          src="/images/loading.png"
+          alt="로딩중"
+          width={100}
+          height={100}
+        />
+        <p className="text-gray-500">로딩중...</p>
+      </div>
+    );
 
   // 헤더 포함 데이터 없을때
   if (reservations.length === 0) {
@@ -129,15 +140,15 @@ export default function ReservationHistory() {
       {filteredCount === 0 ? (
         <div
           className={clsx(
-            'flex flex-col items-center pt-[60px]',
+            'flex flex-col items-center pt-[60px] ',
             'xs:pt-14',
-            'md:pt-[86px]'
+            'md:pt-[86px] '
           )}
         >
           <Image
             width={200}
             height={200}
-            src="/images/empty.svg"
+            src="/images/design_2/empty.png"
             alt="데이터 없음"
             className="md:w-[240px] md:h-[240px]"
           />
@@ -165,7 +176,7 @@ export default function ReservationHistory() {
               <div
                 key={list.id}
                 ref={isLastElement ? lastElementRef : null} // 무한스크롤시 필수!!
-                className="relative flex mb-4 rounded-3xl overflow-hidden w-full shadow"
+                className="relative flex mb-4 rounded-3xl overflow-hidden max-w-full shadow mx-1"
               >
                 <div
                   className={clsx(
