@@ -170,7 +170,7 @@ export default function TimeSlots({
           className="w-[56px] h-[56px] flex-none cursor-pointer"
           onClick={handleAddTimeSlot}
         >
-          <div className="h-full w-full flex items-center justify-center border rounded-sm bg-[#0b3d2d]">
+          <div className="h-full w-full flex items-center justify-center border-orange-dark rounded-sm bg-orange-dark">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
