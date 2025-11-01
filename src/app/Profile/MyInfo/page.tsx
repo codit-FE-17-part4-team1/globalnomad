@@ -19,7 +19,7 @@ type FormType = {
   nickname: string;
   email: string;
   password: string;
-  passwordConfirm: string;
+  passwordConfirmation: string;
 };
 
 export default function MyInfo() {
@@ -28,13 +28,14 @@ export default function MyInfo() {
     nickname: '',
     email: '',
     password: '',
-    passwordConfirm: '',
+    passwordConfirmation: '',
   });
 
-  // 추가: 로컬 에러 상태 (닉네임/비번/비번확인)
+  // 로컬 에러 상태 (닉네임/비번/비번확인)
   const [nicknameError, setNicknameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const [passwordConfirmError, setPasswordConfirmError] = useState('');
+  const [passwordConfirmationError, setpasswordConfirmationError] =
+    useState('');
 
   const [isEdit, setIsEdit] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -43,6 +44,16 @@ export default function MyInfo() {
     message: '',
   });
   const Label_Style = 'font-bold! text-2xl! mb-4! text-black!';
+  // 사용자가 변경했는지 체크
+  const hasChanges = () => {
+    if (!isEdit || !user) return false;
+    return (
+      form.nickname !== user.nickname ||
+      form.password !== '' ||
+      form.passwordConfirmation !== ''
+    );
+  };
+
   // 모달 열기
   const showModal = (message: string) => {
     setModal({ isOpen: true, message });
@@ -63,12 +74,12 @@ export default function MyInfo() {
           nickname: data.nickname || '',
           email: data.email || '',
           password: '',
-          passwordConfirm: '',
+          passwordConfirmation: '',
         });
         // 초기화 시 에러도 비움
         setNicknameError('');
         setPasswordError('');
-        setPasswordConfirmError('');
+        setpasswordConfirmationError('');
       } catch (error) {
         console.error(error);
         alert('사용자 정보를 불러올 수 없습니다.');
@@ -79,13 +90,54 @@ export default function MyInfo() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+
+    setForm((prev) => {
+      const next = { ...prev, [name]: value };
+
+      // 닉네임 에러: 10자 제한
+      if (name === 'nickname') {
+        if (value.length > 10) {
+          setNicknameError('열 자 이하로 작성해주세요.');
+        } else {
+          setNicknameError('');
+        }
+      }
+
+      // 비밀번호 에러: 8자 이상 체크
+      if (name === 'password') {
+        if (value.length > 0 && value.length < 8) {
+          setPasswordError('비밀번호는 8자 이상이어야 합니다.');
+        } else {
+          setPasswordError('');
+        }
+
+        // 비밀번호 확인란이 채워져 있으면 일치 여부 체크
+        if (next.passwordConfirmation) {
+          if (value !== next.passwordConfirmation) {
+            setpasswordConfirmationError('비밀번호가 일치하지 않습니다.');
+          } else {
+            setpasswordConfirmationError('');
+          }
+        }
+      }
+
+      // 비밀번호 확인 에러: password와 passwordConfirmation 비교
+      if (name === 'passwordConfirmation') {
+        if (value !== next.password) {
+          setpasswordConfirmationError('비밀번호가 일치하지 않습니다.');
+        } else {
+          setpasswordConfirmationError('');
+        }
+      }
+
+      return next;
+    });
   };
   //
   const handleSave = async () => {
-    // 저장 직전 마지막 방어 (에러 있으면 중단)
-    if (nicknameError || passwordError || passwordConfirmError) {
-      alert('입력값을 다시 확인해 주세요.');
+    // 에러 모달 생성
+    if (nicknameError || passwordError || passwordConfirmationError) {
+      showModal('입력값을 다시 확인해 주세요.');
       return;
     }
 
@@ -94,7 +146,7 @@ export default function MyInfo() {
       return;
     }
 
-    if (form.password !== form.passwordConfirm) {
+    if (form.password !== form.passwordConfirmation) {
       showModal('비밀번호가 일치하지 않습니다.');
       return;
     }
@@ -110,9 +162,9 @@ export default function MyInfo() {
       setUser(updatedUser);
       showModal('수정이 완료되었습니다.');
       setIsEdit(false);
-      setForm((prev) => ({ ...prev, password: '', passwordConfirm: '' }));
+      setForm((prev) => ({ ...prev, password: '', passwordConfirmation: '' }));
       setPasswordError('');
-      setPasswordConfirmError('');
+      setpasswordConfirmationError('');
     } catch (error) {
       alert(error instanceof Error ? error.message : '수정에 실패했습니다.');
       console.error(error);
@@ -129,6 +181,7 @@ export default function MyInfo() {
         title="내 정보"
         type="button"
         buttonText={isEdit ? '저장하기' : '수정하기'}
+        disabled={isEdit && !hasChanges()}
         onClick={() => {
           if (isEdit) {
             handleSave();
@@ -178,7 +231,7 @@ export default function MyInfo() {
             type="passwordConfirm"
             labelText="비밀번호 재입력"
             placeholder="비밀번호를 한번 더 입력해 주세요"
-            value={form.passwordConfirm}
+            value={form.passwordConfirmation}
             onChange={handleChange}
             passwordValue={form.password}
             disabled={!isEdit}

@@ -14,7 +14,7 @@ export default function ModalPlayground() {
 
       {/* 프리셋 확인 모달 보기 */}
       <button
-        className="mr-3 px-4 py-2 rounded bg-[var(--color-green-dark)] text-white"
+        className="mr-3 px-4 py-2 rounded bg-[var(--color-orange-dark)] text-white"
         onClick={() => {
           setRawOpen(false);
           setConfirmOpen(true);
@@ -25,7 +25,7 @@ export default function ModalPlayground() {
 
       {/* 베이스 모달로 조립해 보기 */}
       <button
-        className="mr-3 px-4 py-2 rounded bg-[var(--color-green-dark)] text-white"
+        className="mr-3 px-4 py-2 rounded bg-[var(--color-orange-dark)] text-white"
         onClick={() => {
           setConfirmOpen(false);
           setRawOpen(true);
@@ -59,7 +59,7 @@ export default function ModalPlayground() {
           <div className="mt-6 flex justify-end">
             <button
               onClick={() => setRawOpen(false)}
-              className="w-full h-12 rounded bg-[var(--color-green-dark)] text-white"
+              className="w-full h-12 rounded bg-[var(--color-orange-dark)] text-white"
             >
               작성하기
             </button>
