@@ -161,7 +161,7 @@ export default function Experience() {
   );
 
   return (
-    <div className="w-[100%] md:pl-[16px] lg:w-[800px]">
+    <div className="w-[100%] ">
       <MypageHeader
         title="내 체험 관리"
         type="button"
@@ -201,7 +201,7 @@ export default function Experience() {
                 ref={
                   isLastElement && hasMore && !isLoading ? lastElementRef : null
                 }
-                className="bg-white rounded-3xl flex shadow mb-[24px]"
+                className="bg-white rounded-3xl flex shadow mb-[24px] mx-1"
               >
                 <li className="relative flex w-[128px] h-[128px] md:w-[156px] md:h-[156px] lg:w-[204px] lg:h-[204px] overflow-hidden rounded-l-3xl">
                   <Image

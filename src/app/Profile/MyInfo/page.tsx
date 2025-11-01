@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getUser, updateUser } from '@/lib/users/api';
+import Image from 'next/image';
 import FormInput from '@/components/Input/FormInput';
 import Header from '@/app/Profile/_components/MypageHeader/MypageHeader';
 import ConfirmModal from '@/components/Modal/ConfirmModal';
@@ -173,7 +174,18 @@ export default function MyInfo() {
     }
   };
 
-  if (!user) return <p>로딩 중...</p>;
+  if (!user)
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <Image
+          src="/images/loading.png"
+          alt="로딩중"
+          width={100}
+          height={100}
+        />
+        <p className="text-gray-500">로딩중...</p>
+      </div>
+    );
 
   return (
     <div>
@@ -227,7 +239,7 @@ export default function MyInfo() {
           />
           <FormInput
             id="passwordConfirm"
-            name="passwordConfirm"
+            name="passwordConfirmation"
             type="passwordConfirm"
             labelText="비밀번호 재입력"
             placeholder="비밀번호를 한번 더 입력해 주세요"

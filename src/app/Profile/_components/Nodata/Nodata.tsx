@@ -13,7 +13,7 @@ export default function Nodata() {
       <Image
         width={200}
         height={200}
-        src="/images/empty.svg"
+        src="/images/design_2/empty.png"
         alt="데이터 없음"
         className="md:w-[240px] md:h-[240px]"
       />

@@ -6,7 +6,7 @@ export default function ProfileLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 mt-5">
+    <div className="mx-auto max-w-7xl px-4 pb-10 mt-5">
       <div className="flex gap-6 min-h-screen">
         {/* 프로필 카드 */}
         <aside>

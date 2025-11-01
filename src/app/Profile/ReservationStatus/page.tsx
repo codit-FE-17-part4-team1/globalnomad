@@ -100,7 +100,7 @@ function AuthenticatedContent() {
   };
 
   return (
-    <div className="mx-auto max-w-screen-xl ">
+    <div className="mx-auto max-w-screen-xl">
       {/* 공통 컴포넌트 적용 - title 유선님 작업하신 거 조립 완료 */}
       <Header title="예약 현황" />
       {/* 카테고리 필터 공통 컴포넌트 적용 필요 - 따로 생성해서 조립 완료! */}
