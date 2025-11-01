@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Modal from '@/components/Modal/BaseModal';
 import StarButton from '@/app/Profile/ReservationHistory/_components/StarButton';
+import ConfirmModal from '@/components/Modal/ConfirmModal';
 import CustomInput from '@/components/Input/CustomInput';
 
 type ReservationInfo = {
@@ -33,15 +34,28 @@ export default function ReviewModal({
   const [rating, setRating] = useState(0);
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState('');
+  const [modal, setModal] = useState({
+    isOpen: false,
+    message: '',
+  });
+  // 모달 열기
+  const showModal = (message: string) => {
+    setModal({ isOpen: true, message });
+  };
+
+  // 모달 닫기
+  const closeModal = () => {
+    setModal({ isOpen: false, message: '' });
+  };
 
   const handleSubmit = async () => {
     if (!reservationId) return;
     if (rating === 0) {
-      alert('별점을 선택해주세요.');
+      showModal('별점을 선택해주세요.');
       return;
     }
     if (!content.trim()) {
-      alert('후기 내용을 입력해주세요.');
+      showModal('후기 내용을 입력해주세요.');
       return;
     }
     setLoading(true);
@@ -64,7 +78,7 @@ export default function ReviewModal({
         const errorData = await response.json();
         throw new Error(errorData.error || '후기 작성에 실패했습니다.');
       }
-      alert('후기 작성 완료');
+      showModal('후기 작성 완료!');
       setRawOpen(false);
     } catch (error) {
       alert(
@@ -76,74 +90,86 @@ export default function ReviewModal({
   };
 
   return (
-    <Modal
-      isOpen={isRawOpen}
-      onClose={() => setRawOpen(false)}
-      className="bg-white"
-    >
-      <div className="p-6 relative">
-        <div className="sticky top-6 flex justify-between items-center mb-10">
-          <h2 className="text-xl font-semibold">후기 작성</h2>
-          <button onClick={() => setRawOpen(false)}>
-            <Image
-              src="/icon/btn/X_lg.svg"
-              width={40}
-              height={40}
-              alt="모달 닫기"
-            />
-          </button>
-        </div>
-        <div className="flex flex-col gap-6">
-          <div className="flex">
-            <Image
-              src={reservationInfo.activity.bannerImageUrl}
-              width={126}
-              height={126}
-              alt="체험 사진"
-              className="rounded-xl"
-            />
-            <div className="flex flex-col gap-3 flex-auto pl-6 ">
-              <h3 className="text-[20px] font-bold">
-                {reservationInfo.activity.title}
-              </h3>
-              <p className="text-2lg">
-                <span>{reservationInfo.date}</span>·
-                <span>{reservationInfo.startTime}</span>~
-                <span>{reservationInfo.endTime}</span>·
-                <span>{reservationInfo.headCount}명</span>
-              </p>
-              <hr className=" opacity-20" />
-              <p className="text-3xl font-bold">{reservationInfo.totalPrice}</p>
-            </div>
-          </div>
-          <div className="flex gap-2 justify-center items-center">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <StarButton
-                key={star}
-                isActive={star <= rating}
-                onClick={() => setRating(star)}
+    <>
+      <Modal
+        isOpen={isRawOpen}
+        onClose={() => setRawOpen(false)}
+        className="bg-white md:!w-[480px] !w-[375px]"
+      >
+        <div className="md:p-6 p-4 relative">
+          <div className="sticky top-6 flex justify-between items-center md:mb-10 mb-8">
+            <h2 className="text-xl font-semibold">후기 작성</h2>
+            <button onClick={() => setRawOpen(false)}>
+              <Image
+                src="/icon/btn/X_lg.svg"
+                width={40}
+                height={40}
+                alt="모달 닫기"
               />
-            ))}
+            </button>
           </div>
-          <CustomInput
-            id="description"
-            name="description"
-            variant="textarea"
-            labelText=""
-            placeholder="후기를 작성해주세요"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
+          <div className="flex flex-col gap-6">
+            <div className="flex">
+              <Image
+                src={reservationInfo.activity.bannerImageUrl}
+                width={126}
+                height={126}
+                alt="체험 사진"
+                className="rounded-xl md:w-[126px] w-[100px]"
+              />
+              <div className="flex flex-col md:gap-3 gap-1.5 flex-auto pl-6 ">
+                <h3 className="md:text-[20px] text-lg font-bold">
+                  {reservationInfo.activity.title}
+                </h3>
+                <p className="md:text-2lg text-md">
+                  <span>{reservationInfo.date}</span>·
+                  <span>{reservationInfo.startTime}</span>~
+                  <span>{reservationInfo.endTime}</span>·
+                  <span>{reservationInfo.headCount}명</span>
+                </p>
+                <hr className=" opacity-20" />
+                <p className="md:text-3xl text-[20px] font-bold">
+                  ₩{reservationInfo.totalPrice}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2 justify-center items-center">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <StarButton
+                  key={star}
+                  isActive={star <= rating}
+                  onClick={() => setRating(star)}
+                />
+              ))}
+            </div>
+            <CustomInput
+              id="description"
+              name="description"
+              variant="textarea"
+              labelText=""
+              placeholder="후기를 작성해주세요"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+          </div>
+          <div className="flex justify-end">
+            <button
+              onClick={handleSubmit}
+              className="w-full h-12 rounded bg-[var(--color-orange-dark)] text-white"
+            >
+              작성하기
+            </button>
+          </div>
         </div>
-        <div className="flex justify-end">
-          <button
-            onClick={handleSubmit}
-            className="w-full h-12 rounded bg-[var(--color-orange-dark)] text-white"
-          >
-            작성하기
-          </button>
-        </div>
-      </div>
-    </Modal>
+      </Modal>
+      {/* 확인모달 */}
+      <ConfirmModal
+        isOpen={modal.isOpen}
+        onClose={closeModal}
+        message={modal.message}
+        className="bg-white"
+        onConfirm={closeModal}
+      />
+    </>
   );
 }

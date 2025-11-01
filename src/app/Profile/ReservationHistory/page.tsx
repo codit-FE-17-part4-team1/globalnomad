@@ -29,6 +29,28 @@ type ReservationData = {
   reservations: Array<ReservationItem>;
   cursorId: null | string;
 };
+const statusList = {
+  confirmed: '예약 승인',
+  canceled: '예약 취소',
+  declined: '예약 거절',
+  completed: '체험 완료',
+  pending: '예약 대기',
+} as const;
+const reverseStatusList: Record<string, keyof typeof statusList> = {
+  '예약 취소': 'canceled',
+  '예약 승인': 'confirmed',
+  '예약 거절': 'declined',
+  '체험 완료': 'completed',
+  '예약 대기': 'pending',
+} as const;
+const selectList = [
+  '전체',
+  '예약 대기',
+  '예약 취소',
+  '예약 승인',
+  '예약 거절',
+  '체험 완료',
+];
 
 export default function ReservationHistory() {
   const [isRawOpen, setRawOpen] = useState(false);
@@ -40,28 +62,6 @@ export default function ReservationHistory() {
 
   const BUTTONSTYLE =
     'absolute bottom-6 right-6 rounded-md w-20 h-8 text-md md:h-11 md:w-36 xs:w-[112px] xs:h-10 xs:text-lg';
-  const statusList = {
-    confirmed: '예약 승인',
-    canceled: '예약 취소',
-    declined: '예약 거절',
-    completed: '체험 완료',
-    pending: '예약 대기',
-  } as const;
-  const reverseStatusList: Record<string, keyof typeof statusList> = {
-    '예약 취소': 'canceled',
-    '예약 승인': 'confirmed',
-    '예약 거절': 'declined',
-    '체험 완료': 'completed',
-    '예약 대기': 'pending',
-  } as const;
-  const selectList = [
-    '전체',
-    '예약 대기',
-    '예약 취소',
-    '예약 승인',
-    '예약 거절',
-    '체험 완료',
-  ];
 
   // API 호출 함수 (데이터를 불러와야함)
   const fetchReservations = async (cursor?: string | null) => {
@@ -88,30 +88,19 @@ export default function ReservationHistory() {
     fetchData: fetchReservations,
     pageSize: 5, // 한번에 보여지는 아이템 갯수
   });
-  // 기존 data 형태로 변환
-  const data = useMemo<ReservationData | null>(() => {
-    if (reservations.length === 0 && isLoading) return null;
-    return {
-      totalCount: reservations.length,
-      reservations: reservations,
-      cursorId: null,
-    };
-  }, [reservations, isLoading]);
-
   const loading = isLoading && reservations.length === 0;
 
-  // 필터링된 예약 목록
-  const filteredReservations =
-    data?.reservations?.filter((reservation) => {
-      if (selected === '전체') return true;
-      const statusKey = reverseStatusList[selected];
-      return reservation.status === statusKey;
-    }) || [];
+  // 기존 data 형태로 변환
+  const filteredCount = useMemo(() => {
+    if (selected === '전체') return reservations.length;
+    const statusKey = reverseStatusList[selected];
+    return reservations.filter((r) => r.status === statusKey).length;
+  }, [reservations, selected]);
 
   if (loading) return <p>로딩 중</p>;
 
   // 헤더 포함 데이터 없을때
-  if (!data || !data.reservations || data.reservations.length === 0) {
+  if (reservations.length === 0) {
     return (
       <div>
         <Header
@@ -137,7 +126,7 @@ export default function ReservationHistory() {
       />
 
       {/* 필터링된 결과가 없을 때 */}
-      {filteredReservations.length === 0 ? (
+      {filteredCount === 0 ? (
         <div
           className={clsx(
             'flex flex-col items-center pt-[60px]',
@@ -158,9 +147,20 @@ export default function ReservationHistory() {
         </div>
       ) : (
         <>
-          {filteredReservations.map((list, index) => {
-            // 마지막 요소에만 ref 추가
-            const isLastElement = filteredReservations.length === index + 1;
+          {reservations.map((list, index) => {
+            const isLastElement = reservations.length === index + 1;
+            if (selected !== '전체') {
+              const statusKey = reverseStatusList[selected];
+              if (list.status !== statusKey) {
+                return isLastElement ? (
+                  <div
+                    key={list.id}
+                    ref={lastElementRef}
+                    style={{ height: 0 }}
+                  />
+                ) : null;
+              }
+            }
             return (
               <div
                 key={list.id}

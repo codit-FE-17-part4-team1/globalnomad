@@ -135,9 +135,9 @@ export default function MyInfo() {
   };
   //
   const handleSave = async () => {
-    // 저장 직전 마지막 방어 (에러 있으면 중단)
+    // 에러 모달 생성
     if (nicknameError || passwordError || passwordConfirmationError) {
-      alert('입력값을 다시 확인해 주세요.');
+      showModal('입력값을 다시 확인해 주세요.');
       return;
     }
 
